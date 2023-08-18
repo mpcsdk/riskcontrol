@@ -25,19 +25,25 @@ func (s *sLEngine) UpRules(name, rules string) error {
 	return nil
 }
 
-func (s *sLEngine) Exec(name string, param map[string]interface{}) (any, error) {
+func (s *sLEngine) Exec(name string, param map[string]interface{}) (bool, error) {
 	fmt.Println("exec:", name, param)
 	if p, ok := s.RuleEnginePool[name]; !ok {
-		return nil, errors.New("no rules:" + name)
+		return false, errors.New("no rules:" + name)
 	} else {
 
 		// param := map[string]interface{}{}
 		// param["User"] = uer
 		err, rst := p.ExecuteConcurrent(param)
+		fmt.Println(rst)
 		if err != nil {
-			return nil, err
+			return false, err
 		}
-		return rst, nil
+		for _, v := range rst {
+			if v == false {
+				return false, nil
+			}
+		}
+		return true, nil
 	}
 }
 func (s *sLEngine) List(name string) map[string]string {

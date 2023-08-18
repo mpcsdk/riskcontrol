@@ -16,4 +16,6 @@ message RiskReq {
     string Method = 2; // v: required
     string Data = 3; // v: required
 }
-message RiskRes {}
+message RiskRes {
+    bool Result = 1;
+}
