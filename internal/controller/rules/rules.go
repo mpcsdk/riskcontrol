@@ -2,11 +2,11 @@ package rules
 
 import (
 	"context"
+	"fmt"
 	v1 "riskcontral/api/rules/v1"
+	"riskcontral/internal/service"
 
 	"github.com/gogf/gf/contrib/rpc/grpcx/v2"
-	"github.com/gogf/gf/v2/errors/gcode"
-	"github.com/gogf/gf/v2/errors/gerror"
 )
 
 type Controller struct {
@@ -18,5 +18,15 @@ func Register(s *grpcx.GrpcServer) {
 }
 
 func (*Controller) PerformRisk(ctx context.Context, req *v1.RiskReq) (res *v1.RiskRes, err error) {
-	return nil, gerror.NewCode(gcode.CodeNotImplemented)
+	param := map[string]interface{}{}
+	// for k, v := range req.Param {
+	// 	fmt.Println(reflect.TypeOf(v))
+	// 	fmt.Println(reflect.ValueOf(v).Type())
+	// 	n := v.(json.Number)
+	// 	param[k], _ = n.Int64()
+	// }
+	rst, err := service.LEngine().Exec("test", param)
+	fmt.Println(rst)
+	res = &v1.RiskRes{}
+	return res, err
 }

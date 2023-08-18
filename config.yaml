@@ -1,5 +1,5 @@
 server:
-  address:     ":8000"
+  address:     ":8002"
 
 logger:
   level : "all"
@@ -14,13 +14,16 @@ database:
   - link: "pgsql:postgres:123456@tcp(127.0.0.1:10100)/postgres"
 
 grpc:
-  name:             "demo"  # 服务名称
+  name:             "rulerpc"  # 服务名称
   address:          ":8001" # 自定义服务监听地址
   logPath:          "./log" # 日志存储目录路径
   logStdout:        true    # 日志是否输出到终端
   errorLogEnabled:  true    # 是否开启错误日志记录
   accessLogEnabled: true    # 是否开启访问日志记录
   errorStack:       true    # 当产生错误时，是否记录错误堆栈
+
+etcd:
+  address: "http://192.168.121.203:2379"
 
 gfcli:
   gen:
