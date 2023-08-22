@@ -12,8 +12,8 @@ service User{
 }
 
 message RiskReq {
-    string Contract = 1; // v: required
-    string Method = 2; // v: required
+    string From = 1; // v: required
+    string To = 2; // v: required
     string Data = 3; // v: required
 }
 message RiskRes {
