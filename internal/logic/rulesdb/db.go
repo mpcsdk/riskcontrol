@@ -48,6 +48,12 @@ func (s *sRulesDb) AllRules() map[string]string {
 	}
 	return rst
 }
+func (s *sRulesDb) GetAbi(to string) (string, error) {
+
+	contracts := &entity.Contracts{}
+	err := dao.Contracts.Ctx(s.ctx).Where(dao.Contracts.Columns().Addr, to).Scan(contracts)
+	return contracts.Abi, err
+}
 
 func new() *sRulesDb {
 	g.Redis().Exists(gctx.GetInitCtx())

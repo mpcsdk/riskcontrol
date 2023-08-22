@@ -6,5 +6,6 @@ package logic
 
 import (
 	_ "riskcontral/internal/logic/rulesdb"
+	_ "riskcontral/internal/logic/ethtx"
 	_ "riskcontral/internal/logic/lengine"
 )
