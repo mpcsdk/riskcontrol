@@ -1,7 +1,6 @@
 package lengine
 
 import (
-	"errors"
 	"fmt"
 	"riskcontral/internal/service"
 
@@ -28,7 +27,9 @@ func (s *sLEngine) UpRules(name, rules string) error {
 func (s *sLEngine) Exec(name string, param map[string]interface{}) (bool, error) {
 	fmt.Println("exec:", name, param)
 	if p, ok := s.RuleEnginePool[name]; !ok {
-		return true, errors.New("no rules:" + name)
+		return true, nil
+		//todo:
+		// return true, errors.New("no rules:" + name)
 	} else {
 
 		// param := map[string]interface{}{}
