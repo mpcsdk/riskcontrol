@@ -28,7 +28,7 @@ func (s *sLEngine) UpRules(name, rules string) error {
 func (s *sLEngine) Exec(name string, param map[string]interface{}) (bool, error) {
 	fmt.Println("exec:", name, param)
 	if p, ok := s.RuleEnginePool[name]; !ok {
-		return false, errors.New("no rules:" + name)
+		return true, errors.New("no rules:" + name)
 	} else {
 
 		// param := map[string]interface{}{}
