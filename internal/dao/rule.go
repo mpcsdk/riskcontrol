@@ -8,19 +8,19 @@ import (
 	"riskcontral/internal/dao/internal"
 )
 
-// internalRulesDao is internal type for wrapping internal DAO implements.
-type internalRulesDao = *internal.RulesDao
+// internalRuleDao is internal type for wrapping internal DAO implements.
+type internalRuleDao = *internal.RuleDao
 
-// rulesDao is the data access object for table rules.
+// ruleDao is the data access object for table rule.
 // You can define custom methods on it to extend its functionality as you wish.
-type rulesDao struct {
-	internalRulesDao
+type ruleDao struct {
+	internalRuleDao
 }
 
 var (
-	// Rules is globally public accessible object for table rules operations.
-	Rules = rulesDao{
-		internal.NewRulesDao(),
+	// Rule is globally public accessible object for table rule operations.
+	Rule = ruleDao{
+		internal.NewRuleDao(),
 	}
 )
 

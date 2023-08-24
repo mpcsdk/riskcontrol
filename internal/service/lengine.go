@@ -7,9 +7,9 @@ package service
 
 type (
 	ILEngine interface {
-		UpRules(name, rules string) error
-		Exec(name string, param map[string]interface{}) (bool, error)
-		List(name string) map[string]string
+		UpRules(ruleId, rules string) error
+		Exec(ruleId string, param map[string]interface{}) (bool, error)
+		List(ruleId string) map[string]string
 	}
 )
 

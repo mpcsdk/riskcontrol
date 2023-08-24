@@ -17,41 +17,41 @@ type sRulesDb struct {
 	ctx g.Ctx
 }
 
-func (s *sRulesDb) Set(name, rules string) error {
+func (s *sRulesDb) Set(ruleId, rules string) error {
 	// g.Redis().Set(s.ctx, name, rules)
 
-	i, err := dao.Rules.Ctx(s.ctx).Data(do.Rules{Name: name, Rule: rules}).Where(do.Rules{
-		Name: name,
+	i, err := dao.Rule.Ctx(s.ctx).Data(do.Rule{RuleId: ruleId, Rules: rules}).Where(do.Rule{
+		RuleId: ruleId,
 	}).Count()
 	if i == 0 {
-		_, err = dao.Rules.Ctx(s.ctx).Data(do.Rules{Name: name, Rule: rules}).Insert()
+		_, err = dao.Rule.Ctx(s.ctx).Data(do.Rule{RuleId: ruleId, Rules: rules}).Insert()
 	} else {
-		_, err = dao.Rules.Ctx(s.ctx).Data(do.Rules{Name: name, Rule: rules}).Where(do.Rules{
-			Name: name,
+		_, err = dao.Rule.Ctx(s.ctx).Data(do.Rule{RuleId: ruleId, Rules: rules}).Where(do.Rule{
+			RuleId: ruleId,
 		}).Update()
 	}
 	return err
 }
-func (s *sRulesDb) Get(name string) (string, error) {
+func (s *sRulesDb) Get(ruleId string) (string, error) {
 	// v, _ := g.Redis().Get(s.ctx, name)
-	rule := &entity.Rules{}
-	err := dao.Rules.Ctx(s.ctx).Where(dao.Rules.Columns().Name, name).Scan(rule)
-	return rule.Rule, err
+	rule := &entity.Rule{}
+	err := dao.Rule.Ctx(s.ctx).Where(dao.Rule.Columns().RuleId, ruleId).Scan(rule)
+	return rule.Rules, err
 }
 
 func (s *sRulesDb) AllRules() map[string]string {
-	rule := []entity.Rules{}
-	dao.Rules.Ctx(s.ctx).Scan(&rule)
+	rule := []entity.Rule{}
+	dao.Rule.Ctx(s.ctx).Scan(&rule)
 	rst := map[string]string{}
 	for _, i := range rule {
-		rst[i.Name] = i.Rule
+		rst[i.RuleId] = i.Rules
 	}
 	return rst
 }
 func (s *sRulesDb) GetAbi(to string) (string, error) {
 
-	contracts := &entity.Contracts{}
-	err := dao.Contracts.Ctx(s.ctx).Where(dao.Contracts.Columns().Addr, to).Scan(contracts)
+	contracts := &entity.ContractAbi{}
+	err := dao.ContractAbi.Ctx(s.ctx).Where(dao.ContractAbi.Columns().Addr, to).Scan(contracts)
 	return contracts.Abi, err
 }
 

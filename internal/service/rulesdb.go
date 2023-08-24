@@ -8,7 +8,7 @@ package service
 type (
 	IRulesDb interface {
 		Set(name, rules string) error
-		Get(name string) (string, error)
+		Get(ruleId string) (string, error)
 		AllRules() map[string]string
 		GetAbi(to string) (string, error)
 	}

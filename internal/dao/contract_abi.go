@@ -8,19 +8,19 @@ import (
 	"riskcontral/internal/dao/internal"
 )
 
-// internalContractsDao is internal type for wrapping internal DAO implements.
-type internalContractsDao = *internal.ContractsDao
+// internalContractAbiDao is internal type for wrapping internal DAO implements.
+type internalContractAbiDao = *internal.ContractAbiDao
 
-// contractsDao is the data access object for table contracts.
+// contractAbiDao is the data access object for table contract_abi.
 // You can define custom methods on it to extend its functionality as you wish.
-type contractsDao struct {
-	internalContractsDao
+type contractAbiDao struct {
+	internalContractAbiDao
 }
 
 var (
-	// Contracts is globally public accessible object for table contracts operations.
-	Contracts = contractsDao{
-		internal.NewContractsDao(),
+	// ContractAbi is globally public accessible object for table contract_abi operations.
+	ContractAbi = contractAbiDao{
+		internal.NewContractAbiDao(),
 	}
 )
 

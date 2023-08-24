@@ -11,22 +11,22 @@ type sLEngine struct {
 	RuleEnginePool map[string]*engine.GenginePool
 }
 
-func (s *sLEngine) UpRules(name, rules string) error {
-	fmt.Println("uprules:", name, rules)
-	err := s.newPool(name, rules)
-	///
+func (s *sLEngine) UpRules(ruleId, rules string) error {
+	fmt.Println("uprules:", ruleId, rules)
+	err := s.newPool(ruleId, rules)
+	//ruleId/
 	if err != nil {
 		return err
 	}
 
-	service.RulesDb().Set(name, rules)
+	service.RulesDb().Set(ruleId, rules)
 
 	return nil
 }
 
-func (s *sLEngine) Exec(name string, param map[string]interface{}) (bool, error) {
-	fmt.Println("exec:", name, param)
-	if p, ok := s.RuleEnginePool[name]; !ok {
+func (s *sLEngine) Exec(ruleId string, param map[string]interface{}) (bool, error) {
+	fmt.Println("exec:", ruleId, param)
+	if p, ok := s.RuleEnginePool[ruleId]; !ok {
 		return true, nil
 		//todo:
 		// return true, errors.New("no rules:" + name)
@@ -47,23 +47,23 @@ func (s *sLEngine) Exec(name string, param map[string]interface{}) (bool, error)
 		return true, nil
 	}
 }
-func (s *sLEngine) List(name string) map[string]string {
-	r, err := service.RulesDb().Get(name)
+func (s *sLEngine) List(ruleId string) map[string]string {
+	r, err := service.RulesDb().Get(ruleId)
 	fmt.Println(err)
 
 	return map[string]string{
-		name: r,
+		"rules": r,
 	}
 }
 
 var apis map[string]interface{}
 
-func (s *sLEngine) newPool(name, rules string) error {
+func (s *sLEngine) newPool(ruleId, rules string) error {
 	p, err := engine.NewGenginePool(10, 100, 2, rules, apis)
 	if err != nil {
 		panic(err)
 	}
-	s.RuleEnginePool[name] = p
+	s.RuleEnginePool[ruleId] = p
 	return err
 }
 func new() *sLEngine {
