@@ -19,7 +19,7 @@ func (s *sLEngine) UpRules(ruleId, rules string) error {
 		return err
 	}
 
-	service.RulesDb().Set(ruleId, rules)
+	// service.RulesDb().Set(ruleId, rules)
 
 	return nil
 }
@@ -59,6 +59,11 @@ func (s *sLEngine) List(ruleId string) map[string]string {
 var apis map[string]interface{}
 
 func (s *sLEngine) newPool(ruleId, rules string) error {
+	if rules == "" {
+		//todo: mutex
+		delete(s.RuleEnginePool, ruleId)
+		return nil
+	}
 	p, err := engine.NewGenginePool(10, 100, 2, rules, apis)
 	if err != nil {
 		panic(err)

@@ -11,7 +11,7 @@ redis:
     db: 2
 database:
   default:
-  - link: "pgsql:postgres:123456@tcp(127.0.0.1:10100)/gva"
+  - link: "pgsql://postgres:123456@127.0.0.1:10100/gva"
 
 grpc:
   name:             "rulerpc"  # 服务名称
@@ -23,7 +23,7 @@ grpc:
   errorStack:       true    # 当产生错误时，是否记录错误堆栈
 
 etcd:
-  address: "http://192.168.121.203:2379"
+  address: "http://localhost:2379"
 
 gfcli:
   gen:

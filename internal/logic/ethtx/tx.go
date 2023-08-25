@@ -25,10 +25,10 @@ type sEthTx struct{}
 
 func (s *sEthTx) Data2Args(req *v1.RiskReq) (map[string]interface{}, error) {
 	//
-	// rawBytes, err := hex.DecodeString(tx.Data)
+	// rawBytes, err := hex.DecodeString(req.Data)
 	// rtx := &types.Transaction{}
-	// err = rtx.UnmarshalBinary(rawBytes)
-	// d := rtx.Data()
+	// rlp.Decode(r, val)
+	// d := rtx.Hash()
 	// fmt.Println(common.Bytes2Hex(d))
 	///
 	data := req.Data
