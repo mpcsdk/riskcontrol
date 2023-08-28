@@ -10,7 +10,7 @@ import (
 
 // Rule is the golang structure for table rule.
 type Rule struct {
-	Id        int64       `json:"id"        ` //
+	Id        uint64      `json:"id"        ` //
 	CreatedAt *gtime.Time `json:"createdAt" ` //
 	UpdatedAt *gtime.Time `json:"updatedAt" ` //
 	DeletedAt *gtime.Time `json:"deletedAt" ` //

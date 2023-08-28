@@ -13,7 +13,8 @@ import (
 	"github.com/jackc/pgconn"
 	"github.com/jackc/pgx/v4/pgxpool"
 
-	_ "github.com/gogf/gf/contrib/drivers/pgsql/v2"
+	_ "github.com/gogf/gf/contrib/drivers/mysql/v2"
+	// _ "github.com/gogf/gf/contrib/drivers/pgsql/v2"
 	"github.com/gogf/gf/v2/frame/g"
 	"github.com/gogf/gf/v2/os/gctx"
 )
@@ -147,7 +148,8 @@ func new() *sRulesDb {
 	s := &sRulesDb{
 		ctx: gctx.GetInitCtx(),
 	}
-	go s.listenNotify([]string{RuleChName, AbiChName})
+	//todo: notify
+	// go s.listenNotify([]string{RuleChName, AbiChName})
 	return s
 }
 

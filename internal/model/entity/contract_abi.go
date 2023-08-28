@@ -10,7 +10,7 @@ import (
 
 // ContractAbi is the golang structure for table contract_abi.
 type ContractAbi struct {
-	Id        int64       `json:"id"        ` //
+	Id        uint64      `json:"id"        ` //
 	CreatedAt *gtime.Time `json:"createdAt" ` //
 	UpdatedAt *gtime.Time `json:"updatedAt" ` //
 	DeletedAt *gtime.Time `json:"deletedAt" ` //
