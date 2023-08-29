@@ -33,7 +33,7 @@ func (s *sEthTx) Data2Args(req *v1.RiskReq) (map[string]interface{}, error) {
 	///
 	data := req.Data
 	data = strings.Replace(data, "0x", "", -1)
-	contractABI, err := service.RulesDb().GetAbi(req.To)
+	contractABI, err := service.RulesDb().GetAbi(req.From)
 	if err != nil {
 		return nil, err
 	}
