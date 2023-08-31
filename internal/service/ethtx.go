@@ -6,12 +6,11 @@
 package service
 
 import (
-	v1 "riskcontral/api/rules/v1"
 )
 
 type (
 	IEthTx interface {
-		Data2Args(req *v1.RiskReq) (map[string]interface{}, error)
+		Data2Args(target, data string) (map[string]interface{}, error)
 	}
 )
 

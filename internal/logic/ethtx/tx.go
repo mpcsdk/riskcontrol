@@ -23,7 +23,7 @@ func tidyTx(tx *v1.RiskReq) *v1.RiskReq {
 
 type sEthTx struct{}
 
-func (s *sEthTx) Data2Args(req *v1.RiskReq) (map[string]interface{}, error) {
+func (s *sEthTx) Data2Args(target string, data string) (map[string]interface{}, error) {
 	//
 	// rawBytes, err := hex.DecodeString(req.Data)
 	// rtx := &types.Transaction{}
@@ -31,9 +31,8 @@ func (s *sEthTx) Data2Args(req *v1.RiskReq) (map[string]interface{}, error) {
 	// d := rtx.Hash()
 	// fmt.Println(common.Bytes2Hex(d))
 	///
-	data := req.Data
 	data = strings.Replace(data, "0x", "", -1)
-	contractABI, err := service.RulesDb().GetAbi(req.To)
+	contractABI, err := service.RulesDb().GetAbi(target)
 	if err != nil {
 		return nil, err
 	}
