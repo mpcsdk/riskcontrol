@@ -11,7 +11,7 @@ redis:
     db: 2
 database:
   default:
-  - link: "mysql:mysql:123456@tcp(localhost:3306)/riskcontrol"
+  - link: "mysql:mysql:123456@tcp(localhost:3306)/risk"
 
 grpc:
   name:             "rulerpc"  # 服务名称
@@ -28,6 +28,6 @@ etcd:
 gfcli:
   gen:
     dao:
-    - link:     "mysql:mysql:123456@tcp(localhost:3306)/riskcontrol"
+    - link:     "mysql:mysql:123456@tcp(localhost:3306)/risk"
       tables:   "contract_abi,rule"
       jsonCase: "CamelLower"

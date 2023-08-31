@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	v1 "riskcontral/api/rules/v1"
+	"riskcontral/internal/dao"
 	"riskcontral/internal/service"
 	"strings"
 
@@ -23,6 +24,11 @@ func (*Controller) PerformRisk(ctx context.Context, req *v1.RiskReq) (res *v1.Ri
 	req.To = strings.ToLower(req.To)
 	req.From = strings.ToLower(req.From)
 	req.Data = strings.ToLower(req.Data)
+	i, err := dao.Rule.Ctx(ctx).Where(dao.Rule.Columns().RuleId, req.From).Count()
+	if i == 0 {
+		fmt.Println(err)
+		return nil, nil
+	}
 	//uppack inputs to param
 	// param := map[string]interface{}{}
 	param, err := service.EthTx().Data2Args(req.To, req.Data)
