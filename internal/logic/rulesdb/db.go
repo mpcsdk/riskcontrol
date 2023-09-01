@@ -13,8 +13,8 @@ import (
 	"github.com/jackc/pgconn"
 	"github.com/jackc/pgx/v4/pgxpool"
 
-	_ "github.com/gogf/gf/contrib/drivers/mysql/v2"
-	// _ "github.com/gogf/gf/contrib/drivers/pgsql/v2"
+	// _ "github.com/gogf/gf/contrib/drivers/mysql/v2"
+	_ "github.com/gogf/gf/contrib/drivers/pgsql/v2"
 	"github.com/gogf/gf/v2/frame/g"
 	"github.com/gogf/gf/v2/os/gctx"
 )
@@ -50,7 +50,10 @@ func (s *sRulesDb) Get(ruleId string) (string, error) {
 
 func (s *sRulesDb) AllRules() map[string]string {
 	rule := []entity.Rule{}
-	dao.Rule.Ctx(s.ctx).Scan(&rule)
+	err := dao.Rule.Ctx(s.ctx).Scan(&rule)
+	if err != nil {
+		g.Log().Error(s.ctx, err)
+	}
 	rst := map[string]string{}
 	for _, i := range rule {
 		rst[i.RuleId] = i.Rules
@@ -103,7 +106,9 @@ func (s *sRulesDb) listenNotify(subNames []string) {
 	l, _ := g.Cfg().Get(context.Background(), "database.default.0.link")
 	fmt.Println(l.String())
 	link := l.String()
-	link = strings.Replace(link, "pgsql", "postgres", -1)
+	link = strings.Replace(link, "pgsql:", "postgres://", -1)
+	link = strings.Replace(link, "tcp(", "", -1)
+	link = strings.Replace(link, ")", "", -1)
 
 	ctx := gctx.GetInitCtx()
 	cfg, err := pgxpool.ParseConfig(link)
@@ -149,7 +154,7 @@ func new() *sRulesDb {
 		ctx: gctx.GetInitCtx(),
 	}
 	//todo: notify
-	// go s.listenNotify([]string{RuleChName, AbiChName})
+	go s.listenNotify([]string{RuleChName, AbiChName})
 	return s
 }
 

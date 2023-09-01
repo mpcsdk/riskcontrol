@@ -17,6 +17,6 @@ type Rule struct {
 	UpdatedAt *gtime.Time //
 	DeletedAt *gtime.Time //
 	RuleId    interface{} //
-	RuleName  interface{} //
+	RuleDesc  interface{} //
 	Rules     interface{} //
 }

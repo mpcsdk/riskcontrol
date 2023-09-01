@@ -25,7 +25,7 @@ type RuleColumns struct {
 	UpdatedAt string //
 	DeletedAt string //
 	RuleId    string //
-	RuleName  string //
+	RuleDesc  string //
 	Rules     string //
 }
 
@@ -36,7 +36,7 @@ var ruleColumns = RuleColumns{
 	UpdatedAt: "updated_at",
 	DeletedAt: "deleted_at",
 	RuleId:    "rule_id",
-	RuleName:  "rule_name",
+	RuleDesc:  "rule_desc",
 	Rules:     "rules",
 }
 
