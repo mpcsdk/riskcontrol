@@ -2,15 +2,15 @@
 // Code generated and maintained by GoFrame CLI tool. DO NOT EDIT. 
 // =================================================================================
 
-package rules
+package risk
 
 import (
-	"riskcontral/api/rules"
+	"riskcontral/api/risk"
 )
 
 type ControllerV1 struct{}
 
-func NewV1() rules.IRulesV1 {
+func NewV1() risk.IRiskV1 {
 	return &ControllerV1{}
 }
 

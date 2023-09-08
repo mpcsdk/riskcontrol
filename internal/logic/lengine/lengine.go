@@ -1,6 +1,7 @@
 package lengine
 
 import (
+	"errors"
 	"fmt"
 	"riskcontral/internal/service"
 	"strings"
@@ -30,9 +31,7 @@ func (s *sLEngine) Exec(ruleId string, param map[string]interface{}) (bool, erro
 	ruleId = strings.ToLower(ruleId)
 	fmt.Println("exec:", ruleId, param)
 	if p, ok := s.RuleEnginePool[ruleId]; !ok {
-		return true, nil
-		//todo:
-		// return true, errors.New("no rules:" + name)
+		return false, errors.New("no rules:" + ruleId)
 	} else {
 
 		// param := map[string]interface{}{}

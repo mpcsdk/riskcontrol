@@ -13,7 +13,7 @@ database:
   default:
   - link: "pgsql:postgres:123456@tcp(127.0.0.1:10100)/riskcontrol"
 grpc:
-  name:             "rulerpc"  # 服务名称
+  name:             "riskrpc"  # 服务名称
   address:          ":8001" # 自定义服务监听地址
   logPath:          "./log" # 日志存储目录路径
   logStdout:        true    # 日志是否输出到终端
@@ -22,11 +22,29 @@ grpc:
   errorStack:       true    # 当产生错误时，是否记录错误堆栈
 
 etcd:
-  address: "http://localhost:2379"
+  address: "127.0.0.1:2379"
+
+sms:
+  huawei:
+    APIAddress: "https://smsapi.cn-south-1.myhuaweicloud.com:443/sms/batchSendSms/v1"
+    ApplicationKey: "DZcZWoIauKdHY1wD0179m4Jk5N9V"
+    ApplicationSecret: "1GSPX8WyCwJbTfwEohqsBlOzbcam"
+    Sender: "cs106900001477"
+    TemplateID: "4ea904bd91ad47b690573aa6be183952"
+    Signature: "华为云测试签名"
+
+emailOTP:
+  Mail: "xinwei.li@mixmarvel.com"
+  Password: "Kkj7pJAdUpLpjgYE"
+  Host: "smtp.exmail.qq.com"
+  Port: 465
+  Subject: "Subject"
+  Body: "Body"
+
 
 gfcli:
   gen:
     dao:
     - link:     "pgsql:postgres:123456@tcp(127.0.0.1:10100)/riskcontrol"
-      tables:   "contract_abi,rule"
+      tables:   "contract_abi,rule,eth_tx,tfa"
       jsonCase: "CamelLower"

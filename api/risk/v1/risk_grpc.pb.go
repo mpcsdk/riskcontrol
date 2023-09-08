@@ -2,7 +2,7 @@
 // versions:
 // - protoc-gen-go-grpc v1.2.0
 // - protoc             v3.6.1
-// source: rules/v1/rules.proto
+// source: risk/v1/risk.proto
 
 package v1
 
@@ -24,6 +24,8 @@ const _ = grpc.SupportPackageIsVersion7
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
 type UserClient interface {
 	PerformRisk(ctx context.Context, in *RiskReq, opts ...grpc.CallOption) (*RiskRes, error)
+	PerformSmsCode(ctx context.Context, in *SmsCodeReq, opts ...grpc.CallOption) (*SmsCodeRes, error)
+	PerformMailCode(ctx context.Context, in *MailCodekReq, opts ...grpc.CallOption) (*MailCodekRes, error)
 }
 
 type userClient struct {
@@ -36,7 +38,25 @@ func NewUserClient(cc grpc.ClientConnInterface) UserClient {
 
 func (c *userClient) PerformRisk(ctx context.Context, in *RiskReq, opts ...grpc.CallOption) (*RiskRes, error) {
 	out := new(RiskRes)
-	err := c.cc.Invoke(ctx, "/rules.User/PerformRisk", in, out, opts...)
+	err := c.cc.Invoke(ctx, "/risk.User/PerformRisk", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *userClient) PerformSmsCode(ctx context.Context, in *SmsCodeReq, opts ...grpc.CallOption) (*SmsCodeRes, error) {
+	out := new(SmsCodeRes)
+	err := c.cc.Invoke(ctx, "/risk.User/PerformSmsCode", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *userClient) PerformMailCode(ctx context.Context, in *MailCodekReq, opts ...grpc.CallOption) (*MailCodekRes, error) {
+	out := new(MailCodekRes)
+	err := c.cc.Invoke(ctx, "/risk.User/PerformMailCode", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -48,6 +68,8 @@ func (c *userClient) PerformRisk(ctx context.Context, in *RiskReq, opts ...grpc.
 // for forward compatibility
 type UserServer interface {
 	PerformRisk(context.Context, *RiskReq) (*RiskRes, error)
+	PerformSmsCode(context.Context, *SmsCodeReq) (*SmsCodeRes, error)
+	PerformMailCode(context.Context, *MailCodekReq) (*MailCodekRes, error)
 	mustEmbedUnimplementedUserServer()
 }
 
@@ -57,6 +79,12 @@ type UnimplementedUserServer struct {
 
 func (UnimplementedUserServer) PerformRisk(context.Context, *RiskReq) (*RiskRes, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method PerformRisk not implemented")
+}
+func (UnimplementedUserServer) PerformSmsCode(context.Context, *SmsCodeReq) (*SmsCodeRes, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method PerformSmsCode not implemented")
+}
+func (UnimplementedUserServer) PerformMailCode(context.Context, *MailCodekReq) (*MailCodekRes, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method PerformMailCode not implemented")
 }
 func (UnimplementedUserServer) mustEmbedUnimplementedUserServer() {}
 
@@ -81,10 +109,46 @@ func _User_PerformRisk_Handler(srv interface{}, ctx context.Context, dec func(in
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/rules.User/PerformRisk",
+		FullMethod: "/risk.User/PerformRisk",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
 		return srv.(UserServer).PerformRisk(ctx, req.(*RiskReq))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _User_PerformSmsCode_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(SmsCodeReq)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(UserServer).PerformSmsCode(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/risk.User/PerformSmsCode",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(UserServer).PerformSmsCode(ctx, req.(*SmsCodeReq))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _User_PerformMailCode_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(MailCodekReq)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(UserServer).PerformMailCode(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/risk.User/PerformMailCode",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(UserServer).PerformMailCode(ctx, req.(*MailCodekReq))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -93,14 +157,22 @@ func _User_PerformRisk_Handler(srv interface{}, ctx context.Context, dec func(in
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
 var User_ServiceDesc = grpc.ServiceDesc{
-	ServiceName: "rules.User",
+	ServiceName: "risk.User",
 	HandlerType: (*UserServer)(nil),
 	Methods: []grpc.MethodDesc{
 		{
 			MethodName: "PerformRisk",
 			Handler:    _User_PerformRisk_Handler,
 		},
+		{
+			MethodName: "PerformSmsCode",
+			Handler:    _User_PerformSmsCode_Handler,
+		},
+		{
+			MethodName: "PerformMailCode",
+			Handler:    _User_PerformMailCode_Handler,
+		},
 	},
 	Streams:  []grpc.StreamDesc{},
-	Metadata: "rules/v1/rules.proto",
+	Metadata: "risk/v1/risk.proto",
 }

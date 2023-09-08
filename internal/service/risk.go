@@ -5,23 +5,27 @@
 
 package service
 
+import (
+	"context"
+)
+
 type (
-	IEthTx interface {
-		Data2Args(target string, data string) (map[string]interface{}, error)
+	IRisk interface {
+		PerformRisk(ctx context.Context, riskName string, riskData interface{}) (interface{}, error)
 	}
 )
 
 var (
-	localEthTx IEthTx
+	localRisk IRisk
 )
 
-func EthTx() IEthTx {
-	if localEthTx == nil {
-		panic("implement not found for interface IEthTx, forgot register?")
+func Risk() IRisk {
+	if localRisk == nil {
+		panic("implement not found for interface IRisk, forgot register?")
 	}
-	return localEthTx
+	return localRisk
 }
 
-func RegisterEthTx(i IEthTx) {
-	localEthTx = i
+func RegisterRisk(i IRisk) {
+	localRisk = i
 }

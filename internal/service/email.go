@@ -5,23 +5,27 @@
 
 package service
 
+import (
+	"context"
+)
+
 type (
-	IEthTx interface {
-		Data2Args(target string, data string) (map[string]interface{}, error)
+	IMailCode interface {
+		SendMailCode(ctx context.Context, to string, code string) (string, error)
 	}
 )
 
 var (
-	localEthTx IEthTx
+	localMailCode IMailCode
 )
 
-func EthTx() IEthTx {
-	if localEthTx == nil {
-		panic("implement not found for interface IEthTx, forgot register?")
+func MailCode() IMailCode {
+	if localMailCode == nil {
+		panic("implement not found for interface IMailCode, forgot register?")
 	}
-	return localEthTx
+	return localMailCode
 }
 
-func RegisterEthTx(i IEthTx) {
-	localEthTx = i
+func RegisterMailCode(i IMailCode) {
+	localMailCode = i
 }

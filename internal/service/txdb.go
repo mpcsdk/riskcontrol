@@ -5,23 +5,28 @@
 
 package service
 
+import (
+	"context"
+)
+
 type (
-	IEthTx interface {
-		Data2Args(target string, data string) (map[string]interface{}, error)
+	ITxDb interface {
+		Set(ctx context.Context, ruleId, rules string) error
+		Get(ctx context.Context, ruleId string) (string, error)
 	}
 )
 
 var (
-	localEthTx IEthTx
+	localTxDb ITxDb
 )
 
-func EthTx() IEthTx {
-	if localEthTx == nil {
-		panic("implement not found for interface IEthTx, forgot register?")
+func TxDb() ITxDb {
+	if localTxDb == nil {
+		panic("implement not found for interface ITxDb, forgot register?")
 	}
-	return localEthTx
+	return localTxDb
 }
 
-func RegisterEthTx(i IEthTx) {
-	localEthTx = i
+func RegisterTxDb(i ITxDb) {
+	localTxDb = i
 }

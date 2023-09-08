@@ -5,23 +5,27 @@
 
 package service
 
+import (
+	"context"
+)
+
 type (
-	IEthTx interface {
-		Data2Args(target string, data string) (map[string]interface{}, error)
+	ISmsCode interface {
+		SendCode(ctx context.Context, receiver, code string) error
 	}
 )
 
 var (
-	localEthTx IEthTx
+	localSmsCode ISmsCode
 )
 
-func EthTx() IEthTx {
-	if localEthTx == nil {
-		panic("implement not found for interface IEthTx, forgot register?")
+func SmsCode() ISmsCode {
+	if localSmsCode == nil {
+		panic("implement not found for interface ISmsCode, forgot register?")
 	}
-	return localEthTx
+	return localSmsCode
 }
 
-func RegisterEthTx(i IEthTx) {
-	localEthTx = i
+func RegisterSmsCode(i ISmsCode) {
+	localSmsCode = i
 }
