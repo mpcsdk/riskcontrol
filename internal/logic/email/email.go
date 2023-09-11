@@ -3,8 +3,9 @@ package email
 import (
 	"context"
 	"crypto/tls"
-	"riskcontral/utility/common"
+	"strconv"
 
+	"github.com/dchest/captcha"
 	"github.com/gogf/gf/v2/os/gcfg"
 	"github.com/gogf/gf/v2/os/gctx"
 	"gopkg.in/gomail.v2"
@@ -22,13 +23,21 @@ type sMailCode struct {
 	d *gomail.Dialer
 }
 
-func (s *sMailCode) SendMailCode(ctx context.Context, to string, code string) (string, error) {
+func (s *sMailCode) SendMailCode(ctx context.Context, to string) (string, error) {
+
+	//todo:
+	d := captcha.RandomDigits(6)
+	code := ""
+	for _, b := range d {
+		code += strconv.Itoa(int(b))
+	}
+	////
 	m := gomail.NewMessage()
 	m.SetHeader("From", s.From)
 	m.SetHeader("To", to)
 	m.SetHeader("Subject", "验证码")
 	m.SetBody("text/html", s.Body+code)
-	return common.GenNewSid(), s.d.DialAndSend(m)
+	return code, s.d.DialAndSend(m)
 
 }
 

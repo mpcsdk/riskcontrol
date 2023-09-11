@@ -11,7 +11,7 @@ import (
 
 type (
 	IMailCode interface {
-		SendMailCode(ctx context.Context, to string, code string) (string, error)
+		SendMailCode(ctx context.Context, to string) (string, error)
 	}
 )
 

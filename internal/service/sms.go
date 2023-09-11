@@ -11,7 +11,7 @@ import (
 
 type (
 	ISmsCode interface {
-		SendCode(ctx context.Context, receiver, code string) error
+		SendCode(ctx context.Context, receiver string) (string, error)
 	}
 )
 

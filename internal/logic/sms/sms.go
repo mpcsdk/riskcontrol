@@ -23,17 +23,17 @@ func (s *sSmsCode) sendCode(ctx context.Context, receiver, code string) error {
 	return err
 }
 
-func (s *sSmsCode) SendCode(ctx context.Context, receiver, code string) error {
+func (s *sSmsCode) SendCode(ctx context.Context, receiver string) (string, error) {
 
 	//todo: get phone by  sid
 	d := captcha.RandomDigits(6)
-	code = ""
+	code := ""
 	for _, b := range d {
 		code += strconv.Itoa(int(b))
 	}
 	////
 
-	return s.sendCode(ctx, receiver, code)
+	return code, s.sendCode(ctx, receiver, code)
 }
 
 // func (s *sSmsCode) Verify(ctx context.Context, sid, code string) error {

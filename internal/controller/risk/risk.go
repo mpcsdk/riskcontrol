@@ -18,6 +18,12 @@ func Register(s *grpcx.GrpcServer) {
 }
 
 func (*Controller) PerformRisk(ctx context.Context, req *v1.RiskReq) (res *v1.RiskRes, err error) {
+	if req.RuleName == "phone" {
+		return nil, nil
+	} else if req.RuleName == "mail" {
+		return nil, gerror.NewCode(gcode.CodeNotImplemented)
+	}
+
 	return nil, gerror.NewCode(gcode.CodeNotImplemented)
 }
 

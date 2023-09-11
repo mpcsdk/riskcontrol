@@ -7,5 +7,5 @@ import (
 )
 
 func (c *ControllerV1) VerifySmsCode(ctx context.Context, req *v1.VerifySmsCodeReq) (res *v1.VerifySmsCodeRes, err error) {
-	return nil, service.TFA().VerifyCode(ctx, req.Token, "kind", req.Code)
+	return nil, service.TFA().VerifyCode(ctx, req.Token, "upPhone", req.Code)
 }

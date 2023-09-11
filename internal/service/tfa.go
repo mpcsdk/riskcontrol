@@ -7,10 +7,12 @@ package service
 
 import (
 	"context"
+	"riskcontral/internal/model/entity"
 )
 
 type (
 	ITFA interface {
+		TFAInfo(ctx context.Context, token string) (*entity.Tfa, error)
 		VerifyCode(ctx context.Context, token string, kind, code string) error
 		UpPhone(ctx context.Context, token string, phone string) error
 		UpMail(ctx context.Context, token string, mail string) error

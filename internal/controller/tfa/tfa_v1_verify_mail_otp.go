@@ -7,5 +7,5 @@ import (
 )
 
 func (c *ControllerV1) VerifyMailOTP(ctx context.Context, req *v1.VerifyMailOTPReq) (res *v1.VerifyMailOTPRes, err error) {
-	return nil, service.TFA().VerifyCode(ctx, req.Token, "kind", req.Code)
+	return nil, service.TFA().VerifyCode(ctx, req.Token, "upMail", req.Code)
 }
