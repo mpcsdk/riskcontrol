@@ -11,7 +11,7 @@ import (
 
 type (
 	IRisk interface {
-		PerformRisk(ctx context.Context, riskName string, riskData interface{}) (interface{}, error)
+		PerformRisk(ctx context.Context, riskName string, riskData interface{}) (bool, error)
 	}
 )
 

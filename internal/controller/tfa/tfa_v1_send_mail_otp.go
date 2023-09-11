@@ -9,6 +9,5 @@ import (
 )
 
 func (c *ControllerV1) SendMailOTP(ctx context.Context, req *v1.SendMailOTPReq) (res *v1.SendMailOTPRes, err error) {
-	// service.
 	return nil, gerror.NewCode(gcode.CodeNotImplemented)
 }

@@ -2,6 +2,7 @@ package tfa
 
 import (
 	"context"
+	"riskcontral/internal/consts/conrisk"
 	"riskcontral/internal/dao"
 	"riskcontral/internal/model/entity"
 	"riskcontral/internal/service"
@@ -35,7 +36,11 @@ func (s *sTFA) upMail(token, mail string) error {
 }
 func (s *sTFA) UpMail(ctx context.Context, token string, mail string) error {
 	//todo:
-	rst, err := service.Risk().PerformRisk(ctx, "mail", nil)
+	riskData := &conrisk.TfaUpMail{
+		Token: token,
+		Mail:  mail,
+	}
+	rst, err := service.Risk().PerformRisk(ctx, "upMail", riskData)
 	if err != nil {
 		_, err := s.SendMailOTP(ctx, token, "upMail")
 		//todo:
