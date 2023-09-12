@@ -1,0 +1,22 @@
+// protoc --go_out=plugins=grpc:. *.proto
+
+syntax = "proto3";
+
+package tfa;
+
+
+option go_package = "/tfa/v1";
+
+service TFA{
+    rpc CallTFAInfo(TFAReq) returns (TFARes) {}
+}
+
+message TFAReq {
+    string Token = 1; // v: required
+}
+message TFARes{
+    string Phone = 1;
+    string UpPhoneTime = 2;
+    string Mail = 3;
+    string UpMailTime = 4;
+}

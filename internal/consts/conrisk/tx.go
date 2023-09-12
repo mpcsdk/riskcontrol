@@ -10,5 +10,5 @@ type RiskTx struct {
 	To    string `json:"to"`
 	Value string `json:"value"`
 	//风控阈值
-	Threshold int `json:"threshold"`
+	// Threshold int `json:"threshold"`
 }

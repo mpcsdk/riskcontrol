@@ -5,9 +5,13 @@
 
 package service
 
+import (
+	"context"
+)
+
 type (
 	IEthTx interface {
-		Data2Args(target string, data string) (map[string]interface{}, error)
+		Data2Args(ctx context.Context, target string, data string) (map[string]interface{}, error)
 	}
 )
 

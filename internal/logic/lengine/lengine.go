@@ -1,12 +1,14 @@
 package lengine
 
 import (
+	"context"
 	"errors"
 	"fmt"
 	"riskcontral/internal/service"
 	"strings"
 
 	"github.com/bilibili/gengine/engine"
+	"github.com/gogf/gf/v2/os/gctx"
 )
 
 type sLEngine struct {
@@ -49,9 +51,9 @@ func (s *sLEngine) Exec(ruleId string, param map[string]interface{}) (bool, erro
 		return true, nil
 	}
 }
-func (s *sLEngine) List(ruleId string) map[string]string {
+func (s *sLEngine) List(ctx context.Context, ruleId string) map[string]string {
 	ruleId = strings.ToLower(ruleId)
-	r, err := service.RulesDb().Get(ruleId)
+	r, err := service.RulesDb().Get(ctx, ruleId)
 	fmt.Println(err)
 
 	return map[string]string{
@@ -79,7 +81,7 @@ func new() *sLEngine {
 	e := &sLEngine{
 		RuleEnginePool: make(map[string]*engine.GenginePool),
 	}
-	rs := service.RulesDb().AllRules()
+	rs := service.RulesDb().AllRules(gctx.GetInitCtx())
 	for name, rule := range rs {
 		e.newPool(name, rule)
 	}

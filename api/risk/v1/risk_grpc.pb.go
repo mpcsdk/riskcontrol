@@ -9,6 +9,7 @@ package v1
 import (
 	context "context"
 
+	empty "github.com/golang/protobuf/ptypes/empty"
 	grpc "google.golang.org/grpc"
 	codes "google.golang.org/grpc/codes"
 	status "google.golang.org/grpc/status"
@@ -23,7 +24,9 @@ const _ = grpc.SupportPackageIsVersion7
 //
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
 type UserClient interface {
-	PerformRisk(ctx context.Context, in *RiskReq, opts ...grpc.CallOption) (*RiskRes, error)
+	PerformAlive(ctx context.Context, in *empty.Empty, opts ...grpc.CallOption) (*empty.Empty, error)
+	PerformRiskTx(ctx context.Context, in *TxRiskReq, opts ...grpc.CallOption) (*TxRiskRes, error)
+	PerformRiskTFA(ctx context.Context, in *TFARiskReq, opts ...grpc.CallOption) (*TFARiskRes, error)
 	PerformSmsCode(ctx context.Context, in *SmsCodeReq, opts ...grpc.CallOption) (*SmsCodeRes, error)
 	PerformMailCode(ctx context.Context, in *MailCodekReq, opts ...grpc.CallOption) (*MailCodekRes, error)
 }
@@ -36,9 +39,27 @@ func NewUserClient(cc grpc.ClientConnInterface) UserClient {
 	return &userClient{cc}
 }
 
-func (c *userClient) PerformRisk(ctx context.Context, in *RiskReq, opts ...grpc.CallOption) (*RiskRes, error) {
-	out := new(RiskRes)
-	err := c.cc.Invoke(ctx, "/risk.User/PerformRisk", in, out, opts...)
+func (c *userClient) PerformAlive(ctx context.Context, in *empty.Empty, opts ...grpc.CallOption) (*empty.Empty, error) {
+	out := new(empty.Empty)
+	err := c.cc.Invoke(ctx, "/risk.User/PerformAlive", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *userClient) PerformRiskTx(ctx context.Context, in *TxRiskReq, opts ...grpc.CallOption) (*TxRiskRes, error) {
+	out := new(TxRiskRes)
+	err := c.cc.Invoke(ctx, "/risk.User/PerformRiskTx", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *userClient) PerformRiskTFA(ctx context.Context, in *TFARiskReq, opts ...grpc.CallOption) (*TFARiskRes, error) {
+	out := new(TFARiskRes)
+	err := c.cc.Invoke(ctx, "/risk.User/PerformRiskTFA", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -67,7 +88,9 @@ func (c *userClient) PerformMailCode(ctx context.Context, in *MailCodekReq, opts
 // All implementations must embed UnimplementedUserServer
 // for forward compatibility
 type UserServer interface {
-	PerformRisk(context.Context, *RiskReq) (*RiskRes, error)
+	PerformAlive(context.Context, *empty.Empty) (*empty.Empty, error)
+	PerformRiskTx(context.Context, *TxRiskReq) (*TxRiskRes, error)
+	PerformRiskTFA(context.Context, *TFARiskReq) (*TFARiskRes, error)
 	PerformSmsCode(context.Context, *SmsCodeReq) (*SmsCodeRes, error)
 	PerformMailCode(context.Context, *MailCodekReq) (*MailCodekRes, error)
 	mustEmbedUnimplementedUserServer()
@@ -77,8 +100,14 @@ type UserServer interface {
 type UnimplementedUserServer struct {
 }
 
-func (UnimplementedUserServer) PerformRisk(context.Context, *RiskReq) (*RiskRes, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method PerformRisk not implemented")
+func (UnimplementedUserServer) PerformAlive(context.Context, *empty.Empty) (*empty.Empty, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method PerformAlive not implemented")
+}
+func (UnimplementedUserServer) PerformRiskTx(context.Context, *TxRiskReq) (*TxRiskRes, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method PerformRiskTx not implemented")
+}
+func (UnimplementedUserServer) PerformRiskTFA(context.Context, *TFARiskReq) (*TFARiskRes, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method PerformRiskTFA not implemented")
 }
 func (UnimplementedUserServer) PerformSmsCode(context.Context, *SmsCodeReq) (*SmsCodeRes, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method PerformSmsCode not implemented")
@@ -99,20 +128,56 @@ func RegisterUserServer(s grpc.ServiceRegistrar, srv UserServer) {
 	s.RegisterService(&User_ServiceDesc, srv)
 }
 
-func _User_PerformRisk_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(RiskReq)
+func _User_PerformAlive_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(empty.Empty)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(UserServer).PerformRisk(ctx, in)
+		return srv.(UserServer).PerformAlive(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/risk.User/PerformRisk",
+		FullMethod: "/risk.User/PerformAlive",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(UserServer).PerformRisk(ctx, req.(*RiskReq))
+		return srv.(UserServer).PerformAlive(ctx, req.(*empty.Empty))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _User_PerformRiskTx_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(TxRiskReq)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(UserServer).PerformRiskTx(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/risk.User/PerformRiskTx",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(UserServer).PerformRiskTx(ctx, req.(*TxRiskReq))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _User_PerformRiskTFA_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(TFARiskReq)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(UserServer).PerformRiskTFA(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/risk.User/PerformRiskTFA",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(UserServer).PerformRiskTFA(ctx, req.(*TFARiskReq))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -161,8 +226,16 @@ var User_ServiceDesc = grpc.ServiceDesc{
 	HandlerType: (*UserServer)(nil),
 	Methods: []grpc.MethodDesc{
 		{
-			MethodName: "PerformRisk",
-			Handler:    _User_PerformRisk_Handler,
+			MethodName: "PerformAlive",
+			Handler:    _User_PerformAlive_Handler,
+		},
+		{
+			MethodName: "PerformRiskTx",
+			Handler:    _User_PerformRiskTx_Handler,
+		},
+		{
+			MethodName: "PerformRiskTFA",
+			Handler:    _User_PerformRiskTFA_Handler,
 		},
 		{
 			MethodName: "PerformSmsCode",

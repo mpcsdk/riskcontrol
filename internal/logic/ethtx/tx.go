@@ -1,6 +1,7 @@
 package ethtx
 
 import (
+	"context"
 	"errors"
 	"fmt"
 	"riskcontral/internal/service"
@@ -17,7 +18,7 @@ import (
 
 type sEthTx struct{}
 
-func (s *sEthTx) Data2Args(target string, data string) (map[string]interface{}, error) {
+func (s *sEthTx) Data2Args(ctx context.Context, target string, data string) (map[string]interface{}, error) {
 	//
 	// rawBytes, err := hex.DecodeString(req.Data)
 	// rtx := &types.Transaction{}
@@ -26,7 +27,7 @@ func (s *sEthTx) Data2Args(target string, data string) (map[string]interface{}, 
 	// fmt.Println(common.Bytes2Hex(d))
 	///
 	data = strings.TrimPrefix(data, "0x")
-	contractABI, err := service.RulesDb().GetAbi(target)
+	contractABI, err := service.RulesDb().GetAbi(ctx, target)
 	if err != nil {
 		return nil, err
 	}

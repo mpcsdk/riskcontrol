@@ -2,6 +2,7 @@ package risk
 
 import (
 	"context"
+	"encoding/json"
 	"fmt"
 	"riskcontral/internal/consts/conrisk"
 	"riskcontral/internal/dao"
@@ -9,6 +10,7 @@ import (
 
 	"github.com/gogf/gf/errors/gcode"
 	"github.com/gogf/gf/errors/gerror"
+	"github.com/gogf/gf/v2/os/gcfg"
 	"github.com/gogf/gf/v2/os/gtime"
 )
 
@@ -17,40 +19,47 @@ func (s *sRisk) checkTx(ctx context.Context, riskName string, riskData interface
 		return false, gerror.NewCode(gcode.CodeInvalidParameter)
 	}
 	data := riskData.(*conrisk.RiskTx)
-	////
-	checkRst := false
-	for _, f := range rulesList {
-		switch data.Contract {
-		case "0x60e4d786628fea6478f785a6d7e704777c86a7c6":
-			rst, err := f(ctx, data)
+	////has contractrisk cfg
+	if rcfg, ok := contractRiskMap[data.Contract]; ok {
+		if rcfg.Kind == "erc20" {
+			cnt, err := rule_Token(ctx, rcfg.Contract, rcfg.MethodName, data)
 			if err != nil {
 				return false, err
 			}
-			if rst > data.Threshold {
+			if cnt > rcfg.Threshold {
 				return false, nil
 			}
-			checkRst = true
-		case "MUD、MAK、USDT、RPG":
-		case "矿机、装备、时装、武器":
+			return true, nil
+		} else if rcfg.Kind == "erc721" {
+			cnt, err := rule_nftcnt(ctx, rcfg.Contract, rcfg.MethodName, data)
+			if err != nil {
+				return false, err
+			}
+			if cnt > rcfg.Threshold {
+				return false, nil
+			}
+			return true, nil
+		} else {
+			return false, gerror.NewCode(gcode.CodeInvalidParameter)
 		}
 	}
 
-	return checkRst, nil
+	return false, gerror.NewCode(gcode.CodeInvalidParameter)
 }
 
-func rule_NFTCnt(ctx context.Context, data *conrisk.RiskTx) (int, error) {
-	switch data.Contract {
-	case "矿机":
-		return rule_nftcnt(ctx, "usdt", "transfer", data)
-	case "装备":
-		return rule_nftcnt(ctx, "MUD", "transfer", data)
-	case "时装":
-		return rule_nftcnt(ctx, "MAK", "transfer", data)
-	case "武器":
-		return rule_nftcnt(ctx, "RPG", "safeTransferFrom", data)
-	}
-	return 0, gerror.New("rule_Token24HCnt")
-}
+// func rule_NFTCnt(ctx context.Context, data *conrisk.RiskTx) (int, error) {
+// 	switch data.Contract {
+// 	case "矿机":
+// 		return rule_nftcnt(ctx, "usdt", "transfer", data)
+// 	case "装备":
+// 		return rule_nftcnt(ctx, "MUD", "transfer", data)
+// 	case "时装":
+// 		return rule_nftcnt(ctx, "MAK", "transfer", data)
+// 	case "武器":
+// 		return rule_nftcnt(ctx, "RPG", "safeTransferFrom", data)
+// 	}
+// 	return 0, gerror.New("rule_Token24HCnt")
+// }
 
 // 矿机、装备、时装、武器
 func rule_nftcnt(ctx context.Context, tokenAddress string, methdoName string, data *conrisk.RiskTx) (int, error) {
@@ -74,19 +83,19 @@ func rule_nftcnt(ctx context.Context, tokenAddress string, methdoName string, da
 	return val, nil
 }
 
-func rule_Token24HCnt(ctx context.Context, data *conrisk.RiskTx) (int, error) {
-	switch data.Contract {
-	case "USDT":
-		return rule_Token(ctx, "usdt", "transfer", data)
-	case "MUD":
-		return rule_Token(ctx, "MUD", "transfer", data)
-	case "MAK":
-		return rule_Token(ctx, "MAK", "transfer", data)
-	case "RPG":
-		return rule_Token(ctx, "RPG", "safeTransferFrom", data)
-	}
-	return 0, gerror.New("rule_Token24HCnt")
-}
+// func rule_Token24HCnt(ctx context.Context, data *conrisk.RiskTx) (int, error) {
+// 	switch data.Contract {
+// 	case "USDT":
+// 		return rule_Token(ctx, "usdt", "transfer", data)
+// 	case "MUD":
+// 		return rule_Token(ctx, "MUD", "transfer", data)
+// 	case "MAK":
+// 		return rule_Token(ctx, "MAK", "transfer", data)
+// 	case "RPG":
+// 		return rule_Token(ctx, "RPG", "safeTransferFrom", data)
+// 	}
+// 	return 0, gerror.New("rule_Token24HCnt")
+// }
 
 // MUD、MAK、USDT、RPG
 func rule_Token(ctx context.Context, tokenAddress string, methdoName string, data *conrisk.RiskTx) (int, error) {
@@ -113,10 +122,40 @@ func rule_Token(ctx context.Context, tokenAddress string, methdoName string, dat
 
 }
 
-var rulesList map[string]func(ctx context.Context, data *conrisk.RiskTx) (int, error)
+// var rulesFuncList map[string]func(ctx context.Context, data *conrisk.RiskTx) (int, error)
+
+type contractRisk struct {
+	Contract   string
+	Kind       string
+	MethodName string
+	Threshold  int
+}
+
+var contractRiskMap map[string]*contractRisk
 
 func init() {
-	rulesList = make(map[string]func(ctx context.Context, data *conrisk.RiskTx) (int, error))
-	rulesList["Token24HCnt"] = rule_Token24HCnt
-	rulesList["Nft24HCnt"] = rule_NFTCnt
+	// rulesFuncList = make(map[string]func(ctx context.Context, data *conrisk.RiskTx) (int, error))
+	// rulesFuncList["Token24HCnt"] = rule_Token24HCnt
+	// rulesFuncList["Nft24HCnt"] = rule_NFTCnt
+	////
+	contractRiskMap := map[string]*contractRisk{}
+	ctx := context.Background()
+	riskcfg, err := gcfg.Instance().Get(ctx, "contractRisk")
+	if err != nil {
+		panic(err)
+	}
+	for _, val := range riskcfg.Array() {
+		if valrisk, ok := val.(map[string]interface{}); !ok {
+			panic(fmt.Errorf("contractRisk:%v", val))
+		} else {
+			Threshold, _ := valrisk["threshold"].(json.Number).Int64()
+			r := &contractRisk{
+				Contract:   valrisk["contract"].(string),
+				Kind:       valrisk["kind"].(string),
+				MethodName: valrisk["methodName"].(string),
+				Threshold:  int(Threshold),
+			}
+			contractRiskMap[r.Contract] = r
+		}
+	}
 }

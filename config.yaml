@@ -25,6 +25,16 @@ grpc:
 # url
 userTokenUrl: "https://auth-dev.mixmarvel-sdk.com/info"
 
+contractRisk:
+  - contract: "0x123"
+    kind: "erc20"
+    methodName: "transfer"
+    threshold: 100
+  - contract: "0x123"
+    kind: "erc721"
+    methodName: "transferFrom"
+    threshold: 5
+
 #
 etcd:
   address: "127.0.0.1:2379"

@@ -4,7 +4,6 @@ import (
 	"context"
 	"fmt"
 	"riskcontral/internal/dao"
-	"riskcontral/internal/model/do"
 	"riskcontral/internal/model/entity"
 	"riskcontral/internal/service"
 	"strings"
@@ -20,39 +19,39 @@ import (
 )
 
 type sRulesDb struct {
-	ctx g.Ctx
+	sctx g.Ctx
 }
 
 var RuleChName = "rule_ch"
 var AbiChName = "abi_ch"
 
-func (s *sRulesDb) Set(ruleId, rules string) error {
-	// g.Redis().Set(s.ctx, name, rules)
+// func (s *sRulesDb) Set(ctx context.Context, ruleId, rules string) error {
+// 	// g.Redis().Set(s.ctx, name, rules)
 
-	i, err := dao.Rule.Ctx(s.ctx).Data(do.Rule{RuleId: ruleId, Rules: rules}).Where(do.Rule{
-		RuleId: ruleId,
-	}).Count()
-	if i == 0 {
-		_, err = dao.Rule.Ctx(s.ctx).Data(do.Rule{RuleId: ruleId, Rules: rules}).Insert()
-	} else {
-		_, err = dao.Rule.Ctx(s.ctx).Data(do.Rule{RuleId: ruleId, Rules: rules}).Where(do.Rule{
-			RuleId: ruleId,
-		}).Update()
-	}
-	return err
-}
-func (s *sRulesDb) Get(ruleId string) (string, error) {
+//		i, err := dao.Rule.Ctx(s.ctx).Data(do.Rule{RuleId: ruleId, Rules: rules}).Where(do.Rule{
+//			RuleId: ruleId,
+//		}).Count()
+//		if i == 0 {
+//			_, err = dao.Rule.Ctx(s.ctx).Data(do.Rule{RuleId: ruleId, Rules: rules}).Insert()
+//		} else {
+//			_, err = dao.Rule.Ctx(s.ctx).Data(do.Rule{RuleId: ruleId, Rules: rules}).Where(do.Rule{
+//				RuleId: ruleId,
+//			}).Update()
+//		}
+//		return err
+//	}
+func (s *sRulesDb) Get(ctx context.Context, ruleId string) (string, error) {
 	// v, _ := g.Redis().Get(s.ctx, name)
 	rule := &entity.Rule{}
-	err := dao.Rule.Ctx(s.ctx).Where(dao.Rule.Columns().RuleId, ruleId).Scan(rule)
+	err := dao.Rule.Ctx(ctx).Where(dao.Rule.Columns().RuleId, ruleId).Scan(rule)
 	return rule.Rules, err
 }
 
-func (s *sRulesDb) AllRules() map[string]string {
+func (s *sRulesDb) AllRules(ctx context.Context) map[string]string {
 	rule := []entity.Rule{}
-	err := dao.Rule.Ctx(s.ctx).Scan(&rule)
+	err := dao.Rule.Ctx(ctx).Scan(&rule)
 	if err != nil {
-		g.Log().Error(s.ctx, err)
+		g.Log().Error(ctx, err)
 	}
 	rst := map[string]string{}
 	for _, i := range rule {
@@ -60,9 +59,9 @@ func (s *sRulesDb) AllRules() map[string]string {
 	}
 	return rst
 }
-func (s *sRulesDb) GetAbi(to string) (string, error) {
+func (s *sRulesDb) GetAbi(ctx context.Context, to string) (string, error) {
 	contracts := &entity.ContractAbi{}
-	err := dao.ContractAbi.Ctx(s.ctx).Where(dao.ContractAbi.Columns().Addr, to).Scan(contracts)
+	err := dao.ContractAbi.Ctx(ctx).Where(dao.ContractAbi.Columns().Addr, to).Scan(contracts)
 	return contracts.Abi, err
 }
 
@@ -86,7 +85,7 @@ func (s *sRulesDb) subscription(conn *pgxpool.Conn, name string, notificationCha
 						ruleId := ops[0]
 						op := ops[1]
 						if op == "up" {
-							rules, _ := s.Get(ruleId)
+							rules, _ := s.Get(s.sctx, ruleId)
 							service.LEngine().UpRules(ruleId, rules)
 						}
 						if op == "rm" {
@@ -151,7 +150,7 @@ func (s *sRulesDb) listenNotify(subNames []string) {
 func new() *sRulesDb {
 	g.Redis().Exists(gctx.GetInitCtx())
 	s := &sRulesDb{
-		ctx: gctx.GetInitCtx(),
+		sctx: gctx.GetInitCtx(),
 	}
 	//todo: notify
 	go s.listenNotify([]string{RuleChName, AbiChName})

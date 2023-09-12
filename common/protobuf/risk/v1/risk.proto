@@ -1,0 +1,61 @@
+// protoc --go_out=plugins=grpc:. *.proto
+
+syntax = "proto3";
+import "google/protobuf/empty.proto";
+package risk;
+
+
+option go_package = "/risk/v1";
+
+service User{
+    rpc PerformAlive(google.protobuf.Empty) returns (google.protobuf.Empty) {}
+
+    rpc PerformRiskTx (TxRiskReq) returns (TxRiskRes) {}
+    rpc PerformRiskTFA (TFARiskReq) returns (TFARiskRes) {}
+
+
+    rpc PerformSmsCode (SmsCodeReq) returns (SmsCodeRes) {}
+    rpc PerformMailCode (MailCodekReq) returns (MailCodekRes) {}
+}
+
+message TxRiskReq {
+    string Address = 1; // v: required
+    string Contract =2; // v: required
+    ////
+    string TxData = 3;  // v: required
+}
+
+message TxRiskRes {
+    bool Ok = 1;
+    string Msg = 2;
+}
+////
+message TFARiskReq {
+    string Token = 1; // v: required
+}
+
+message TFARiskRes {
+    bool Ok = 1;
+    string Msg = 2;
+}
+///
+
+message SmsCodeReq {
+    string Token = 1; // v: required
+    string Operations = 2; // v: required
+}
+message SmsCodeRes {
+    string Id = 1;
+    string Msg = 2;
+}
+
+///
+
+message MailCodekReq {
+    string Token = 1; // v: required
+    string Operations = 2; // v: required
+}
+message MailCodekRes {
+    string Id = 1;
+    string Msg = 2;
+}
