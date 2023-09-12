@@ -20,6 +20,7 @@ type TFAInfoRes struct {
 type SendSmsCodeReq struct {
 	g.Meta `path:"/sendSmsCode" tags:"sendSmsCode" method:"post" summary:"sendSmsCode"`
 	Token  string `json:"token"`
+	Kind   string `json:"kind"`
 }
 type SendSmsCodeRes struct {
 	g.Meta `mime:"text/html" example:"string"`
@@ -28,6 +29,7 @@ type SendSmsCodeRes struct {
 type VerifySmsCodeReq struct {
 	g.Meta `path:"/verifySmsCode" tags:"verifySmsCode" method:"post" summary:"verifySmsCode"`
 	Token  string `json:"token"`
+	Kind   string `json:"kind"`
 	Code   string `json:"code"`
 }
 type VerifySmsCodeRes struct {
@@ -40,6 +42,7 @@ type VerifySmsCodeRes struct {
 type SendMailOTPReq struct {
 	g.Meta `path:"/sendMailOTP" tags:"sendMailOTP" method:"post" summary:"sendMailOTP"`
 	Token  string `json:"token"`
+	Kind   string `json:"kind"`
 }
 type SendMailOTPRes struct {
 	g.Meta `mime:"text/html" example:"string"`
@@ -49,6 +52,7 @@ type VerifyMailOTPReq struct {
 	g.Meta `path:"/verifyMailOTP" tags:"verifyMailOTP" method:"post" summary:"verifyMailOTP"`
 	Token  string `json:"token"`
 	Code   string `json:"code"`
+	Kind   string `json:"kind"`
 }
 type VerifyMailOTPRes struct {
 	g.Meta `mime:"text/html" example:"string"`

@@ -10,7 +10,7 @@ import (
 
 // Tfa is the golang structure for table tfa.
 type Tfa struct {
-	Token          string      `json:"token"          ` //
+	UserId         string      `json:"userId"         ` //
 	CreatedAt      *gtime.Time `json:"createdAt"      ` //
 	DeletedAt      *gtime.Time `json:"deletedAt"      ` //
 	Phone          string      `json:"phone"          ` //

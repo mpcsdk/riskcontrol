@@ -3,9 +3,8 @@ package email
 import (
 	"context"
 	"crypto/tls"
-	"strconv"
+	"riskcontral/common"
 
-	"github.com/dchest/captcha"
 	"github.com/gogf/gf/v2/os/gcfg"
 	"github.com/gogf/gf/v2/os/gctx"
 	"gopkg.in/gomail.v2"
@@ -25,13 +24,8 @@ type sMailCode struct {
 
 func (s *sMailCode) SendMailCode(ctx context.Context, to string) (string, error) {
 
-	//todo:
-	d := captcha.RandomDigits(6)
-	code := ""
-	for _, b := range d {
-		code += strconv.Itoa(int(b))
-	}
-	////
+	code := common.RandomDigits(6)
+	///
 	m := gomail.NewMessage()
 	m.SetHeader("From", s.From)
 	m.SetHeader("To", to)

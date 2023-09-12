@@ -20,7 +20,7 @@ type TfaDao struct {
 
 // TfaColumns defines and stores column names for table tfa.
 type TfaColumns struct {
-	Token          string //
+	UserId         string //
 	CreatedAt      string //
 	DeletedAt      string //
 	Phone          string //
@@ -31,7 +31,7 @@ type TfaColumns struct {
 
 // tfaColumns holds the columns for table tfa.
 var tfaColumns = TfaColumns{
-	Token:          "token",
+	UserId:         "user_id",
 	CreatedAt:      "created_at",
 	DeletedAt:      "deleted_at",
 	Phone:          "phone",

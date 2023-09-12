@@ -12,7 +12,7 @@ import (
 // Tfa is the golang structure of table tfa for DAO operations like Where/Data.
 type Tfa struct {
 	g.Meta         `orm:"table:tfa, do:true"`
-	Token          interface{} //
+	UserId         interface{} //
 	CreatedAt      *gtime.Time //
 	DeletedAt      *gtime.Time //
 	Phone          interface{} //

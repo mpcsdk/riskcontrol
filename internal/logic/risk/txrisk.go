@@ -70,10 +70,7 @@ func rule_nftcnt(ctx context.Context, tokenAddress string, methdoName string, da
 		return 0, err
 	}
 	///
-	val := 0
-	for _, v := range rst {
-		val += v[dao.EthTx.Columns().Value].Int()
-	}
+	val := len(rst)
 	return val, nil
 }
 

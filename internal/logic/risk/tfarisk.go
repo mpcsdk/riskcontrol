@@ -20,7 +20,7 @@ func (s *sRisk) checkTfaUpMail(ctx context.Context, riskName string, riskData in
 	}
 	data = riskData.(*conrisk.TfaUpMail)
 	/////
-	info, err := service.TFA().TFAInfo(ctx, data.Token)
+	info, err := service.TFA().TFAInfo(ctx, data.UserId)
 	if err != nil {
 		return false, err
 	}

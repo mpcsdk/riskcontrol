@@ -19,6 +19,7 @@ func (s *sTFA) SendPhoneCode(ctx context.Context, token string, opt string) (str
 	}
 	return code, err
 }
+
 func (s *sTFA) SendMailOTP(ctx context.Context, token string, opt string) (string, error) {
 	info, err := s.TFAInfo(ctx, token)
 	if err != nil {

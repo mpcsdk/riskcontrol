@@ -21,6 +21,11 @@ grpc:
   accessLogEnabled: true    # 是否开启访问日志记录
   errorStack:       true    # 当产生错误时，是否记录错误堆栈
 
+
+# url
+userTokenUrl: "https://auth-dev.mixmarvel-sdk.com/info"
+
+#
 etcd:
   address: "127.0.0.1:2379"
 

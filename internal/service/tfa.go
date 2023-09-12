@@ -12,9 +12,9 @@ import (
 
 type (
 	ITFA interface {
-		TFAInfo(ctx context.Context, token string) (*entity.Tfa, error)
-		UpPhone(ctx context.Context, token string, phone string) error
-		UpMail(ctx context.Context, token string, mail string) error
+		TFAInfo(ctx context.Context, userId string) (*entity.Tfa, error)
+		UpPhone(ctx context.Context, userId string, phone string) error
+		UpMail(ctx context.Context, userId string, mail string) error
 		SendPhoneCode(ctx context.Context, token string, opt string) (string, error)
 		SendMailOTP(ctx context.Context, token string, opt string) (string, error)
 		VerifyCode(ctx context.Context, token string, kind, code string) error

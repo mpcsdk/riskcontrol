@@ -2,6 +2,7 @@ package v1
 
 import "github.com/gogf/gf/v2/frame/g"
 
+// 执行address和target对应的风控规则
 type ExecRiskReq struct {
 	g.Meta  `path:"/exec" tags:"exec" method:"post" summary:"You first hello api"`
 	Token   string `json:"token"`

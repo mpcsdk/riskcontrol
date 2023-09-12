@@ -2,10 +2,9 @@ package sms
 
 import (
 	"context"
+	"riskcontral/common"
 	"riskcontral/internal/service"
-	"strconv"
 
-	"github.com/dchest/captcha"
 	"github.com/gogf/gf/v2/frame/g"
 	"github.com/gogf/gf/v2/os/grpool"
 )
@@ -25,14 +24,8 @@ func (s *sSmsCode) sendCode(ctx context.Context, receiver, code string) error {
 
 func (s *sSmsCode) SendCode(ctx context.Context, receiver string) (string, error) {
 
-	//todo: get phone by  sid
-	d := captcha.RandomDigits(6)
-	code := ""
-	for _, b := range d {
-		code += strconv.Itoa(int(b))
-	}
-	////
-
+	code := common.RandomDigits(6)
+	///
 	return code, s.sendCode(ctx, receiver, code)
 }
 
