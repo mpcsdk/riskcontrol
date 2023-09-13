@@ -16,7 +16,13 @@ func (s *sTFA) upPhone(userId, phone string) error {
 }
 func (s *sTFA) UpPhone(ctx context.Context, userId string, phone string) error {
 	//todo:
-	rst, err := service.Risk().PerformRisk(ctx, "phone", nil)
+	riskData := &conrisk.RiskTfa{
+		UserId: userId,
+		Kind:   "upPhone",
+		Phone:  "phone",
+	}
+	rst, err := service.Risk().PerformRiskTFA(ctx, userId, riskData)
+	//todo:
 	if err != nil {
 		code, err := s.SendMailOTP(ctx, userId, "upMail")
 		if err != nil {
@@ -36,11 +42,12 @@ func (s *sTFA) upMail(userId, mail string) error {
 }
 func (s *sTFA) UpMail(ctx context.Context, userId string, mail string) error {
 	//todo:
-	riskData := &conrisk.TfaUpMail{
+	riskData := &conrisk.RiskTfa{
 		UserId: userId,
+		Kind:   "upMail",
 		Mail:   mail,
 	}
-	rst, err := service.Risk().PerformRisk(ctx, "upMail", riskData)
+	rst, err := service.Risk().PerformRiskTFA(ctx, userId, riskData)
 	if err != nil {
 		_, err := s.SendMailOTP(ctx, userId, "upMail")
 		//todo:

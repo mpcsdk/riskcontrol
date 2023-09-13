@@ -7,11 +7,16 @@ package service
 
 import (
 	"context"
+	"riskcontral/internal/consts/conrisk"
 )
 
 type (
 	IRisk interface {
-		PerformRisk(ctx context.Context, riskName string, riskData interface{}) (bool, error)
+		RiskPhoneCode(ctx context.Context, serial string) error
+		RiskMailCode(ctx context.Context, serial string) error
+		VerifyCode(ctx context.Context, serial string, code string) error
+		PerformRiskTxs(ctx context.Context, userId string, address string, txs []*conrisk.RiskTx) (string, int32, error)
+		PerformRiskTFA(ctx context.Context, userId string, riskData *conrisk.RiskTfa) (string, error)
 	}
 )
 

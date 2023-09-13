@@ -4,6 +4,7 @@ import (
 	"context"
 	"crypto/tls"
 	"riskcontral/common"
+	"riskcontral/internal/service"
 
 	"github.com/gogf/gf/v2/os/gcfg"
 	"github.com/gogf/gf/v2/os/gctx"
@@ -51,4 +52,8 @@ func new() *sMailCode {
 	d.TLSConfig = &tls.Config{InsecureSkipVerify: true}
 	s.d = d
 	return s
+}
+
+func init() {
+	service.RegisterMailCode(new())
 }

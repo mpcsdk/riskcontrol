@@ -31,7 +31,7 @@ func (c *ControllerV1) ExecRisk(ctx context.Context, req *v1.ExecRiskReq) (res *
 		To:       req.To,
 	}
 
-	rst, err := service.Risk().PerformRisk(ctx, "checkTx", riskData)
+	_, rst, err := service.Risk().PerformRiskTxs(ctx, "userId", req.Address, []*conrisk.RiskTx{riskData})
 	if err != nil {
 		return nil, err
 	}

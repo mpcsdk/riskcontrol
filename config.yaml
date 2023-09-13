@@ -1,5 +1,6 @@
 server:
   address:     ":8002"
+  wordId: 1
 
 logger:
   level : "all"
@@ -26,7 +27,7 @@ grpc:
 userTokenUrl: "https://auth-dev.mixmarvel-sdk.com/info"
 
 contractRisk:
-  - contract: "0x123"
+  - contract: "0xdAC17F958D2ee523a2206206994597C13D831ec7"
     kind: "erc20"
     methodName: "transfer"
     threshold: 100

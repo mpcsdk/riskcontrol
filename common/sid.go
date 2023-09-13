@@ -11,3 +11,7 @@ func GenNewSid() string {
 	sid := genid.String()
 	return sid
 }
+func InitIdGen(workId int) {
+	option := idgen.NewIdGeneratorOptions(uint16(workId))
+	idgen.SetIdGenerator(option)
+}

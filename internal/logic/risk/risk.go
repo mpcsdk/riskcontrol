@@ -2,31 +2,54 @@ package risk
 
 import (
 	"context"
+	"riskcontral/common"
+	"riskcontral/internal/consts/conrisk"
 	"riskcontral/internal/service"
 	"time"
 
-	"github.com/gogf/gf/errors/gcode"
-	"github.com/gogf/gf/errors/gerror"
+	"github.com/gogf/gf/v2/os/gcache"
 	"github.com/gogf/gf/v2/os/gtime"
 )
 
-type sRisk struct{}
-
-func (s *sRisk) PerformRisk(ctx context.Context, riskName string, riskData interface{}) (bool, error) {
-	switch riskName {
-	case "upPhone":
-		return false, gerror.NewCode(gcode.CodeNotImplemented)
-	case "upMail":
-		return s.checkTfaUpMail(ctx, "upMail", riskData)
-	case "checkTx":
-		return s.checkTx(ctx, "checkTx", riskData)
-	}
-	return false, gerror.NewCode(gcode.CodeNotImplemented)
+type sRisk struct {
+	cache *gcache.Cache
 }
+
+func (s *sRisk) PerformRiskTxs(ctx context.Context, userId string, address string, txs []*conrisk.RiskTx) (string, int32, error) {
+	//
+	//todo: record riskinfo
+	riskserial := common.GenNewSid()
+	///
+	code, err := s.checkTxs(ctx, address, txs)
+	//todo: record serial
+	s.cache.Set(ctx, riskserial+"riskUserId", userId, 0)
+	return riskserial, code, err
+}
+func (s *sRisk) PerformRiskTFA(ctx context.Context, userId string, riskData *conrisk.RiskTfa) (string, error) {
+
+	//todo: record riskinfo
+	riskserial := common.GenNewSid()
+	///
+	//todo: record serial
+	return riskserial, nil
+}
+
+// 	switch riskName {
+// 	case "upPhone":
+// 		return false, gerror.NewCode(gcode.CodeNotImplemented)
+// 	case "upMail":
+// 		return s.checkTfaUpMail(ctx, "upMail", riskData)
+// 	case "checkTx":
+// 		return s.checkTx(ctx, "checkTx", riskData)
+// 	}
+// 	return false, gerror.NewCode(gcode.CodeNotImplemented)
+// }
 
 // new 创建一个新的sRisk
 func new() *sRisk {
-	return &sRisk{}
+	return &sRisk{
+		cache: gcache.New(),
+	}
 }
 
 var BeforH24 time.Duration

@@ -1,10 +1,10 @@
 package conrisk
 
-type TfaUpMail struct {
-	UserId string `json:"token"`
-	Mail   string `json:"mail"`
-}
-type TfaUpPhone struct {
-	UserId string `json:"token"`
-	Phone  string `json:"phone"`
+type RiskTfa struct {
+	UserId    string `json:"userId"`
+	UserToken string `json:"token"`
+	Kind      string `json:"kind"`
+	///
+	Mail  string `json:"mail"`
+	Phone string `json:"phone"`
 }

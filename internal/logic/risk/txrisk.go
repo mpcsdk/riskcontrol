@@ -7,6 +7,7 @@ import (
 	"riskcontral/internal/consts/conrisk"
 	"riskcontral/internal/dao"
 	"riskcontral/internal/model/do"
+	"strings"
 
 	"github.com/gogf/gf/errors/gcode"
 	"github.com/gogf/gf/errors/gerror"
@@ -14,37 +15,48 @@ import (
 	"github.com/gogf/gf/v2/os/gtime"
 )
 
-func (s *sRisk) checkTx(ctx context.Context, riskName string, riskData interface{}) (bool, error) {
-	if _, ok := riskData.(*conrisk.RiskTx); !ok {
-		return false, gerror.NewCode(gcode.CodeInvalidParameter)
+func (s *sRisk) checkTxs(ctx context.Context, address string, txs []*conrisk.RiskTx) (int32, error) {
+	for _, tx := range txs {
+		code, err := s.checkTx(ctx, tx)
+		if err != nil {
+			return -1, err
+		}
+		if code != 0 {
+			return code, nil
+		}
 	}
-	data := riskData.(*conrisk.RiskTx)
+	return 0, nil
+}
+
+func (s *sRisk) checkTx(ctx context.Context, riskTx *conrisk.RiskTx) (int32, error) {
+
+	data := riskTx
 	////has contractrisk cfg
 	if rcfg, ok := contractRiskMap[data.Contract]; ok {
 		if rcfg.Kind == "erc20" {
 			cnt, err := rule_Token(ctx, rcfg.Contract, rcfg.MethodName, data)
 			if err != nil {
-				return false, err
+				return 1, err
 			}
 			if cnt > rcfg.Threshold {
-				return false, nil
+				return 1, nil
 			}
-			return true, nil
+			return 0, nil
 		} else if rcfg.Kind == "erc721" {
 			cnt, err := rule_nftcnt(ctx, rcfg.Contract, rcfg.MethodName, data)
 			if err != nil {
-				return false, err
+				return 1, err
 			}
 			if cnt > rcfg.Threshold {
-				return false, nil
+				return 1, nil
 			}
-			return true, nil
+			return 0, nil
 		} else {
-			return false, gerror.NewCode(gcode.CodeInvalidParameter)
+			return 1, gerror.NewCode(gcode.CodeInvalidParameter)
 		}
 	}
 
-	return false, gerror.NewCode(gcode.CodeInvalidParameter)
+	return 1, gerror.NewCode(gcode.CodeInvalidParameter)
 }
 
 // func rule_NFTCnt(ctx context.Context, data *conrisk.RiskTx) (int, error) {
@@ -138,7 +150,7 @@ func init() {
 	// rulesFuncList["Token24HCnt"] = rule_Token24HCnt
 	// rulesFuncList["Nft24HCnt"] = rule_NFTCnt
 	////
-	contractRiskMap := map[string]*contractRisk{}
+	contractRiskMap = map[string]*contractRisk{}
 	ctx := context.Background()
 	riskcfg, err := gcfg.Instance().Get(ctx, "contractRisk")
 	if err != nil {
@@ -150,7 +162,7 @@ func init() {
 		} else {
 			Threshold, _ := valrisk["threshold"].(json.Number).Int64()
 			r := &contractRisk{
-				Contract:   valrisk["contract"].(string),
+				Contract:   strings.ToLower(valrisk["contract"].(string)),
 				Kind:       valrisk["kind"].(string),
 				MethodName: valrisk["methodName"].(string),
 				Threshold:  int(Threshold),

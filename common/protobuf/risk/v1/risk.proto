@@ -10,52 +10,69 @@ option go_package = "/risk/v1";
 service User{
     rpc PerformAlive(google.protobuf.Empty) returns (google.protobuf.Empty) {}
 
-    rpc PerformRiskTx (TxRiskReq) returns (TxRiskRes) {}
+    rpc PerformRiskTxs (TxRiskReq) returns (TxRiskRes) {}
     rpc PerformRiskTFA (TFARiskReq) returns (TFARiskRes) {}
 
 
     rpc PerformSmsCode (SmsCodeReq) returns (SmsCodeRes) {}
     rpc PerformMailCode (MailCodekReq) returns (MailCodekRes) {}
+    rpc PerformVerifyCode (VerifyCodekReq) returns (VerifyCodeRes) {}
 }
-
+////
+message RiskTx {
+    string Contract =1; // v: required
+    string TxData = 2;  // v: required
+}
 message TxRiskReq {
-    string Address = 1; // v: required
-    string Contract =2; // v: required
+    string UserId = 1;// v: required
+    string Address = 2; // v: required
     ////
-    string TxData = 3;  // v: required
+    repeated RiskTx Txs = 3; // v: required
 }
 
 message TxRiskRes {
-    bool Ok = 1;
+    int32 Ok = 1;
     string Msg = 2;
+    string RiskSerial = 3; 
 }
 ////
 message TFARiskReq {
-    string Token = 1; // v: required
+    string UserId = 1; // v: required
+    string Operations = 2; // v: required
 }
-
 message TFARiskRes {
-    bool Ok = 1;
+    int32 Ok = 1;
     string Msg = 2;
+    string RiskSerial = 3; 
 }
 ///
 
 message SmsCodeReq {
-    string Token = 1; // v: required
+    string RiskSerial = 1; // v: required
     string Operations = 2; // v: required
 }
 message SmsCodeRes {
-    string Id = 1;
+    int32 Ok = 1;
     string Msg = 2;
 }
 
 ///
 
 message MailCodekReq {
-    string Token = 1; // v: required
+    string RiskSerial = 1; // v: required
     string Operations = 2; // v: required
 }
 message MailCodekRes {
-    string Id = 1;
+    int32 Ok = 1;
+    string Msg = 2;
+}
+
+/////
+message VerifyCodekReq {
+    string RiskSerial = 1; // v: required
+    string Code = 2; // v: required
+}
+message VerifyCodeRes {
+    int32 Ok = 1;
     string Msg = 2;
 }

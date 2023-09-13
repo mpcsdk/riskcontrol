@@ -25,10 +25,11 @@ const _ = grpc.SupportPackageIsVersion7
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
 type UserClient interface {
 	PerformAlive(ctx context.Context, in *empty.Empty, opts ...grpc.CallOption) (*empty.Empty, error)
-	PerformRiskTx(ctx context.Context, in *TxRiskReq, opts ...grpc.CallOption) (*TxRiskRes, error)
+	PerformRiskTxs(ctx context.Context, in *TxRiskReq, opts ...grpc.CallOption) (*TxRiskRes, error)
 	PerformRiskTFA(ctx context.Context, in *TFARiskReq, opts ...grpc.CallOption) (*TFARiskRes, error)
 	PerformSmsCode(ctx context.Context, in *SmsCodeReq, opts ...grpc.CallOption) (*SmsCodeRes, error)
 	PerformMailCode(ctx context.Context, in *MailCodekReq, opts ...grpc.CallOption) (*MailCodekRes, error)
+	PerformVerifyCode(ctx context.Context, in *VerifyCodekReq, opts ...grpc.CallOption) (*VerifyCodeRes, error)
 }
 
 type userClient struct {
@@ -48,9 +49,9 @@ func (c *userClient) PerformAlive(ctx context.Context, in *empty.Empty, opts ...
 	return out, nil
 }
 
-func (c *userClient) PerformRiskTx(ctx context.Context, in *TxRiskReq, opts ...grpc.CallOption) (*TxRiskRes, error) {
+func (c *userClient) PerformRiskTxs(ctx context.Context, in *TxRiskReq, opts ...grpc.CallOption) (*TxRiskRes, error) {
 	out := new(TxRiskRes)
-	err := c.cc.Invoke(ctx, "/risk.User/PerformRiskTx", in, out, opts...)
+	err := c.cc.Invoke(ctx, "/risk.User/PerformRiskTxs", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -84,15 +85,25 @@ func (c *userClient) PerformMailCode(ctx context.Context, in *MailCodekReq, opts
 	return out, nil
 }
 
+func (c *userClient) PerformVerifyCode(ctx context.Context, in *VerifyCodekReq, opts ...grpc.CallOption) (*VerifyCodeRes, error) {
+	out := new(VerifyCodeRes)
+	err := c.cc.Invoke(ctx, "/risk.User/PerformVerifyCode", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // UserServer is the server API for User service.
 // All implementations must embed UnimplementedUserServer
 // for forward compatibility
 type UserServer interface {
 	PerformAlive(context.Context, *empty.Empty) (*empty.Empty, error)
-	PerformRiskTx(context.Context, *TxRiskReq) (*TxRiskRes, error)
+	PerformRiskTxs(context.Context, *TxRiskReq) (*TxRiskRes, error)
 	PerformRiskTFA(context.Context, *TFARiskReq) (*TFARiskRes, error)
 	PerformSmsCode(context.Context, *SmsCodeReq) (*SmsCodeRes, error)
 	PerformMailCode(context.Context, *MailCodekReq) (*MailCodekRes, error)
+	PerformVerifyCode(context.Context, *VerifyCodekReq) (*VerifyCodeRes, error)
 	mustEmbedUnimplementedUserServer()
 }
 
@@ -103,8 +114,8 @@ type UnimplementedUserServer struct {
 func (UnimplementedUserServer) PerformAlive(context.Context, *empty.Empty) (*empty.Empty, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method PerformAlive not implemented")
 }
-func (UnimplementedUserServer) PerformRiskTx(context.Context, *TxRiskReq) (*TxRiskRes, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method PerformRiskTx not implemented")
+func (UnimplementedUserServer) PerformRiskTxs(context.Context, *TxRiskReq) (*TxRiskRes, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method PerformRiskTxs not implemented")
 }
 func (UnimplementedUserServer) PerformRiskTFA(context.Context, *TFARiskReq) (*TFARiskRes, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method PerformRiskTFA not implemented")
@@ -114,6 +125,9 @@ func (UnimplementedUserServer) PerformSmsCode(context.Context, *SmsCodeReq) (*Sm
 }
 func (UnimplementedUserServer) PerformMailCode(context.Context, *MailCodekReq) (*MailCodekRes, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method PerformMailCode not implemented")
+}
+func (UnimplementedUserServer) PerformVerifyCode(context.Context, *VerifyCodekReq) (*VerifyCodeRes, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method PerformVerifyCode not implemented")
 }
 func (UnimplementedUserServer) mustEmbedUnimplementedUserServer() {}
 
@@ -146,20 +160,20 @@ func _User_PerformAlive_Handler(srv interface{}, ctx context.Context, dec func(i
 	return interceptor(ctx, in, info, handler)
 }
 
-func _User_PerformRiskTx_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+func _User_PerformRiskTxs_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(TxRiskReq)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(UserServer).PerformRiskTx(ctx, in)
+		return srv.(UserServer).PerformRiskTxs(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/risk.User/PerformRiskTx",
+		FullMethod: "/risk.User/PerformRiskTxs",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(UserServer).PerformRiskTx(ctx, req.(*TxRiskReq))
+		return srv.(UserServer).PerformRiskTxs(ctx, req.(*TxRiskReq))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -218,6 +232,24 @@ func _User_PerformMailCode_Handler(srv interface{}, ctx context.Context, dec fun
 	return interceptor(ctx, in, info, handler)
 }
 
+func _User_PerformVerifyCode_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(VerifyCodekReq)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(UserServer).PerformVerifyCode(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/risk.User/PerformVerifyCode",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(UserServer).PerformVerifyCode(ctx, req.(*VerifyCodekReq))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // User_ServiceDesc is the grpc.ServiceDesc for User service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -230,8 +262,8 @@ var User_ServiceDesc = grpc.ServiceDesc{
 			Handler:    _User_PerformAlive_Handler,
 		},
 		{
-			MethodName: "PerformRiskTx",
-			Handler:    _User_PerformRiskTx_Handler,
+			MethodName: "PerformRiskTxs",
+			Handler:    _User_PerformRiskTxs_Handler,
 		},
 		{
 			MethodName: "PerformRiskTFA",
@@ -244,6 +276,10 @@ var User_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "PerformMailCode",
 			Handler:    _User_PerformMailCode_Handler,
+		},
+		{
+			MethodName: "PerformVerifyCode",
+			Handler:    _User_PerformVerifyCode_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},
