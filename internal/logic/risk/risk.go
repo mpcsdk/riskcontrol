@@ -19,6 +19,9 @@ func (s *sRisk) PerformRiskTxs(ctx context.Context, userId string, address strin
 	riskserial := common.GenNewSid()
 	///
 	code, err := s.checkTxs(ctx, address, txs)
+	if err != nil {
+		return riskserial, -1, err
+	}
 	//todo: record serial
 	service.Cache().Set(ctx, riskserial+"riskUserId", userId, 0)
 	return riskserial, code, err
