@@ -72,6 +72,7 @@ func new() *sUserInfo {
 	//
 	s := &sUserInfo{
 		userGeter: userGeter,
+		cache:     gcache.New(),
 	}
 	///
 

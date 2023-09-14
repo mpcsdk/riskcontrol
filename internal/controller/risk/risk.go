@@ -23,18 +23,6 @@ func Register(s *grpcx.GrpcServer) {
 	v1.RegisterUserServer(s.Server, &Controller{})
 }
 
-// func (*Controller) PerformRisk(ctx context.Context, req *v1.RiskReq) (res *v1.RiskRes, err error) {
-// 	if req.RuleName == "phone" {
-// 		return nil, nil
-// 	} else if req.RuleName == "mail" {
-// 		return nil, gerror.NewCode(gcode.CodeNotImplemented)
-// 	} else if req.RuleName == "tx" {
-// 		return nil, gerror.NewCode(gcode.CodeNotImplemented)
-// 	}
-
-// 	return nil, gerror.NewCode(gcode.CodeNotImplemented)
-// }
-
 func (*Controller) PerformSmsCode(ctx context.Context, req *v1.SmsCodeReq) (res *v1.SmsCodeRes, err error) {
 	err = service.Risk().RiskPhoneCode(ctx, req.RiskSerial)
 	if err != nil {
