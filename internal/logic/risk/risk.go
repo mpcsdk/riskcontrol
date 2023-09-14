@@ -7,12 +7,10 @@ import (
 	"riskcontral/internal/service"
 	"time"
 
-	"github.com/gogf/gf/v2/os/gcache"
 	"github.com/gogf/gf/v2/os/gtime"
 )
 
 type sRisk struct {
-	cache *gcache.Cache
 }
 
 func (s *sRisk) PerformRiskTxs(ctx context.Context, userId string, address string, txs []*conrisk.RiskTx) (string, int32, error) {
@@ -22,7 +20,7 @@ func (s *sRisk) PerformRiskTxs(ctx context.Context, userId string, address strin
 	///
 	code, err := s.checkTxs(ctx, address, txs)
 	//todo: record serial
-	s.cache.Set(ctx, riskserial+"riskUserId", userId, 0)
+	service.Cache().Set(ctx, riskserial+"riskUserId", userId, 0)
 	return riskserial, code, err
 }
 func (s *sRisk) PerformRiskTFA(ctx context.Context, userId string, riskData *conrisk.RiskTfa) (string, error) {
@@ -47,9 +45,7 @@ func (s *sRisk) PerformRiskTFA(ctx context.Context, userId string, riskData *con
 
 // new 创建一个新的sRisk
 func new() *sRisk {
-	return &sRisk{
-		cache: gcache.New(),
-	}
+	return &sRisk{}
 }
 
 var BeforH24 time.Duration

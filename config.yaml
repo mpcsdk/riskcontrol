@@ -6,10 +6,20 @@ logger:
   level : "all"
   stdout: true
 
+cache:
+  sessionDur: 10000
+  contextDur: 0
+# redis mem
+  type: "redis"
+  redis:
+    Addr: "127.0.0.1:6379"
+    Db: 1
+
 redis:
   default:
     address: "127.0.0.1:6379"
     db: 2
+
 database:
   default:
   - link: "pgsql:postgres:123456@tcp(127.0.0.1:10100)/riskcontrol"

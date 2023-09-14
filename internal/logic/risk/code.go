@@ -12,7 +12,7 @@ func (s *sRisk) RiskPhoneCode(ctx context.Context, riskserial string) error {
 }
 func (s *sRisk) RiskMailCode(ctx context.Context, riskserial string) error {
 
-	userId, err := s.cache.Get(ctx, riskserial+"riskUserId")
+	userId, err := service.Cache().Get(ctx, riskserial+"riskUserId")
 	if err != nil {
 		return err
 	}
@@ -23,14 +23,14 @@ func (s *sRisk) RiskMailCode(ctx context.Context, riskserial string) error {
 	//todo: senderr
 	code, err := service.MailCode().SendMailCode(ctx, info.Mail)
 	///recode code
-	s.cache.Set(ctx, riskserial+"riskCode", code, 0)
+	service.Cache().Set(ctx, riskserial+"riskCode", code, 0)
 	g.Log().Debug(ctx, "RiskMailCode:", riskserial, code)
 	return err
 }
 
 func (s *sRisk) VerifyCode(ctx context.Context, serial string, code string) error {
 	//verify code
-	vcode, err := s.cache.Get(ctx, serial+"riskCode")
+	vcode, err := service.Cache().Get(ctx, serial+"riskCode")
 	if err != nil {
 		return err
 	}
@@ -42,6 +42,6 @@ func (s *sRisk) VerifyCode(ctx context.Context, serial string, code string) erro
 		//todo: checkcode
 		// return errors.New("VerificationCode failed")
 	}
-	s.cache.Remove(ctx, serial+"riskCode")
+	service.Cache().Remove(ctx, serial+"riskCode")
 	return nil
 }
