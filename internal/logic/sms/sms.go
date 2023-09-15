@@ -2,66 +2,92 @@ package sms
 
 import (
 	"context"
+	"errors"
 	"riskcontral/common"
+	"riskcontral/common/sms"
 	"riskcontral/internal/service"
+	"strings"
 
 	"github.com/gogf/gf/v2/frame/g"
+	"github.com/gogf/gf/v2/os/gcfg"
+	"github.com/gogf/gf/v2/os/gctx"
 	"github.com/gogf/gf/v2/os/grpool"
 )
 
 type sSmsCode struct {
-	sms  *huawei
-	pool *grpool.Pool
+	domestic *sms.Huawei
+	foreign  *sms.Huawei
+	pool     *grpool.Pool
 }
 
-func (s *sSmsCode) sendCode(ctx context.Context, receiver, code string) error {
+func newforeign() *sms.Huawei {
+	cfg := gcfg.Instance()
+	ctx := gctx.GetInitCtx()
+	return &sms.Huawei{
+		APIAddress:        cfg.MustGet(ctx, "sms.foreign.APIAddress").String(),
+		ApplicationKey:    cfg.MustGet(ctx, "sms.foreign.ApplicationKey").String(),
+		ApplicationSecret: cfg.MustGet(ctx, "sms.foreign.ApplicationSecret").String(),
+		Sender:            cfg.MustGet(ctx, "sms.foreign.Sender").String(),
+		TemplateID:        cfg.MustGet(ctx, "sms.foreign.TemplateID").String(),
+		Signature:         cfg.MustGet(ctx, "sms.foreign.Signature").String(),
+	}
+}
+func newdomestic() *sms.Huawei {
+	cfg := gcfg.Instance()
+	ctx := gctx.GetInitCtx()
+	return &sms.Huawei{
+		APIAddress:        cfg.MustGet(ctx, "sms.domestic.APIAddress").String(),
+		ApplicationKey:    cfg.MustGet(ctx, "sms.domestic.ApplicationKey").String(),
+		ApplicationSecret: cfg.MustGet(ctx, "sms.domestic.ApplicationSecret").String(),
+		Sender:            cfg.MustGet(ctx, "sms.domestic.Sender").String(),
+		TemplateID:        cfg.MustGet(ctx, "sms.domestic.TemplateID").String(),
+		Signature:         cfg.MustGet(ctx, "sms.domestic.Signature").String(),
+	}
+}
 
-	resp, status, err := s.sms.sendSms(receiver, code)
+// //
+// //
+func (s *sSmsCode) sendCode(ctx context.Context, receiver, code string) error {
+	//todo: dstphone
+	resp, status, err := s.foreign.SendSms(receiver, code)
 	g.Log().Info(ctx, "sendcode:", resp, status, err)
 	///
 	return err
 }
 
 func (s *sSmsCode) SendCode(ctx context.Context, receiver string) (string, error) {
-
+	receiver = strings.TrimPrefix(receiver, "+")
 	code := common.RandomDigits(6)
+	resp := &sms.HuaweiResp{}
+	state := ""
+	var err error
+	if strings.HasPrefix(receiver, "86") {
+		resp, state, err = s.foreign.SendSms(receiver, code)
+	} else {
+		resp, state, err = s.domestic.SendSms(receiver, code)
+	}
 	///
-	return code, s.sendCode(ctx, receiver, code)
+	if err != nil {
+		g.Log().Warning(ctx, "sendcode:", err)
+		return code, err
+	}
+	if state != "" {
+		g.Log().Warning(ctx, "sendcode:", resp, state)
+		return code, errors.New(state)
+	}
+	if resp.Code != "000000" {
+		g.Log().Warning(ctx, "sendcode:", resp, state)
+		return code, errors.New(resp.Description)
+	}
+	return code, nil
 }
 
-// func (s *sSmsCode) Verify(ctx context.Context, sid, code string) error {
-// 	c, err := service.Cache().Get(ctx, sid+"smscode")
-// 	if err == nil {
-// 		if c.String() != code {
-// 			return errors.New("verfiy fauild")
-// 		}
-// 	}
-// 	//todo: faild stat
-// 	stat, err := service.Cache().Get(ctx, sid+"sms")
-// 	if err != nil {
-// 		return err
-// 	}
-// 	if stat.String() == "err" {
-// 		estr, err := service.Cache().Get(ctx, sid+"smserr")
-// 		if err != nil {
-// 			return err
-// 		}
-// 		return errors.New(estr.String())
-// 	}
-
-//		status, err := service.Cache().Get(ctx, sid+"smsstatus")
-//		if err != nil {
-//			return err
-//		}
-//		///
-//		fmt.Println(status.String())
-//		return nil
-//	}
 func new() *sSmsCode {
 
 	return &sSmsCode{
-		pool: grpool.New(10),
-		sms:  newhuawei(),
+		pool:     grpool.New(10),
+		foreign:  newforeign(),
+		domestic: newdomestic(),
 	}
 }
 

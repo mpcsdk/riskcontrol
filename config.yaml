@@ -55,13 +55,20 @@ etcd:
   address: "127.0.0.1:2379"
 
 sms:
-  huawei:
+  foreign:
     APIAddress: "https://smsapi.cn-south-1.myhuaweicloud.com:443/sms/batchSendSms/v1"
     ApplicationKey: "DZcZWoIauKdHY1wD0179m4Jk5N9V"
     ApplicationSecret: "1GSPX8WyCwJbTfwEohqsBlOzbcam"
     Sender: "cs106900001477"
     TemplateID: "4ea904bd91ad47b690573aa6be183952"
     Signature: "华为云测试签名"
+  domestic:
+    APIAddress : "https://smsapi.ap-southeast-1.myhuaweicloud.com:443/sms/batchSendSms/v1"
+    ApplicationKey : "07wcF2NQy1M7pQ48tp3kvQXgm9PT"                                           
+    ApplicationSecret : "xegZ0VXmh5BDygT69sYm5DnKmIou"                                        
+    Sender : "msgapp0000000370"                                                         
+    TemplateID : "e582fdc05e8043f8b69f9b0b05e970b4"                                    
+    Signature: ""
 
 emailOTP:
   Mail: "xinwei.li@mixmarvel.com"
