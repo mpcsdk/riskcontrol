@@ -55,8 +55,8 @@ func (s *sRisk) checkTx(ctx context.Context, riskTx *conrisk.RiskTx) (int32, err
 			return 1, gerror.NewCode(gcode.CodeInvalidParameter)
 		}
 	}
-
-	return 1, gerror.NewCode(gcode.CodeInvalidParameter)
+	//notice: default
+	return 0, nil
 }
 
 // func rule_NFTCnt(ctx context.Context, data *conrisk.RiskTx) (int, error) {
