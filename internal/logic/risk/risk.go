@@ -35,6 +35,8 @@ func (s *sRisk) PerformRiskTFA(ctx context.Context, userId string, riskData *con
 	g.Log().Debug(ctx, "PerformRiskTFA:", "userId:", userId, "riskData:", riskData)
 	//
 	riskserial := common.GenNewSid()
+	//todo:
+	return riskserial, 0, nil
 	///
 	var code int32 = -1
 	var err error
