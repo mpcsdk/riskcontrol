@@ -21,6 +21,8 @@ func (s *sRisk) PerformRiskTxs(ctx context.Context, userId string, address strin
 	g.Log().Debug(ctx, "PerformRiskTxs:", "userId:", userId, "address:", address, "txs:", txs)
 	///
 	riskserial := common.GenNewSid()
+	//todo:
+	return riskserial, 0, nil
 	///
 	code, err := s.checkTxs(ctx, address, txs)
 	if err != nil {

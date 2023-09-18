@@ -22,7 +22,7 @@ func (c *ControllerV1) UpPhone(ctx context.Context, req *v1.UpPhoneReq) (res *v1
 	serial, err := service.TFA().UpPhone(ctx, userInfo.UserId, req.Phone)
 	if err != nil {
 		g.Log().Warning(ctx, "UpPhone:", req, err)
-		return nil, gerror.NewCode(consts.CodeRiskPhoneInvalid)
+		return nil, err
 	}
 	res = &v1.UpPhoneRes{
 		RiskSerial: serial,
