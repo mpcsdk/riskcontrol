@@ -44,10 +44,12 @@ func (s *sRisk) PerformRiskTFA(ctx context.Context, userId string, riskData *con
 	var err error
 	///
 	switch riskData.Kind {
-	case "upPhone":
+	case consts.KEY_TFAKindUpPhone:
 		code, err = s.checkTFAUpPhone(ctx, userId)
-	case "upMail":
+	case consts.KEY_TFAKindUpMail:
 		code, err = s.checkTfaUpMail(ctx, userId)
+	case consts.KEY_TFAKindCreate:
+		code, err = s.checkTfaCreate(ctx, userId)
 	default:
 		g.Log().Error(ctx, "PerformRiskTFA:", "kind:", riskData.Kind, "not support")
 		return riskserial, -1, gerror.NewCode(consts.CodeRiskPerformFailed)

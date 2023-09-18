@@ -37,3 +37,7 @@ func (s *sRisk) checkTfaUpMail(ctx context.Context, userId string) (int32, error
 	}
 	return 1, gerror.NewCode(gcode.CodeNotImplemented)
 }
+
+func (s *sRisk) checkTfaCreate(ctx context.Context, userId string) (int32, error) {
+	return 0, nil
+}

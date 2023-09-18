@@ -14,6 +14,7 @@ const (
 	///
 	KEY_TFAKindUpMail  string = "upMail"
 	KEY_TFAKindUpPhone string = "upPhone"
+	KEY_TFAKindCreate  string = "createTFA"
 	KEY_TFAInfoCache   string = "tfaInfoCache"
 )
 
