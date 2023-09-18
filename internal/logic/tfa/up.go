@@ -2,11 +2,13 @@ package tfa
 
 import (
 	"context"
+	"riskcontral/internal/consts"
 	"riskcontral/internal/consts/conrisk"
 	"riskcontral/internal/dao"
 	"riskcontral/internal/model/do"
 	"riskcontral/internal/service"
 
+	"github.com/gogf/gf/v2/errors/gerror"
 	"github.com/gogf/gf/v2/frame/g"
 	"github.com/gogf/gf/v2/os/gtime"
 )
@@ -33,15 +35,15 @@ func (s *sTFA) recordMail(ctx context.Context, userId, mail string) error {
 }
 
 func (s *sTFA) UpPhone(ctx context.Context, userId string, phone string) (string, error) {
-	/////todo:
 	err := s.hasTFA(ctx, userId)
 	if err != nil {
-
+		g.Log().Warning(ctx, "UpPhone:", userId, err)
+		return "", gerror.NewCode(consts.CodeTFANotExist)
 	}
-	//todo:
+	//
 	riskData := &conrisk.RiskTfa{
 		UserId: userId,
-		Kind:   "upPhone",
+		Kind:   consts.KEY_TFAKindUpPhone,
 		Phone:  phone,
 	}
 	riskSerial, code, err := service.Risk().PerformRiskTFA(ctx, userId, riskData)
@@ -59,16 +61,15 @@ func (s *sTFA) UpPhone(ctx context.Context, userId string, phone string) (string
 }
 
 func (s *sTFA) UpMail(ctx context.Context, userId string, mail string) (string, error) {
-	/////todo:
 	err := s.hasTFA(ctx, userId)
 	if err != nil {
-
+		g.Log().Warning(ctx, "UpPhone:", userId, err)
+		return "", gerror.NewCode(consts.CodeTFANotExist)
 	}
-
-	//todo:
+	//
 	riskData := &conrisk.RiskTfa{
 		UserId: userId,
-		Kind:   "upMail",
+		Kind:   consts.KEY_TFAKindUpMail,
 		Mail:   mail,
 	}
 	riskSerial, code, err := service.Risk().PerformRiskTFA(ctx, userId, riskData)

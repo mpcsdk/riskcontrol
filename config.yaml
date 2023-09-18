@@ -8,7 +8,6 @@ logger:
 
 cache:
   sessionDur: 10000
-  contextDur: 0
 # redis mem
   type: "redis"
   redis:

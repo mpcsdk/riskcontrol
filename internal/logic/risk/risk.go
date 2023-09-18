@@ -27,13 +27,13 @@ func (s *sRisk) PerformRiskTxs(ctx context.Context, userId string, address strin
 		g.Log().Warning(ctx, "PerformRiskTxs:", "checkTxs:", err)
 		return riskserial, -1, gerror.NewCode(consts.CodeRiskPerformFailed)
 	}
-	//todo: record serial
-	service.Cache().Set(ctx, riskserial+"riskUserId", userId, 0)
+	//
+	service.Cache().Set(ctx, riskserial+consts.KEY_RiskUId, userId, 0)
 	return riskserial, code, err
 }
 func (s *sRisk) PerformRiskTFA(ctx context.Context, userId string, riskData *conrisk.RiskTfa) (string, int32, error) {
-
-	//todo: record riskinfo
+	g.Log().Debug(ctx, "PerformRiskTFA:", "userId:", userId, "riskData:", riskData)
+	//
 	riskserial := common.GenNewSid()
 	///
 	var code int32 = -1
@@ -45,13 +45,15 @@ func (s *sRisk) PerformRiskTFA(ctx context.Context, userId string, riskData *con
 	case "upMail":
 		code, err = s.checkTfaUpMail(ctx, userId)
 	default:
-		return riskserial, -1, nil
+		g.Log().Error(ctx, "PerformRiskTFA:", "kind:", riskData.Kind, "not support")
+		return riskserial, -1, gerror.NewCode(consts.CodeRiskPerformFailed)
 	}
 	if err != nil {
-		return riskserial, code, err
+		g.Log().Error(ctx, "PerformRiskTFA:", err)
+		return riskserial, code, gerror.NewCode(consts.CodeRiskPerformFailed)
 	}
-	// todo: record serial
-	service.Cache().Set(ctx, riskserial+"riskUserId", userId, 0)
+	///
+	service.Cache().Set(ctx, riskserial+consts.KEY_RiskUId, userId, 0)
 	return riskserial, code, nil
 }
 

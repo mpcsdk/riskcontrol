@@ -3,6 +3,7 @@ package rulesdb
 import (
 	"context"
 	"fmt"
+	"riskcontral/internal/consts"
 	"riskcontral/internal/dao"
 	"riskcontral/internal/model/entity"
 	"riskcontral/internal/service"
@@ -14,6 +15,7 @@ import (
 
 	// _ "github.com/gogf/gf/contrib/drivers/mysql/v2"
 	_ "github.com/gogf/gf/contrib/drivers/pgsql/v2"
+	"github.com/gogf/gf/v2/errors/gerror"
 	"github.com/gogf/gf/v2/frame/g"
 	"github.com/gogf/gf/v2/os/gctx"
 )
@@ -25,25 +27,15 @@ type sRulesDb struct {
 var RuleChName = "rule_ch"
 var AbiChName = "abi_ch"
 
-// func (s *sRulesDb) Set(ctx context.Context, ruleId, rules string) error {
-// 	// g.Redis().Set(s.ctx, name, rules)
-
-//		i, err := dao.Rule.Ctx(s.ctx).Data(do.Rule{RuleId: ruleId, Rules: rules}).Where(do.Rule{
-//			RuleId: ruleId,
-//		}).Count()
-//		if i == 0 {
-//			_, err = dao.Rule.Ctx(s.ctx).Data(do.Rule{RuleId: ruleId, Rules: rules}).Insert()
-//		} else {
-//			_, err = dao.Rule.Ctx(s.ctx).Data(do.Rule{RuleId: ruleId, Rules: rules}).Where(do.Rule{
-//				RuleId: ruleId,
-//			}).Update()
-//		}
-//		return err
-//	}
 func (s *sRulesDb) Get(ctx context.Context, ruleId string) (string, error) {
+	//todo: cache
 	// v, _ := g.Redis().Get(s.ctx, name)
 	rule := &entity.Rule{}
 	err := dao.Rule.Ctx(ctx).Where(dao.Rule.Columns().RuleId, ruleId).Scan(rule)
+	if err != nil {
+		g.Log().Error(ctx, "RulesGet:", ruleId, err)
+		return "", gerror.NewCode(consts.CodeInternalError)
+	}
 	return rule.Rules, err
 }
 
@@ -60,8 +52,13 @@ func (s *sRulesDb) AllRules(ctx context.Context) map[string]string {
 	return rst
 }
 func (s *sRulesDb) GetAbi(ctx context.Context, to string) (string, error) {
+	//todo: cache
 	contracts := &entity.ContractAbi{}
 	err := dao.ContractAbi.Ctx(ctx).Where(dao.ContractAbi.Columns().Addr, to).Scan(contracts)
+	if err != nil {
+		g.Log().Error(ctx, "GetAbi:", to, err)
+		return "", gerror.NewCode(consts.CodeInternalError)
+	}
 	return contracts.Abi, err
 }
 

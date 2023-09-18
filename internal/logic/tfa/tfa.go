@@ -15,19 +15,6 @@ type sTFA struct {
 	////
 }
 
-//	func (s *sTFA)Token(ctx context.Context, token string) *sTFA {
-//		info, err := s.userGeter.GetUserInfo(ctx, token)
-//		if err != nil {
-//			g.Log().Error(ctx, "NotExist token:", token , err)
-//			return nil
-//		}
-//		return &sTFA{ctx: ctx,
-//			pendding: s.pendding,
-//			url: s.url,
-//			userGeter: s.userGeter,
-//			userid: userid,
-//			}
-//	}
 func new() *sTFA {
 
 	ctx := gctx.GetInitCtx()
