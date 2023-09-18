@@ -7,6 +7,7 @@ import (
 	"riskcontral/internal/service"
 
 	"github.com/gogf/gf/v2/errors/gerror"
+	"github.com/gogf/gf/v2/frame/g"
 )
 
 // @Summary 验证token，注册用户tfa
@@ -14,10 +15,15 @@ func (c *ControllerV1) UpPhone(ctx context.Context, req *v1.UpPhoneReq) (res *v1
 	///
 	userInfo, err := service.UserInfo().GetUserInfo(ctx, req.Token)
 	if err != nil {
-		return nil, gerror.NewCode(consts.CodeAuthFailed)
+		g.Log().Warning(ctx, "UpPhone:", req, err)
+		return nil, gerror.NewCode(consts.CodeTFANotExist)
 	}
 	///
 	serial, err := service.TFA().UpPhone(ctx, userInfo.UserId, req.Phone)
+	if err != nil {
+		g.Log().Warning(ctx, "UpPhone:", req, err)
+		return nil, gerror.NewCode(consts.CodeTFANotExist)
+	}
 	res = &v1.UpPhoneRes{
 		RiskSerial: serial,
 	}

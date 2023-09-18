@@ -18,11 +18,10 @@ type sUserInfo struct {
 }
 
 func (s *sUserInfo) GetUserInfo(ctx context.Context, userToken string) (userInfo *common.UserInfo, err error) {
-
 	g.Log().Debug(ctx, "GetUserInfo:", userToken)
 	if userToken == "" {
 		g.Log().Error(ctx, "GetUserInfo:", userToken)
-		return nil, gerror.NewCode(consts.CodeAuthFailed)
+		return nil, gerror.NewCode(consts.CodeTokenInvalid)
 	}
 	///
 	// 用户信息示例
@@ -36,12 +35,17 @@ func (s *sUserInfo) GetUserInfo(ctx context.Context, userToken string) (userInfo
 	if v, ok := service.Cache().Get(ctx, userToken); ok == nil && !v.IsEmpty() {
 		info := &common.UserInfo{}
 		err = v.Struct(info)
-		return info, err
+		if err != nil {
+			g.Log().Error(ctx, "GetUserInfo:", err)
+			return nil, gerror.NewCode(consts.CodeInternalError)
+		}
+		return info, nil
 	}
 	///
 	info, err := s.userGeter.GetUserInfo(ctx, userToken)
 	if err != nil {
-		//todo:
+		g.Log().Warning(ctx, "GetUserInfo:", err)
+		return info, gerror.NewCode(consts.CodeTokenInvalid)
 	}
 	service.Cache().Set(ctx, userToken, info, 0)
 	return info, err

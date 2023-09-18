@@ -8,7 +8,6 @@ import (
 	"riskcontral/internal/model/entity"
 	"riskcontral/internal/service"
 
-	"github.com/gogf/gf/v2/errors/gcode"
 	"github.com/gogf/gf/v2/errors/gerror"
 	"github.com/gogf/gf/v2/frame/g"
 )
@@ -17,14 +16,15 @@ func (c *ControllerV1) TFAInfo(ctx context.Context, req *v1.TFAInfoReq) (res *v1
 	///
 	userInfo, err := service.UserInfo().GetUserInfo(ctx, req.Token)
 	if err != nil {
-		return nil, gerror.NewCode(consts.CodeAuthFailed)
+		g.Log().Warning(ctx, "TFAInfo:", req, err)
+		return nil, gerror.NewCode(consts.CodeTFANotExist)
 	}
 	///
 	rst := entity.Tfa{}
 	err = dao.Tfa.Ctx(ctx).Where(dao.Tfa.Columns().UserId, userInfo.UserId).Scan(&rst)
 	if err != nil {
-		g.Log().Error(ctx, "tfainfo:", err, req)
-		return nil, gerror.NewCode(gcode.CodeOperationFailed)
+		g.Log().Error(ctx, "TFAinfo no info?:", err, req)
+		return nil, gerror.NewCode(consts.CodeTFANotExist)
 	}
 	res = &v1.TFAInfoRes{
 		Phone:       rst.Phone,
