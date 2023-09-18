@@ -41,8 +41,9 @@ func (s *sUserInfo) GetUserInfo(ctx context.Context, userToken string) (userInfo
 	///
 	info, err := s.userGeter.GetUserInfo(ctx, userToken)
 	if err != nil {
-		service.Cache().Set(ctx, userToken, info, 0)
+		//todo:
 	}
+	service.Cache().Set(ctx, userToken, info, 0)
 	return info, err
 	// return &model.UserInfo{
 	// 	Id: 10,

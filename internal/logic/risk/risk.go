@@ -26,27 +26,30 @@ func (s *sRisk) PerformRiskTxs(ctx context.Context, userId string, address strin
 	service.Cache().Set(ctx, riskserial+"riskUserId", userId, 0)
 	return riskserial, code, err
 }
-func (s *sRisk) PerformRiskTFA(ctx context.Context, userId string, riskData *conrisk.RiskTfa) (string, error) {
+func (s *sRisk) PerformRiskTFA(ctx context.Context, userId string, riskData *conrisk.RiskTfa) (string, int32, error) {
 
 	//todo: record riskinfo
 	riskserial := common.GenNewSid()
 	///
-	//todo: record serial
-	return riskserial, nil
+	var code int32 = -1
+	var err error
+	///
+	switch riskData.Kind {
+	case "upPhone":
+		code, err = s.checkTFAUpPhone(ctx, userId)
+	case "upMail":
+		code, err = s.checkTfaUpMail(ctx, userId)
+	default:
+		return riskserial, -1, nil
+	}
+	if err != nil {
+		return riskserial, code, err
+	}
+	// todo: record serial
+	service.Cache().Set(ctx, riskserial+"riskUserId", userId, 0)
+	return riskserial, code, nil
 }
 
-// 	switch riskName {
-// 	case "upPhone":
-// 		return false, gerror.NewCode(gcode.CodeNotImplemented)
-// 	case "upMail":
-// 		return s.checkTfaUpMail(ctx, "upMail", riskData)
-// 	case "checkTx":
-// 		return s.checkTx(ctx, "checkTx", riskData)
-// 	}
-// 	return false, gerror.NewCode(gcode.CodeNotImplemented)
-// }
-
-// new 创建一个新的sRisk
 func new() *sRisk {
 	return &sRisk{}
 }

@@ -17,6 +17,9 @@ func (c *ControllerV1) UpMail(ctx context.Context, req *v1.UpMailReq) (res *v1.U
 		return nil, gerror.NewCode(consts.CodeAuthFailed)
 	}
 	///
-
-	return nil, service.TFA().UpMail(ctx, userInfo.UserId, req.Mail)
+	serial, err := service.TFA().UpMail(ctx, userInfo.UserId, req.Mail)
+	res = &v1.UpMailRes{
+		RiskSerial: serial,
+	}
+	return res, err
 }

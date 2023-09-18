@@ -39,21 +39,21 @@ type VerifySmsCodeRes struct {
 
 ////
 
-type SendMailOTPReq struct {
-	g.Meta     `path:"/sendMailOTP" tags:"sendMailOTP" method:"post" summary:"sendMailOTP"`
+type SendMailCodeReq struct {
+	g.Meta     `path:"/sendMailCode" tags:"sendMailCode" method:"post" summary:"sendMailCode"`
 	Token      string `json:"token"`
 	RiskSerial string `json:"riskSerial"`
 }
-type SendMailOTPRes struct {
+type SendMailCodeRes struct {
 	g.Meta `mime:"text/html" example:"string"`
 }
-type VerifyMailOTPReq struct {
-	g.Meta     `path:"/verifyMailOTP" tags:"verifyMailOTP" method:"post" summary:"verifyMailOTP"`
+type VerifyMailCodeReq struct {
+	g.Meta     `path:"/verifyMailCode" tags:"verifyMailCode" method:"post" summary:"verifyMailCode"`
 	Token      string `json:"token"`
 	RiskSerial string `json:"riskSerial"`
 	Code       string `json:"code"`
 }
-type VerifyMailOTPRes struct {
+type VerifyMailCodeRes struct {
 	g.Meta `mime:"text/html" example:"string"`
 }
 
@@ -76,4 +76,15 @@ type UpMailReq struct {
 type UpMailRes struct {
 	g.Meta     `mime:"text/html" example:"string"`
 	RiskSerial string `json:"riskSerial"`
+}
+
+// notice: debug
+type CreateTFAReq struct {
+	g.Meta `path:"/createTFA" tags:"createTFA" method:"post" summary:"createTFA"`
+	Token  string `json:"token"`
+	Phone  string `json:"phone"`
+	Mail   string `json:"mail"`
+}
+type CreateTFARes struct {
+	g.Meta `mime:"text/html" example:"string"`
 }

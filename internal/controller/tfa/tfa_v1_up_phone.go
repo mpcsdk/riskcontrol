@@ -17,5 +17,9 @@ func (c *ControllerV1) UpPhone(ctx context.Context, req *v1.UpPhoneReq) (res *v1
 		return nil, gerror.NewCode(consts.CodeAuthFailed)
 	}
 	///
-	return nil, service.TFA().UpPhone(ctx, userInfo.UserId, req.Phone)
+	serial, err := service.TFA().UpPhone(ctx, userInfo.UserId, req.Phone)
+	res = &v1.UpPhoneRes{
+		RiskSerial: serial,
+	}
+	return res, err
 }

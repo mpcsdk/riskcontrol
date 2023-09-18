@@ -5,41 +5,40 @@ import (
 	"riskcontral/internal/service"
 )
 
-func (s *sTFA) SendPhoneCode(ctx context.Context, token string, opt string) (string, error) {
-	info, err := s.TFAInfo(ctx, token)
+func (s *sTFA) SendPhoneCode(ctx context.Context, token string, riskSerial string) (string, error) {
+	_, err := s.TFAInfo(ctx, token)
 	if err != nil {
 		return "", err
 	}
-	//todo: check info
-	code, err := service.SmsCode().SendCode(ctx, info.Phone)
-	if err == nil {
-		s.pendding[token+opt+"mail"] = func() {
-		}
-		return code, nil
+	////
+	err = service.Risk().RiskPhoneCode(ctx, riskSerial)
+	if err != nil {
 	}
-	return code, err
+	return "", err
 }
 
-func (s *sTFA) SendMailOTP(ctx context.Context, token string, opt string) (string, error) {
-	info, err := s.TFAInfo(ctx, token)
+func (s *sTFA) SendMailOTP(ctx context.Context, token string, riskSerial string) (string, error) {
+	_, err := s.TFAInfo(ctx, token)
 	if err != nil {
 		return "", err
 	}
-	//todo: check info
-	code, err := service.MailCode().SendMailCode(ctx, info.Mail)
-	if err == nil {
-		s.pendding[token+opt+"mail"] = func() {
-		}
-		return code, nil
+	////
+	err = service.Risk().RiskMailCode(ctx, riskSerial)
+	if err != nil {
 	}
-	return code, err
+	return "", err
 }
 
-func (s *sTFA) VerifyCode(ctx context.Context, token string, kind, code string) error {
+func (s *sTFA) VerifyCode(ctx context.Context, token string, riskSerial string, code string) error {
 	// 验证验证码
-	var err error
-	if task, ok := s.pendding[token+kind+code]; ok {
-		delete(s.pendding, token+kind+code)
+	err := service.Risk().VerifyCode(ctx, riskSerial, code)
+	if err != nil {
+		//todo:
+
+	}
+	////
+	if task, ok := s.pendding[token+riskSerial]; ok {
+		delete(s.pendding, token+riskSerial)
 		task()
 		return err
 	}

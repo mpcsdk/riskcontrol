@@ -8,8 +8,23 @@ import (
 )
 
 func (s *sRisk) RiskPhoneCode(ctx context.Context, riskserial string) error {
-	return nil
+
+	userId, err := service.Cache().Get(ctx, riskserial+"riskUserId")
+	if err != nil {
+		return err
+	}
+	info, err := service.TFA().TFAInfo(ctx, userId.String())
+	if err != nil {
+		return err
+	}
+	//todo: senderr
+	code, err := service.SmsCode().SendCode(ctx, info.Phone)
+	///recode code
+	service.Cache().Set(ctx, riskserial+"riskCode", code, 0)
+	g.Log().Debug(ctx, "RiskPhoneCode:", riskserial, code)
+	return err
 }
+
 func (s *sRisk) RiskMailCode(ctx context.Context, riskserial string) error {
 
 	userId, err := service.Cache().Get(ctx, riskserial+"riskUserId")
