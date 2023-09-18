@@ -12,7 +12,7 @@ import (
 
 // @Summary 验证token，注册用户tfa
 func (c *ControllerV1) UpPhone(ctx context.Context, req *v1.UpPhoneReq) (res *v1.UpPhoneRes, err error) {
-	///
+	///check token
 	userInfo, err := service.UserInfo().GetUserInfo(ctx, req.Token)
 	if err != nil {
 		g.Log().Warning(ctx, "UpPhone:", req, err)
