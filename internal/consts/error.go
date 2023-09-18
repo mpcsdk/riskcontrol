@@ -32,7 +32,7 @@ var (
 	CodeRiskVerifyCodeNotExist = &errCode{23, "Verify RiskSerial NotExist", nil} // The verification code does not exist.
 	CodeRiskPhoneInvalid       = &errCode{24, "Phone Invalid", nil}              // The verification code does not exist.
 	CodeRiskMailInvalid        = &errCode{25, "Mail Invalid", nil}               // The verification code does not exist.
-	CodeRiskPerformFailed      = &errCode{25, "RiskPerform failed", nil}         // The verification code does not exist.
+	CodeRiskPerformFailed      = &errCode{26, "RiskPerform failed", nil}         // The verification code does not exist.
 	///
 	///
 	CodeInternalError = &errCode{50, "Internal Error", nil} // An error occurred internally.
