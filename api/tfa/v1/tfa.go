@@ -84,6 +84,7 @@ type DialCodeReq struct {
 }
 type DialCode struct {
 	Name     string `json:"name"`
+	En       string `json:"en"`
 	DialCode string `json:"dial_code"`
 }
 type DialCodeRes struct {
