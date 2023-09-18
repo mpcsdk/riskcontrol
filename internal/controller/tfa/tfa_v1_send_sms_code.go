@@ -19,7 +19,7 @@ func (c *ControllerV1) VerifySmsCode(ctx context.Context, req *v1.VerifySmsCodeR
 	///
 	userInfo, err := service.UserInfo().GetUserInfo(ctx, req.Token)
 	if err != nil {
-		return nil, gerror.NewCode(consts.CodeAuthFailed)
+		return nil, gerror.NewCode(consts.CodeTFANotExist)
 	}
 	///
 	return nil, service.TFA().VerifyCode(ctx, userInfo.UserId, req.RiskSerial, req.Code)
