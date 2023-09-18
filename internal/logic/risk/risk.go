@@ -3,10 +3,13 @@ package risk
 import (
 	"context"
 	"riskcontral/common"
+	"riskcontral/internal/consts"
 	"riskcontral/internal/consts/conrisk"
 	"riskcontral/internal/service"
 	"time"
 
+	"github.com/gogf/gf/frame/g"
+	"github.com/gogf/gf/v2/errors/gerror"
 	"github.com/gogf/gf/v2/os/gtime"
 )
 
@@ -15,12 +18,14 @@ type sRisk struct {
 
 func (s *sRisk) PerformRiskTxs(ctx context.Context, userId string, address string, txs []*conrisk.RiskTx) (string, int32, error) {
 	//
-	//todo: record riskinfo
+	g.Log().Debug(ctx, "PerformRiskTxs:", "userId:", userId, "address:", address, "txs:", txs)
+	///
 	riskserial := common.GenNewSid()
 	///
 	code, err := s.checkTxs(ctx, address, txs)
 	if err != nil {
-		return riskserial, -1, err
+		g.Log().Warning(ctx, "PerformRiskTxs:", "checkTxs:", err)
+		return riskserial, -1, gerror.NewCode(consts.CodeRiskPerformFailed)
 	}
 	//todo: record serial
 	service.Cache().Set(ctx, riskserial+"riskUserId", userId, 0)
