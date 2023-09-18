@@ -24,3 +24,14 @@ func (c *ControllerV1) CreateTFA(ctx context.Context, req *v1.CreateTFAReq) (res
 	})
 	return nil, err
 }
+
+func (c *ControllerV1) DialCode(ctx context.Context, req *v1.DialCodeReq) (res *v1.DialCodeRes, err error) {
+
+	return &v1.DialCodeRes{
+		DialCodes: []*v1.DialCode{
+			{Name: "中国", DialCode: "+86"},
+			{Name: "美国", DialCode: "+1"},
+			{Name: "英国", DialCode: "+44"},
+		},
+	}, nil
+}

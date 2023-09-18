@@ -78,6 +78,19 @@ type UpMailRes struct {
 	RiskSerial string `json:"riskSerial"`
 }
 
+// /
+type DialCodeReq struct {
+	g.Meta `path:"/dialCode" tags:"dialCode" method:"post" summary:"dialCode"`
+}
+type DialCode struct {
+	Name     string `json:"name"`
+	DialCode string `json:"dial_code"`
+}
+type DialCodeRes struct {
+	g.Meta    `mime:"text/html" example:"string"`
+	DialCodes []*DialCode `json:"dial_codes"`
+}
+
 // notice: debug
 type CreateTFAReq struct {
 	g.Meta `path:"/createTFA" tags:"createTFA" method:"post" summary:"createTFA"`

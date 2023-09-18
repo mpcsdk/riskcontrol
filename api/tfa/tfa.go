@@ -18,6 +18,8 @@ type ITfaV1 interface {
 	VerifyMailCode(ctx context.Context, req *v1.VerifyMailCodeReq) (res *v1.VerifyMailCodeRes, err error)
 	UpPhone(ctx context.Context, req *v1.UpPhoneReq) (res *v1.UpPhoneRes, err error)
 	UpMail(ctx context.Context, req *v1.UpMailReq) (res *v1.UpMailRes, err error)
+	DialCode(ctx context.Context, req *v1.DialCodeReq) (res *v1.DialCodeRes, err error)
+	CreateTFA(ctx context.Context, req *v1.CreateTFAReq) (res *v1.CreateTFARes, err error)
 }
 
 
