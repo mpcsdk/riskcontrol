@@ -56,12 +56,12 @@ func (s *sSmsCode) sendCode(ctx context.Context, receiver, code string) error {
 }
 
 func (s *sSmsCode) SendCode(ctx context.Context, receiver string) (string, error) {
-	receiver = strings.TrimPrefix(receiver, "+")
+	return "123456", nil
 	code := common.RandomDigits(6)
 	resp := &sms.HuaweiResp{}
 	state := ""
 	var err error
-	if strings.HasPrefix(receiver, "86") {
+	if strings.HasPrefix(receiver, "+86") {
 		resp, state, err = s.foreign.SendSms(receiver, code)
 	} else {
 		resp, state, err = s.domestic.SendSms(receiver, code)

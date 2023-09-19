@@ -106,7 +106,7 @@ func (s *sTFA) UpPhone(ctx context.Context, userId string, phone string) (string
 			return riskSerial, gerror.NewCode(consts.CodeRiskVerification)
 		} else {
 			s.recordPhone(ctx, userId, phone)
-			return "", nil
+			return riskSerial, nil
 		}
 	}
 }

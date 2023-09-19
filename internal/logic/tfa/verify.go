@@ -29,7 +29,7 @@ func (s *sTFA) SendPhoneCode(ctx context.Context, userId string, riskSerial stri
 func (s *sTFA) sendPhoneCode(ctx context.Context, userId, phone, riskSerial string) (string, error) {
 	////
 	code, err := service.SmsCode().SendCode(ctx, phone)
-
+	g.Log().Debug(ctx, "SendPhoneCode:", userId, phone, riskSerial, code, err)
 	if err != nil {
 		g.Log().Warning(ctx, "SendPhoneCode:", userId, riskSerial, err, code)
 		return "", gerror.NewCode(consts.CodeRiskPerformFailed)

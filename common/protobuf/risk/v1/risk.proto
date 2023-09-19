@@ -49,7 +49,7 @@ message TFARiskRes {
 
 message SmsCodeReq {
     string RiskSerial = 1; // v: required
-    string Operations = 2; // v: required
+    string Token = 2; // v: required
 }
 message SmsCodeRes {
     int32 Ok = 1;
@@ -60,7 +60,7 @@ message SmsCodeRes {
 
 message MailCodekReq {
     string RiskSerial = 1; // v: required
-    string Operations = 2; // v: required
+    string Token= 2; // v: required
 }
 message MailCodekRes {
     int32 Ok = 1;
@@ -70,7 +70,8 @@ message MailCodekRes {
 /////
 message VerifyCodekReq {
     string RiskSerial = 1; // v: required
-    string Code = 2; // v: required
+    string Token = 2; // v: required
+    string Code = 3; // v: required
 }
 message VerifyCodeRes {
     int32 Ok = 1;
