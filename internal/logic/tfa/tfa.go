@@ -10,8 +10,9 @@ import (
 type sTFA struct {
 	ctx context.Context
 	// riskClient riskv1.UserClient
-	pendding map[string]func()
-	url      string
+	pendding     map[string]func()
+	sendpendding map[string]func()
+	url          string
 	////
 }
 
@@ -31,8 +32,9 @@ func new() *sTFA {
 	///
 	//
 	s := &sTFA{
-		pendding: map[string]func(){},
-		ctx:      ctx,
+		pendding:     map[string]func(){},
+		sendpendding: map[string]func(){},
+		ctx:          ctx,
 	}
 	///
 

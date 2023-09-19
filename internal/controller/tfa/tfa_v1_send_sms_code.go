@@ -15,7 +15,12 @@ func (c *ControllerV1) SendSmsCode(ctx context.Context, req *v1.SendSmsCodeReq) 
 	ctx, span := gtrace.NewSpan(ctx, "SendSmsCode")
 	defer span.End()
 	//
-	err = service.Risk().RiskPhoneCode(ctx, req.RiskSerial)
+	info, err := service.UserInfo().GetUserInfo(ctx, req.Token)
+	if err != nil {
+		return nil, err
+	}
+	// err = service.Risk().RiskPhoneCode(ctx, req.RiskSerial)
+	_, err = service.TFA().SendPhoneCode(ctx, info.UserId, req.RiskSerial)
 	return nil, err
 }
 

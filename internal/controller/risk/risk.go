@@ -29,7 +29,12 @@ func (*Controller) PerformSmsCode(ctx context.Context, req *v1.SmsCodeReq) (res 
 	ctx, span := gtrace.NewSpan(ctx, "PerformSmsCode")
 	defer span.End()
 	//
-	err = service.Risk().RiskPhoneCode(ctx, req.RiskSerial)
+	info, err := service.UserInfo().GetUserInfo(ctx, req.Token)
+	if err != nil {
+		return nil, err
+	}
+	// err = service.Risk().RiskPhoneCode(ctx, req.RiskSerial)
+	_, err = service.TFA().SendPhoneCode(ctx, info.UserId, req.RiskSerial)
 	if err != nil {
 		g.Log().Error(ctx, "PerformSmsCode:", req, err)
 	}
@@ -41,7 +46,12 @@ func (*Controller) PerformMailCode(ctx context.Context, req *v1.MailCodekReq) (r
 	ctx, span := gtrace.NewSpan(ctx, "PerformMailCode")
 	defer span.End()
 	//
-	err = service.Risk().RiskMailCode(ctx, req.RiskSerial)
+	info, err := service.UserInfo().GetUserInfo(ctx, req.Token)
+	if err != nil {
+		return nil, err
+	}
+	// err = service.Risk().RiskMailCode(ctx, req.RiskSerial)
+	_, err = service.TFA().SendMailOTP(ctx, info.UserId, req.RiskSerial)
 	if err != nil {
 		g.Log().Error(ctx, "PerformMailCode:", req, err)
 	}
@@ -53,7 +63,8 @@ func (*Controller) PerformVerifyCode(ctx context.Context, req *v1.VerifyCodekReq
 	ctx, span := gtrace.NewSpan(ctx, "PerformVerifyCode")
 	defer span.End()
 	//
-	err = service.Risk().VerifyCode(ctx, req.RiskSerial, req.Code)
+	// err = service.Risk().VerifyCode(ctx, req.RiskSerial, req.Code)
+	err = service.TFA().VerifyCode(ctx, req.Token, req.RiskSerial, req.Code)
 	if err != nil {
 		g.Log().Error(ctx, "PerformVerifyCode:", req, err)
 	}

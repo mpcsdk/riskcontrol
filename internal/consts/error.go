@@ -27,12 +27,12 @@ var (
 	CodeTokenNotExist = &errCode{12, "Token NotExist", nil} // The token does not exist.
 	CodeTFANotExist   = &errCode{12, "TFA NotExist", nil}   // The token does not exist.
 	///
-	CodeRiskVerification       = &errCode{21, "Risk VerificationCode", nil}      // The risk rule does not exist.
-	CodeRiskVerifyCodeInvalid  = &errCode{22, "Verify Code Invalid", nil}        // The verification code is invalid.
-	CodeRiskVerifyCodeNotExist = &errCode{23, "Verify RiskSerial NotExist", nil} // The verification code does not exist.
-	CodeRiskPhoneInvalid       = &errCode{24, "Phone Invalid", nil}              // The verification code does not exist.
-	CodeRiskMailInvalid        = &errCode{25, "Mail Invalid", nil}               // The verification code does not exist.
-	CodeRiskPerformFailed      = &errCode{26, "RiskPerform failed", nil}         // The verification code does not exist.
+	CodeRiskVerification       = &errCode{21, "Risk VerificationCode", nil} // The risk need verification code
+	CodeRiskVerifyCodeInvalid  = &errCode{22, "Verify Code Invalid", nil}   // The verify code is invalid.
+	CodeRiskVerifyCodeNotExist = &errCode{23, "Verify RiskSerial NotExist", nil}
+	CodeRiskPhoneInvalid       = &errCode{24, "Phone Invalid", nil}      //
+	CodeRiskMailInvalid        = &errCode{25, "Mail Invalid", nil}       //
+	CodeRiskPerformFailed      = &errCode{26, "RiskPerform failed", nil} //
 	///
 	///
 	CodeInternalError = &errCode{50, "Internal Error", nil} // An error occurred internally.

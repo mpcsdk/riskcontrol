@@ -12,9 +12,6 @@ import (
 
 type (
 	IRisk interface {
-		RiskPhoneCode(ctx context.Context, riskserial string) error
-		RiskMailCode(ctx context.Context, riskserial string) error
-		VerifyCode(ctx context.Context, serial string, code string) error
 		PerformRiskTxs(ctx context.Context, userId string, address string, txs []*conrisk.RiskTx) (string, int32, error)
 		PerformRiskTFA(ctx context.Context, userId string, riskData *conrisk.RiskTfa) (string, int32, error)
 	}

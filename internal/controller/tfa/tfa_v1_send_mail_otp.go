@@ -16,7 +16,12 @@ func (c *ControllerV1) SendMailCode(ctx context.Context, req *v1.SendMailCodeReq
 	ctx, span := gtrace.NewSpan(ctx, "SendMailCode")
 	defer span.End()
 	//
-	err = service.Risk().RiskMailCode(ctx, req.RiskSerial)
+	info, err := service.UserInfo().GetUserInfo(ctx, req.Token)
+	if err != nil {
+		return nil, err
+	}
+	// err = service.Risk().RiskMailCode(ctx, req.RiskSerial)
+	_, err = service.TFA().SendMailOTP(ctx, info.UserId, req.RiskSerial)
 	return nil, err
 }
 

@@ -9,6 +9,7 @@ import (
 	"riskcontral/internal/model/entity"
 	"riskcontral/internal/service"
 
+	"github.com/gogf/gf/v2/errors/gerror"
 	"github.com/gogf/gf/v2/frame/g"
 	"github.com/gogf/gf/v2/os/gtime"
 )
@@ -93,17 +94,20 @@ func (s *sTFA) UpPhone(ctx context.Context, userId string, phone string) (string
 			Phone:  phone,
 		}
 		riskSerial, code, err := service.Risk().PerformRiskTFA(ctx, userId, riskData)
-		if err != nil || code != 0 {
-			s.pendding[userId+riskSerial] = func() {
-				s.recordPhone(ctx, userId, phone)
+		if err != nil {
+			return "", err
+		}
+
+		if code != 0 {
+			s.sendpendding[userId+riskSerial] = func() {
+				s.sendPhoneCode(ctx, userId, phone, riskSerial)
 			}
-			return riskSerial, err
+
+			return riskSerial, gerror.NewCode(consts.CodeRiskVerification)
 		} else {
 			s.recordPhone(ctx, userId, phone)
+			return "", nil
 		}
-		//
-		g.Log().Info(ctx, "UpPhone PerformRiskTFA:", riskSerial, code)
-		return riskSerial, err
 	}
 }
 
@@ -119,13 +123,18 @@ func (s *sTFA) UpMail(ctx context.Context, userId string, mail string) (string, 
 			Mail:   mail,
 		}
 		riskSerial, code, err := service.Risk().PerformRiskTFA(ctx, userId, riskData)
-		if err != nil || code != 0 {
-			s.pendding[userId+riskSerial] = func() {
-				s.recordMail(ctx, userId, mail)
+		if err != nil {
+			return "", err
+		}
+		if code != 0 {
+			s.sendpendding[userId+riskSerial] = func() {
+				s.sendMailOTP(ctx, userId, mail, riskSerial)
 			}
-			return riskSerial, err
+
+			return riskSerial, gerror.NewCode(consts.CodeRiskVerifyCodeInvalid)
 		} else {
 			s.recordMail(ctx, userId, mail)
+			return "", nil
 		}
 		//
 

@@ -4,8 +4,6 @@ import (
 	"context"
 	"riskcontral/internal/service"
 
-	"github.com/gogf/gf/v2/errors/gcode"
-	"github.com/gogf/gf/v2/errors/gerror"
 	"github.com/gogf/gf/v2/os/gtime"
 )
 
@@ -20,7 +18,7 @@ func (s *sRisk) checkTFAUpPhone(ctx context.Context, userId string) (int32, erro
 	if info.PhoneUpdatedAt.Before(befor24h) {
 		return 0, nil
 	}
-	return 1, gerror.NewCode(gcode.CodeNotImplemented)
+	return 1, nil
 }
 
 func (s *sRisk) checkTfaUpMail(ctx context.Context, userId string) (int32, error) {
@@ -35,7 +33,7 @@ func (s *sRisk) checkTfaUpMail(ctx context.Context, userId string) (int32, error
 	if info.MailUpdatedAt.Before(befor24h) {
 		return 0, nil
 	}
-	return 1, gerror.NewCode(gcode.CodeNotImplemented)
+	return 1, nil
 }
 
 func (s *sRisk) checkTfaCreate(ctx context.Context, userId string) (int32, error) {
