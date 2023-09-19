@@ -16,9 +16,9 @@ type (
 		CreateTFA(ctx context.Context, userId string, phone string, mail string) (string, error)
 		UpPhone(ctx context.Context, userId string, phone string) (string, error)
 		UpMail(ctx context.Context, userId string, mail string) (string, error)
-		SendPhoneCode(ctx context.Context, token string, riskSerial string) (string, error)
-		SendMailOTP(ctx context.Context, token string, riskSerial string) (string, error)
-		VerifyCode(ctx context.Context, token string, riskSerial string, code string) error
+		SendPhoneCode(ctx context.Context, userId string, riskSerial string) (string, error)
+		SendMailOTP(ctx context.Context, userId string, riskSerial string) (string, error)
+		VerifyCode(ctx context.Context, userId string, riskSerial string, code string) error
 	}
 )
 

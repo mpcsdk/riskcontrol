@@ -27,15 +27,6 @@ type SendSmsCodeReq struct {
 type SendSmsCodeRes struct {
 	g.Meta `mime:"text/html" example:"string"`
 }
-type VerifySmsCodeReq struct {
-	g.Meta     `path:"/verifySmsCode" tags:"verifySmsCode" method:"post" summary:"verifySmsCode"`
-	Token      string `json:"token"`
-	RiskSerial string `json:"riskSerial"`
-	Code       string `json:"code"`
-}
-type VerifySmsCodeRes struct {
-	g.Meta `mime:"text/html" example:"string"`
-}
 
 ////
 
@@ -47,13 +38,17 @@ type SendMailCodeReq struct {
 type SendMailCodeRes struct {
 	g.Meta `mime:"text/html" example:"string"`
 }
-type VerifyMailCodeReq struct {
-	g.Meta     `path:"/verifyMailCode" tags:"verifyMailCode" method:"post" summary:"verifyMailCode"`
-	Token      string `json:"token"`
+
+type VerifyReq struct {
 	RiskSerial string `json:"riskSerial"`
 	Code       string `json:"code"`
 }
-type VerifyMailCodeRes struct {
+type VerifyCodeReq struct {
+	g.Meta    `path:"/verifyMailCode" tags:"verifyMailCode" method:"post" summary:"verifyMailCode"`
+	Token     string `json:"token"`
+	VerifyReq []*VerifyReq
+}
+type VerifyCodeRes struct {
 	g.Meta `mime:"text/html" example:"string"`
 }
 
