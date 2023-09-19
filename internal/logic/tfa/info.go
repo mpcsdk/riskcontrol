@@ -15,11 +15,10 @@ import (
 func (s *sTFA) TFAInfo(ctx context.Context, userId string) (*entity.Tfa, error) {
 	/// cache
 	rst, err := s.getTfaCache(ctx, userId)
-	if err != nil {
-		g.Log().Error(ctx, "TFAInfo:", userId, err)
-		return nil, err
+	if err == nil {
+		return rst, err
 	}
-	///
+	///get from db
 	err = dao.Tfa.Ctx(ctx).Where(dao.Tfa.Columns().UserId, userId).Scan(&rst)
 	if err != nil {
 		g.Log().Error(ctx, "tfainfo:", err, userId)

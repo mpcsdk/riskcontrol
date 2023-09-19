@@ -6,6 +6,8 @@ import (
 	v1 "riskcontral/api/risk/v1"
 	"riskcontral/internal/consts/conrisk"
 	"riskcontral/internal/service"
+
+	"github.com/gogf/gf/v2/net/gtrace"
 )
 
 // @Summary 验证token，执行交易风控,
@@ -17,11 +19,10 @@ import (
 // @Failure 200 {object} riskcontral/internal/service.RiskTx
 // @Router /v1/risk/execrisk [post]
 func (c *ControllerV1) ExecRisk(ctx context.Context, req *v1.ExecRiskReq) (res *v1.ExecRiskRes, err error) {
-	// param := map[string]interface{}{}
-	// rst, err := service.LEngine().Exec(req.Name, param)
-	// res = &v1.ExecRiskRes{
-	// 	Result: rst,
-	// }
+	//trace
+	ctx, span := gtrace.NewSpan(ctx, "ExecRisk")
+	defer span.End()
+	//
 
 	riskData := &conrisk.RiskTx{
 		Token:    req.Token,

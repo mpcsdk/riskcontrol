@@ -7,20 +7,20 @@ require (
 	github.com/dchest/captcha v1.0.0
 	github.com/ethereum/go-ethereum v1.12.2
 	github.com/go-resty/resty/v2 v2.7.0
-	github.com/gogf/gf v1.16.9
-	github.com/gogf/gf/contrib/drivers/pgsql/v2 v2.5.1
-	github.com/gogf/gf/contrib/nosql/redis/v2 v2.5.1
-	github.com/gogf/gf/contrib/registry/etcd/v2 v2.5.2
-	github.com/gogf/gf/contrib/rpc/grpcx/v2 v2.5.1
-	github.com/gogf/gf/v2 v2.5.2
+	github.com/gogf/gf/contrib/drivers/pgsql/v2 v2.5.4
+	github.com/gogf/gf/contrib/nosql/redis/v2 v2.5.4
+	github.com/gogf/gf/contrib/registry/etcd/v2 v2.5.4
+	github.com/gogf/gf/contrib/rpc/grpcx/v2 v2.5.4
+	github.com/gogf/gf/contrib/trace/jaeger/v2 v2.5.4
+	github.com/gogf/gf/v2 v2.5.4
 	github.com/golang/protobuf v1.5.3
-	github.com/jackc/pgconn v1.14.0
-	github.com/jackc/pgx/v4 v4.18.1
+	github.com/jackc/pgconn v1.9.1-0.20210724152538-d89c8390a530
+	github.com/jackc/pgx/v4 v4.12.1-0.20210724153913-640aa07df17c
 	github.com/satori/go.uuid v1.2.0
 	github.com/sirupsen/logrus v1.9.3
 	github.com/yitter/idgenerator-go v1.3.3
 	google.golang.org/grpc v1.57.0
-	google.golang.org/protobuf v1.30.0
+	google.golang.org/protobuf v1.31.0
 	gopkg.in/gomail.v2 v2.0.0-20160411212932-81ebce5c23df
 )
 
@@ -29,7 +29,6 @@ require (
 	github.com/antlr/antlr4 v0.0.0-20210105192202-5c2b686f95e1 // indirect
 	github.com/btcsuite/btcd/btcec/v2 v2.2.0 // indirect
 	github.com/cespare/xxhash/v2 v2.2.0 // indirect
-	github.com/clbanning/mxj v1.8.5-0.20200714211355-ff02cfb8ea28 // indirect
 	github.com/clbanning/mxj/v2 v2.7.0 // indirect
 	github.com/coreos/go-semver v0.3.0 // indirect
 	github.com/coreos/go-systemd/v22 v22.3.2 // indirect
@@ -39,12 +38,9 @@ require (
 	github.com/fsnotify/fsnotify v1.6.0 // indirect
 	github.com/go-logr/logr v1.2.4 // indirect
 	github.com/go-logr/stdr v1.2.2 // indirect
-	github.com/go-redis/redis/v8 v8.11.5 // indirect
-	github.com/go-sql-driver/mysql v1.6.0 // indirect
-	github.com/gogf/gf/contrib/registry/file/v2 v2.5.1 // indirect
+	github.com/gogf/gf/contrib/registry/file/v2 v2.5.4 // indirect
 	github.com/gogo/protobuf v1.3.2 // indirect
 	github.com/golang-collections/collections v0.0.0-20130729185459-604e922904d3 // indirect
-	github.com/gomodule/redigo v1.8.5 // indirect
 	github.com/google/martian v2.1.0+incompatible // indirect
 	github.com/gorilla/websocket v1.5.0 // indirect
 	github.com/grokify/html-strip-tags-go v0.0.1 // indirect
@@ -62,11 +58,13 @@ require (
 	github.com/mattn/go-isatty v0.0.19 // indirect
 	github.com/mattn/go-runewidth v0.0.15 // indirect
 	github.com/olekukonko/tablewriter v0.0.5 // indirect
+	github.com/redis/go-redis/v9 v9.0.5 // indirect
 	github.com/rivo/uniseg v0.4.4 // indirect
 	go.etcd.io/etcd/api/v3 v3.5.7 // indirect
 	go.etcd.io/etcd/client/pkg/v3 v3.5.7 // indirect
 	go.etcd.io/etcd/client/v3 v3.5.7 // indirect
 	go.opentelemetry.io/otel v1.16.0 // indirect
+	go.opentelemetry.io/otel/exporters/jaeger v1.14.0 // indirect
 	go.opentelemetry.io/otel/metric v1.16.0 // indirect
 	go.opentelemetry.io/otel/sdk v1.16.0 // indirect
 	go.opentelemetry.io/otel/trace v1.16.0 // indirect

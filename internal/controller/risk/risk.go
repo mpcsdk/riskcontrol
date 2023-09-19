@@ -9,9 +9,10 @@ import (
 	"strings"
 
 	"github.com/gogf/gf/contrib/rpc/grpcx/v2"
-	"github.com/gogf/gf/frame/g"
 	"github.com/gogf/gf/v2/errors/gcode"
 	"github.com/gogf/gf/v2/errors/gerror"
+	"github.com/gogf/gf/v2/frame/g"
+	"github.com/gogf/gf/v2/net/gtrace"
 	"github.com/golang/protobuf/ptypes/empty"
 )
 
@@ -24,6 +25,10 @@ func Register(s *grpcx.GrpcServer) {
 }
 
 func (*Controller) PerformSmsCode(ctx context.Context, req *v1.SmsCodeReq) (res *v1.SmsCodeRes, err error) {
+	//trace
+	ctx, span := gtrace.NewSpan(ctx, "PerformSmsCode")
+	defer span.End()
+	//
 	err = service.Risk().RiskPhoneCode(ctx, req.RiskSerial)
 	if err != nil {
 		g.Log().Error(ctx, "PerformSmsCode:", req, err)
@@ -32,6 +37,10 @@ func (*Controller) PerformSmsCode(ctx context.Context, req *v1.SmsCodeReq) (res 
 }
 
 func (*Controller) PerformMailCode(ctx context.Context, req *v1.MailCodekReq) (res *v1.MailCodekRes, err error) {
+	//trace
+	ctx, span := gtrace.NewSpan(ctx, "PerformMailCode")
+	defer span.End()
+	//
 	err = service.Risk().RiskMailCode(ctx, req.RiskSerial)
 	if err != nil {
 		g.Log().Error(ctx, "PerformMailCode:", req, err)
@@ -40,6 +49,10 @@ func (*Controller) PerformMailCode(ctx context.Context, req *v1.MailCodekReq) (r
 }
 
 func (*Controller) PerformVerifyCode(ctx context.Context, req *v1.VerifyCodekReq) (res *v1.VerifyCodeRes, err error) {
+	//trace
+	ctx, span := gtrace.NewSpan(ctx, "PerformVerifyCode")
+	defer span.End()
+	//
 	err = service.Risk().VerifyCode(ctx, req.RiskSerial, req.Code)
 	if err != nil {
 		g.Log().Error(ctx, "PerformVerifyCode:", req, err)
@@ -47,7 +60,11 @@ func (*Controller) PerformVerifyCode(ctx context.Context, req *v1.VerifyCodekReq
 	return nil, err
 }
 
-func (*Controller) PerformAlive(context.Context, *empty.Empty) (*empty.Empty, error) {
+func (*Controller) PerformAlive(ctx context.Context, in *empty.Empty) (*empty.Empty, error) {
+	//trace
+	ctx, span := gtrace.NewSpan(ctx, "PerformAlive")
+	defer span.End()
+	//
 	return &empty.Empty{}, nil
 }
 
@@ -56,6 +73,10 @@ func (*Controller) PerformRiskTFA(ctx context.Context, req *v1.TFARiskReq) (res 
 }
 
 func (*Controller) PerformRiskTxs(ctx context.Context, req *v1.TxRiskReq) (res *v1.TxRiskRes, err error) {
+	//trace
+	ctx, span := gtrace.NewSpan(ctx, "performRiskTxs")
+	defer span.End()
+	//
 	///
 	g.Log().Debug(ctx, "PerformRiskTxs:", req)
 	req.Address = strings.ToLower(req.Address)

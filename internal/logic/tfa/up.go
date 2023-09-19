@@ -76,7 +76,7 @@ func (s *sTFA) CreateTFA(ctx context.Context, userId string, phone string, mail 
 	} else {
 		s.recordPhone(ctx, userId, phone)
 	}
-	g.Log().Info(ctx, "UpPhone risk:", riskSerial, code)
+	g.Log().Info(ctx, "CreateTFA PerformRiskTFA:", riskSerial, code)
 	return riskSerial, err
 }
 
@@ -102,7 +102,7 @@ func (s *sTFA) UpPhone(ctx context.Context, userId string, phone string) (string
 			s.recordPhone(ctx, userId, phone)
 		}
 		//
-		g.Log().Info(ctx, "UpPhone risk:", riskSerial, code)
+		g.Log().Info(ctx, "UpPhone PerformRiskTFA:", riskSerial, code)
 		return riskSerial, err
 	}
 }
@@ -129,7 +129,7 @@ func (s *sTFA) UpMail(ctx context.Context, userId string, mail string) (string, 
 		}
 		//
 
-		g.Log().Info(ctx, "UpPhone risk:", riskSerial, code)
+		g.Log().Info(ctx, "UpPhone UpMail:", riskSerial, code)
 		return riskSerial, err
 	}
 }

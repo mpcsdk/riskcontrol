@@ -6,11 +6,15 @@ import (
 	"riskcontral/internal/dao"
 	"riskcontral/internal/model/entity"
 
+	"github.com/gogf/gf/v2/net/gtrace"
 	"github.com/gogf/gf/v2/os/gtime"
 )
 
 // // @Summary 验证token，注册用户tfa
 func (c *ControllerV1) CreateTFA(ctx context.Context, req *v1.CreateTFAReq) (res *v1.CreateTFARes, err error) {
+	//	//trace
+	ctx, span := gtrace.NewSpan(ctx, "CreateTFA")
+	defer span.End()
 	///
 
 	///

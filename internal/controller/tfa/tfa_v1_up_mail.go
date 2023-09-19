@@ -8,10 +8,15 @@ import (
 
 	"github.com/gogf/gf/v2/errors/gerror"
 	"github.com/gogf/gf/v2/frame/g"
+	"github.com/gogf/gf/v2/net/gtrace"
 )
 
 // @Summary 验证token，注册用户tfa
 func (c *ControllerV1) UpMail(ctx context.Context, req *v1.UpMailReq) (res *v1.UpMailRes, err error) {
+	//trace
+	ctx, span := gtrace.NewSpan(ctx, "UpMail")
+	defer span.End()
+	//
 	///
 	userInfo, err := service.UserInfo().GetUserInfo(ctx, req.Token)
 	if err != nil {

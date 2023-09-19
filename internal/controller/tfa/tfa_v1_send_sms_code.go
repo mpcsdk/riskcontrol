@@ -7,15 +7,24 @@ import (
 	"riskcontral/internal/service"
 
 	"github.com/gogf/gf/v2/errors/gerror"
+	"github.com/gogf/gf/v2/net/gtrace"
 )
 
 func (c *ControllerV1) SendSmsCode(ctx context.Context, req *v1.SendSmsCodeReq) (res *v1.SendSmsCodeRes, err error) {
+	//trace
+	ctx, span := gtrace.NewSpan(ctx, "SendSmsCode")
+	defer span.End()
+	//
 	err = service.Risk().RiskPhoneCode(ctx, req.RiskSerial)
 	return nil, err
 }
 
 // @Summary 验证token，注册用户tfa
 func (c *ControllerV1) VerifySmsCode(ctx context.Context, req *v1.VerifySmsCodeReq) (res *v1.VerifySmsCodeRes, err error) {
+	//trace
+	ctx, span := gtrace.NewSpan(ctx, "VerifySmsCode")
+	defer span.End()
+	//
 	///
 	userInfo, err := service.UserInfo().GetUserInfo(ctx, req.Token)
 	if err != nil {

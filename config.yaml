@@ -1,6 +1,9 @@
 server:
   address:     ":8002"
   wordId: 1
+  name: "riskcontrol"
+
+jaegerUrl: "127.0.0.1:6831"
 
 logger:
   level : "all"
