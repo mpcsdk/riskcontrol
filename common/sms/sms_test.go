@@ -18,7 +18,7 @@ func Test_foreign(t *testing.T) {
 		TemplateID:        cfg.MustGet(ctx, "sms.foreign.TemplateID").String(),
 		Signature:         cfg.MustGet(ctx, "sms.foreign.Signature").String(),
 	}
-	resp, stat, err := foreign.SendSms("+8615111226175", "123456")
+	resp, stat, err := foreign.SendSms("+8613812345678", "123456")
 	if err != nil {
 		t.Error(err)
 	}
