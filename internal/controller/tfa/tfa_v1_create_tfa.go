@@ -60,6 +60,7 @@ func (c *ControllerV1) DialCode(ctx context.Context, req *v1.DialCodeReq) (res *
 	// 中国,China,+86
 	return &v1.DialCodeRes{
 		DialCodes: []*v1.DialCode{
+			{Name: "中国", En: "China", DialCode: "+86"},
 			{Name: "印度尼西亚", En: "Indonesia", DialCode: "+62"},
 			{Name: "菲律宾", En: "Philippines", DialCode: "+63"},
 			{Name: "泰国", En: "Thailand", DialCode: "+66"},
@@ -87,7 +88,6 @@ func (c *ControllerV1) DialCode(ctx context.Context, req *v1.DialCodeReq) (res *
 			{Name: "中国香港", En: "Hong Kong", DialCode: "+852"},
 			{Name: "中国澳门", En: "Macao", DialCode: "+853"},
 			{Name: "中国台湾", En: "Taiwan", DialCode: "+886"},
-			{Name: "中国", En: "China", DialCode: "+86"},
 		},
 	}, nil
 }

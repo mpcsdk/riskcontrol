@@ -44,9 +44,9 @@ type VerifyReq struct {
 	Code       string `json:"code"`
 }
 type VerifyCodeReq struct {
-	g.Meta    `path:"/verifyMailCode" tags:"verifyMailCode" method:"post" summary:"verifyMailCode"`
-	Token     string `json:"token"`
-	VerifyReq []*VerifyReq
+	g.Meta    `path:"/verifyCode" tags:"verifyCode" method:"post" summary:"verifyCode"`
+	Token     string       `json:"token"`
+	VerifyReq []*VerifyReq `json:"codes"`
 }
 type VerifyCodeRes struct {
 	g.Meta `mime:"text/html" example:"string"`

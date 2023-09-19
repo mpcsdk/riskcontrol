@@ -25,9 +25,9 @@ func (c *ControllerV1) UpMail(ctx context.Context, req *v1.UpMailReq) (res *v1.U
 	}
 	///
 	serial, err := service.TFA().UpMail(ctx, userInfo.UserId, req.Mail)
-	if err != nil {
+	if serial == "" {
 		g.Log().Warning(ctx, "UpMail:", req, err)
-		return nil, gerror.NewCode(consts.CodeRiskMailInvalid)
+		return nil, err
 	}
 	res = &v1.UpMailRes{
 		RiskSerial: serial,

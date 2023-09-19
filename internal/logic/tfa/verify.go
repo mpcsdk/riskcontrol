@@ -88,5 +88,5 @@ func (s *sTFA) VerifyCode(ctx context.Context, userId string, riskSerial string,
 		delete(s.pendding, userId+riskSerial)
 		return nil
 	}
-	return gerror.NewCode(consts.CodeRiskPerformFailed)
+	return gerror.NewCode(consts.CodeRiskVerifyInvalid)
 }
