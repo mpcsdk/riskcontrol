@@ -103,7 +103,7 @@ func (s *sTFA) UpPhone(ctx context.Context, userId string, phone string) (string
 				s.sendPhoneCode(ctx, userId, phone, riskSerial)
 			}
 
-			return riskSerial, gerror.NewCode(consts.CodeRiskVerification)
+			return riskSerial, gerror.NewCode(consts.CodeRiskNeedVerification)
 		} else {
 			s.recordPhone(ctx, userId, phone)
 			return riskSerial, nil
@@ -131,7 +131,7 @@ func (s *sTFA) UpMail(ctx context.Context, userId string, mail string) (string, 
 				s.sendMailOTP(ctx, userId, mail, riskSerial)
 			}
 
-			return riskSerial, gerror.NewCode(consts.CodeRiskVerification)
+			return riskSerial, gerror.NewCode(consts.CodeRiskNeedVerification)
 		} else {
 			s.recordMail(ctx, userId, mail)
 			return "", nil

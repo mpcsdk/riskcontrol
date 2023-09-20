@@ -5,7 +5,7 @@ go 1.20
 require (
 	github.com/bilibili/gengine v1.5.7
 	github.com/dchest/captcha v1.0.0
-	github.com/ethereum/go-ethereum v1.12.2
+	github.com/ethereum/go-ethereum v1.13.1
 	github.com/go-resty/resty/v2 v2.7.0
 	github.com/gogf/gf/contrib/drivers/pgsql/v2 v2.5.4
 	github.com/gogf/gf/contrib/nosql/redis/v2 v2.5.4
@@ -18,6 +18,8 @@ require (
 	github.com/jackc/pgx/v4 v4.12.1-0.20210724153913-640aa07df17c
 	github.com/satori/go.uuid v1.2.0
 	github.com/sirupsen/logrus v1.9.3
+	github.com/tencentcloud/tencentcloud-sdk-go/tencentcloud/common v1.0.752
+	github.com/tencentcloud/tencentcloud-sdk-go/tencentcloud/ses v1.0.752
 	github.com/yitter/idgenerator-go v1.3.3
 	google.golang.org/grpc v1.57.0
 	google.golang.org/protobuf v1.31.0

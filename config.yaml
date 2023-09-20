@@ -72,13 +72,12 @@ sms:
     TemplateID : "e582fdc05e8043f8b69f9b0b05e970b4"                                    
     Signature: ""
 
-emailOTP:
-  Mail: "xinwei.li@mixmarvel.com"
-  Password: "Kkj7pJAdUpLpjgYE"
-  Host: "smtp.exmail.qq.com"
-  Port: 465
-  Subject: "Subject"
-  Body: "Body"
+exemail:
+  From: "mixmarvel-sdk@mixmarvel-sdk.com"
+  SecretId: "AKID51zveEaotSAnIez267vjsxrnfR1eCZwG"
+  SecretKey: "KXlv05GIC0lN2ccq1IYggZJv1CPOLKDt"
+  TemplateID: 26732
+  Subject: "验证码"
 
 
 gfcli:

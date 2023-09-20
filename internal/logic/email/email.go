@@ -2,38 +2,32 @@ package email
 
 import (
 	"context"
-	"crypto/tls"
 	"riskcontral/common"
+	"riskcontral/common/exmail"
 	"riskcontral/internal/service"
 
+	"github.com/gogf/gf/v2/frame/g"
 	"github.com/gogf/gf/v2/os/gcfg"
 	"github.com/gogf/gf/v2/os/gctx"
-	"gopkg.in/gomail.v2"
 )
 
 type sMailCode struct {
-	From    string
-	Passwd  string
-	Host    string
-	Port    int
-	Subject string
-	Body    string
-	////
 
-	d *gomail.Dialer
+	////
+	From       string
+	SecretId   string
+	SecretKey  string
+	TemplateID uint64
+	Subject    string
+	//
+	t *exmail.TencMailClient
 }
 
 func (s *sMailCode) SendMailCode(ctx context.Context, to string) (string, error) {
-
 	code := common.RandomDigits(6)
-	///
-	m := gomail.NewMessage()
-	m.SetHeader("From", s.From)
-	m.SetHeader("To", to)
-	m.SetHeader("Subject", "验证码")
-	m.SetBody("text/html", s.Body+code)
-	return code, s.d.DialAndSend(m)
-
+	resp, err := s.t.SendMail(to, code)
+	g.Log().Debug(ctx, "SendMailCode:", to, code, resp)
+	return code, err
 }
 
 func new() *sMailCode {
@@ -41,16 +35,13 @@ func new() *sMailCode {
 	ctx := gctx.GetInitCtx()
 
 	s := &sMailCode{
-		From:    cfg.MustGet(ctx, "emailOTP.Mail").String(),
-		Passwd:  cfg.MustGet(ctx, "emailOTP.Password").String(),
-		Host:    cfg.MustGet(ctx, "emailOTP.Host").String(),
-		Port:    cfg.MustGet(ctx, "emailOTP.Port").Int(),
-		Subject: cfg.MustGet(ctx, "emailOTP.Subject").String(),
-		Body:    cfg.MustGet(ctx, "emailOTP.Body").String(),
+		From:       cfg.MustGet(ctx, "exemail.From").String(),
+		SecretId:   cfg.MustGet(ctx, "exemail.SecretId").String(),
+		SecretKey:  cfg.MustGet(ctx, "exemail.SecretKey").String(),
+		TemplateID: cfg.MustGet(ctx, "exemail.TemplateID").Uint64(),
+		Subject:    cfg.MustGet(ctx, "exemail.Subject").String(),
 	}
-	d := gomail.NewDialer(s.Host, s.Port, s.From, s.Passwd)
-	d.TLSConfig = &tls.Config{InsecureSkipVerify: true}
-	s.d = d
+	s.t = exmail.NewTencMailClient(s.SecretId, s.SecretKey, s.TemplateID, s.From)
 	return s
 }
 
