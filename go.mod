@@ -20,6 +20,7 @@ require (
 	github.com/sirupsen/logrus v1.9.3
 	github.com/tencentcloud/tencentcloud-sdk-go/tencentcloud/common v1.0.752
 	github.com/tencentcloud/tencentcloud-sdk-go/tencentcloud/ses v1.0.752
+	github.com/tencentcloud/tencentcloud-sdk-go/tencentcloud/sms v1.0.752
 	github.com/yitter/idgenerator-go v1.3.3
 	google.golang.org/grpc v1.57.0
 	google.golang.org/protobuf v1.31.0

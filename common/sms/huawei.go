@@ -45,7 +45,7 @@ const WSSE_HEADER_FORMAT = "UsernameToken Username=\"%s\",PasswordDigest=\"%s\",
 // 无需修改,用于格式化鉴权头域,给"Authorization"参数赋值
 const AUTH_HEADER_VALUE = "WSSE realm=\"SDP\",profile=\"UsernameToken\",type=\"Appkey\""
 
-func (s *Huawei) SendSms(receiver, code string) (resp *HuaweiResp, statusCallBack string, err error) {
+func (s *Huawei) SendSms(receiver, code string) (bool, string, error) {
 	apiAddress := s.APIAddress
 	appKey := s.ApplicationKey
 	appSecret := s.ApplicationSecret
@@ -54,7 +54,7 @@ func (s *Huawei) SendSms(receiver, code string) (resp *HuaweiResp, statusCallBac
 	signature := s.Signature
 
 	//选填,短信状态报告接收地址,推荐使用域名,为空或者不填表示不接收状态报告
-	// statusCallBack := ""
+	statusCallBack := ""
 
 	/*
 	 * 选填,使用无变量模板时请赋空值 string templateParas = "";
@@ -71,10 +71,13 @@ func (s *Huawei) SendSms(receiver, code string) (resp *HuaweiResp, statusCallBac
 	headers["Authorization"] = AUTH_HEADER_VALUE
 	headers["X-WSSE"] = buildWsseHeader(appKey, appSecret)
 	respStr, err := post(apiAddress, []byte(body), headers)
-	resp = &HuaweiResp{}
+	if err != nil {
+		return false, "", err
+	}
+	resp := &HuaweiResp{}
 	err = json.Unmarshal([]byte(respStr), resp)
 
-	return resp, statusCallBack, err
+	return resp.Code == "000000", respStr, err
 }
 
 /**

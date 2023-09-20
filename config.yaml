@@ -57,20 +57,31 @@ etcd:
   address: "127.0.0.1:2379"
 
 sms:
-  foreign:
-    APIAddress: "https://smsapi.cn-south-1.myhuaweicloud.com:443/sms/batchSendSms/v1"
-    ApplicationKey: "DZcZWoIauKdHY1wD0179m4Jk5N9V"
-    ApplicationSecret: "1GSPX8WyCwJbTfwEohqsBlOzbcam"
-    Sender: "8823091933902"
-    TemplateID: "000ab97205d34659a78b47c9e1a805fb"
-    Signature: "幂玛"
-  domestic:
-    APIAddress : "https://smsapi.ap-southeast-1.myhuaweicloud.com:443/sms/batchSendSms/v1"
-    ApplicationKey : "07wcF2NQy1M7pQ48tp3kvQXgm9PT"                                           
-    ApplicationSecret : "xegZ0VXmh5BDygT69sYm5DnKmIou"                                        
-    Sender : "msgapp0000000370"                                                         
-    TemplateID : "e582fdc05e8043f8b69f9b0b05e970b4"                                    
-    Signature: ""
+  huawei:
+    foreign:
+      APIAddress: "https://smsapi.cn-south-1.myhuaweicloud.com:443/sms/batchSendSms/v1"
+      ApplicationKey: "DZcZWoIauKdHY1wD0179m4Jk5N9V"
+      ApplicationSecret: "1GSPX8WyCwJbTfwEohqsBlOzbcam"
+      Sender: "8823091933902"
+      TemplateID: "000ab97205d34659a78b47c9e1a805fb"
+      Signature: "幂玛"
+    # domestic:
+    #   APIAddress : "https://smsapi.ap-southeast-1.myhuaweicloud.com:443/sms/batchSendSms/v1"
+    #   ApplicationKey : "07wcF2NQy1M7pQ48tp3kvQXgm9PT"                                           
+    #   ApplicationSecret : "xegZ0VXmh5BDygT69sYm5DnKmIou"                                        
+    #   Sender : "msgapp0000000370"                                                         
+    #   TemplateID : "e582fdc05e8043f8b69f9b0b05e970b4"                                    
+    #   Signature: ""
+  tenc:
+    domestic:
+      SecretId: "AKID51zveEaotSAnIez267vjsxrnfR1eCZwG"
+      SecretKey: "KXlv05GIC0lN2ccq1IYggZJv1CPOLKDt"
+      Endpoint: "sms.tencentcloudapi.com"
+      SignMethod: "HMAC-SHA256"
+      Region: "ap-guangzhou"
+      SmsSdkAppId: "1400856433"
+      SignName: "腾讯云"
+      TemplateId: "1933346"
 
 exemail:
   From: "mixmarvel-sdk@mixmarvel-sdk.com"

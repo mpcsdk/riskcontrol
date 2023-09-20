@@ -203,6 +203,8 @@ github.com/tencentcloud/tencentcloud-sdk-go/tencentcloud/common v1.0.752 h1:FzHm
 github.com/tencentcloud/tencentcloud-sdk-go/tencentcloud/common v1.0.752/go.mod h1:7sCQWVkxcsR38nffDW057DRGk8mUjK1Ing/EFOK8s8Y=
 github.com/tencentcloud/tencentcloud-sdk-go/tencentcloud/ses v1.0.752 h1:i50deRAtxaSUAs1dYMeCLZWBEPtkJell69xVD/2465U=
 github.com/tencentcloud/tencentcloud-sdk-go/tencentcloud/ses v1.0.752/go.mod h1:G9B0LTtoJsYeAPcPqbCu8VXe/RywiZGl5t8HlmZe034=
+github.com/tencentcloud/tencentcloud-sdk-go/tencentcloud/sms v1.0.752 h1:YdTYGavsYRWKkq+bdxgvPNCNQEprauFkWED62SMHzFg=
+github.com/tencentcloud/tencentcloud-sdk-go/tencentcloud/sms v1.0.752/go.mod h1:Z0dgDFW6QimXHc77SnUOaBD9pqdLQ+yfm4EJHWOzkrg=
 github.com/yitter/idgenerator-go v1.3.3 h1:i6rzmpbCL0vlmr/tuW5+lSQzNuDG9vYBjIYRvnRcHE8=
 github.com/yitter/idgenerator-go v1.3.3/go.mod h1:VVjbqFjGUsIkaXVkXEdmx1LiXUL3K1NvyxWPJBPbBpE=
 github.com/yuin/goldmark v1.1.27/go.mod h1:3hX8gzYuyVAZsxl0MRgGTJEmQBFcNTphYh9decYSb74=
