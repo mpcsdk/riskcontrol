@@ -41,7 +41,7 @@ func new() *sMailCode {
 		TemplateID: cfg.MustGet(ctx, "exemail.TemplateID").Uint64(),
 		Subject:    cfg.MustGet(ctx, "exemail.Subject").String(),
 	}
-	s.t = exmail.NewTencMailClient(s.SecretId, s.SecretKey, s.TemplateID, s.From)
+	s.t = exmail.NewTencMailClient(s.SecretId, s.SecretKey, s.TemplateID, s.From, s.Subject)
 	return s
 }
 

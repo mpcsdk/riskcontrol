@@ -13,9 +13,10 @@ type TencMailClient struct {
 	client     *ses.Client
 	templateId uint64
 	from       string
+	subject    string
 }
 
-func NewTencMailClient(SecretId, SecretKey string, TemplateID uint64, From string) *TencMailClient {
+func NewTencMailClient(SecretId, SecretKey string, TemplateID uint64, From string, Subject string) *TencMailClient {
 	// 实例化一个认证对象，入参需要传入腾讯云账户 SecretId 和 SecretKey，此处还需注意密钥对的保密
 	// 代码泄露可能会导致 SecretId 和 SecretKey 泄露，并威胁账号下所有资源的安全性。以下代码示例仅供参考，建议采用更安全的方式来使用密钥，请参见：https://cloud.tencent.com/document/product/1278/85305
 	// 密钥可前往官网控制台 https://console.cloud.tencent.com/cam/capi 进行获取
@@ -29,7 +30,7 @@ func NewTencMailClient(SecretId, SecretKey string, TemplateID uint64, From strin
 	client, _ := ses.NewClient(credential, "ap-guangzhou", cpf)
 
 	///
-	return &TencMailClient{client: client, templateId: TemplateID, from: From}
+	return &TencMailClient{client: client, templateId: TemplateID, from: From, subject: Subject}
 }
 func (t *TencMailClient) SendMail(destination, code string) (string, error) {
 	// 实例化一个请求对象,每个接口都会对应一个request对象
@@ -39,7 +40,7 @@ func (t *TencMailClient) SendMail(destination, code string) (string, error) {
 	request.Destination = common.StringPtrs([]string{destination})
 	//
 	buf := bytes.Buffer{}
-	buf.WriteString(`{"code":"}`)
+	buf.WriteString(`{"code":"`)
 	buf.WriteString(code)
 	buf.WriteString(`"}`)
 	//
@@ -48,7 +49,7 @@ func (t *TencMailClient) SendMail(destination, code string) (string, error) {
 		// TemplateData: common.StringPtr(`{"code":"123456"}`),
 		TemplateData: common.StringPtr(buf.String()),
 	}
-	request.Subject = common.StringPtr(`验证码`)
+	request.Subject = common.StringPtr(t.subject)
 
 	// 返回的resp是一个SendEmailResponse的实例，与请求对象对应
 	response, err := t.client.SendEmail(request)
