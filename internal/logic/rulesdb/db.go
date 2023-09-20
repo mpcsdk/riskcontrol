@@ -145,7 +145,7 @@ func (s *sRulesDb) listenNotify(subNames []string) {
 }
 
 func new() *sRulesDb {
-	g.Redis().Exists(gctx.GetInitCtx())
+	// g.Redis().Exists(gctx.GetInitCtx())
 	s := &sRulesDb{
 		sctx: gctx.GetInitCtx(),
 	}
