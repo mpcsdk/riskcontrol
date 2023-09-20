@@ -8,6 +8,36 @@ import (
 	"github.com/ethereum/go-ethereum/accounts/abi"
 )
 
+type jsonrpcCall struct {
+	ID      int64
+	Jsonrpc string
+	Method  string
+	Params  []interface{}
+}
+
+func JsonrpcCall(method string, params []interface{}) *jsonrpcCall {
+	return &jsonrpcCall{
+		ID:      1,
+		Jsonrpc: "2.0",
+		Method:  method,
+		Params:  params,
+	}
+}
+
+type JsonrpcResp struct {
+	Jsonrpc string
+	ID      int64
+	Method  string
+	Args    []interface{}
+	// The result is unmarshaled into this field. Result must be set to a
+	// non-nil pointer value of the desired type, otherwise the response will be
+	// discarded.
+	Result interface{}
+	// Error is set if the server returns an error for this request, or if
+	// unmarshaling into Result fails. It is not set for I/O errors.
+	Error error
+}
+
 type AnalzyTxDataResp struct {
 	MethodId   string
 	MethodName string

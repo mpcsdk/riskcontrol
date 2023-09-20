@@ -39,7 +39,17 @@ func Test_domestic(t *testing.T) {
 		TemplateID:        cfg.MustGet(ctx, "sms.domestic.TemplateID").String(),
 		Signature:         cfg.MustGet(ctx, "sms.domestic.Signature").String(),
 	}
-	resp, stat, err := domestic.SendSms("447862429616", "4567")
+	resp, stat, err := domestic.SendSms("+4478624296161", "4567")
+	if err != nil {
+		t.Error(err)
+	}
+	if stat != "" {
+		t.Log(stat)
+		t.Error(err)
+	}
+
+	///
+	resp, stat, err = domestic.SendSms("+447862429616", "4567")
 	if err != nil {
 		t.Error(err)
 	}
