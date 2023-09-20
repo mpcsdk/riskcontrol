@@ -131,7 +131,7 @@ func (s *sTFA) UpMail(ctx context.Context, userId string, mail string) (string, 
 				s.sendMailOTP(ctx, userId, mail, riskSerial)
 			}
 
-			return riskSerial, gerror.NewCode(consts.CodeRiskVerifyCodeInvalid)
+			return riskSerial, gerror.NewCode(consts.CodeRiskVerification)
 		} else {
 			s.recordMail(ctx, userId, mail)
 			return "", nil
