@@ -47,7 +47,7 @@ func (s *sUserInfo) GetUserInfo(ctx context.Context, userToken string) (userInfo
 		g.Log().Warning(ctx, "GetUserInfo:", err)
 		return info, gerror.NewCode(consts.CodeTokenInvalid)
 	}
-	service.Cache().Set(ctx, info.UserId, info, 0)
+	service.Cache().Set(ctx, userToken, info, 0)
 	return info, err
 	// return &model.UserInfo{
 	// 	Id: 10,
