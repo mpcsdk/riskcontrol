@@ -51,7 +51,7 @@ func (*Controller) PerformMailCode(ctx context.Context, req *v1.MailCodekReq) (r
 		return nil, err
 	}
 	// err = service.Risk().RiskMailCode(ctx, req.RiskSerial)
-	_, err = service.TFA().SendMailOTP(ctx, info.UserId, req.RiskSerial)
+	_, err = service.TFA().SendMailCode(ctx, info.UserId, req.RiskSerial)
 	if err != nil {
 		g.Log().Error(ctx, "PerformMailCode:", req, err)
 	}
@@ -63,8 +63,13 @@ func (*Controller) PerformVerifyCode(ctx context.Context, req *v1.VerifyCodekReq
 	ctx, span := gtrace.NewSpan(ctx, "PerformVerifyCode")
 	defer span.End()
 	//
+	//
+	info, err := service.UserInfo().GetUserInfo(ctx, req.Token)
+	if err != nil {
+		return nil, err
+	}
 	// err = service.Risk().VerifyCode(ctx, req.RiskSerial, req.Code)
-	err = service.TFA().VerifyCode(ctx, req.Token, req.RiskSerial, req.Code)
+	err = service.TFA().VerifyCode(ctx, info.UserId, req.RiskSerial, req.Code)
 	if err != nil {
 		g.Log().Error(ctx, "PerformVerifyCode:", req, err)
 	}
@@ -77,10 +82,6 @@ func (*Controller) PerformAlive(ctx context.Context, in *empty.Empty) (*empty.Em
 	defer span.End()
 	//
 	return &empty.Empty{}, nil
-}
-
-func (*Controller) PerformRiskTFA(ctx context.Context, req *v1.TFARiskReq) (res *v1.TFARiskRes, err error) {
-	return nil, gerror.NewCode(gcode.CodeNotImplemented)
 }
 
 func (*Controller) PerformRiskTxs(ctx context.Context, req *v1.TxRiskReq) (res *v1.TxRiskRes, err error) {

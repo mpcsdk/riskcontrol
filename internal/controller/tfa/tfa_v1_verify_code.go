@@ -31,25 +31,5 @@ func (c *ControllerV1) VerifyCode(ctx context.Context, req *v1.VerifyCodeReq) (r
 		}
 	}
 	return nil, nil
-	//
-	// ///
-	// return nil, service.TFA().VerifyCode(ctx, userInfo.UserId, req.RiskSerial, req.Code)
 
-	// //trace
-	// ctx, span := gtrace.NewSpan(ctx, "VerifyMailCode")
-	// defer span.End()
-	// //
-	// ///
-	// userInfo, err := service.UserInfo().GetUserInfo(ctx, req.Token)
-	// if err != nil {
-	// 	g.Log().Warning(ctx, "VerifyMailCode", req, err)
-	// 	return nil, gerror.NewCode(consts.CodeTFANotExist)
-	// }
-	// ///
-	// err = service.TFA().VerifyCode(ctx, userInfo.UserId, req.RiskSerial, req.Code)
-	// if err != nil {
-	// 	g.Log().Warning(ctx, "VerifyMailCode", req, err)
-	// 	return nil, err
-	// }
-	// return nil, err
 }

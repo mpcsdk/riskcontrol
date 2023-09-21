@@ -18,6 +18,6 @@ func (c *ControllerV1) SendMailCode(ctx context.Context, req *v1.SendMailCodeReq
 		return nil, err
 	}
 	// err = service.Risk().RiskMailCode(ctx, req.RiskSerial)
-	_, err = service.TFA().SendMailOTP(ctx, info.UserId, req.RiskSerial)
+	_, err = service.TFA().SendMailCode(ctx, info.UserId, req.RiskSerial)
 	return nil, err
 }

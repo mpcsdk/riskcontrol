@@ -13,6 +13,9 @@ import (
 )
 
 func (s *sTFA) TFAInfo(ctx context.Context, userId string) (*entity.Tfa, error) {
+	if userId == "" {
+		return nil, gerror.NewCode(consts.CodeInternalError)
+	}
 	/// cache
 	rst, err := s.getTfaCache(ctx, userId)
 	if err == nil {
@@ -30,7 +33,10 @@ func (s *sTFA) TFAInfo(ctx context.Context, userId string) (*entity.Tfa, error) 
 }
 
 func (s *sTFA) getTfaCache(ctx context.Context, userId string) (*entity.Tfa, error) {
-	if v, ok := service.Cache().Get(ctx, userId+consts.KEY_TFAInfoCache); ok == nil && !v.IsEmpty() {
+	if v, ok := service.Cache().Get(ctx, userId+consts.KEY_TFAInfoCache); ok == nil {
+		if v.IsEmpty() {
+			return nil, gerror.NewCode(consts.CodeTFANotExist)
+		}
 		info := &entity.Tfa{}
 		err := v.Struct(info)
 		if err != nil {
@@ -42,5 +48,8 @@ func (s *sTFA) getTfaCache(ctx context.Context, userId string) (*entity.Tfa, err
 }
 
 func (s *sTFA) setTfaCache(ctx context.Context, userId string, info *entity.Tfa) error {
+	if info == nil || info.UserId == "" {
+		return nil
+	}
 	return service.Cache().Set(ctx, userId+consts.KEY_TFAInfoCache, info, consts.SessionDur)
 }

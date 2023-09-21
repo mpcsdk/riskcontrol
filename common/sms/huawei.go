@@ -112,6 +112,9 @@ func post(url string, param []byte, headers map[string]string) (string, error) {
 	}
 
 	resp, err := client.Do(req)
+	if err != nil {
+		return "", err
+	}
 	defer resp.Body.Close()
 	body, err := ioutil.ReadAll(resp.Body)
 	if err != nil {

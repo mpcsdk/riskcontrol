@@ -21,15 +21,14 @@ func (s *sRisk) PerformRiskTxs(ctx context.Context, userId string, address strin
 	g.Log().Debug(ctx, "PerformRiskTxs:", "userId:", userId, "address:", address, "txs:", txs)
 	///
 	riskserial := common.GenNewSid()
-	//todo:
-	return riskserial, 0, nil
 	///
 	code, err := s.checkTxs(ctx, address, txs)
 	if err != nil {
 		g.Log().Warning(ctx, "PerformRiskTxs:", "checkTxs:", err)
 		return riskserial, -1, gerror.NewCode(consts.CodeRiskPerformFailed)
 	}
-	//
+	//notice: wait verify
+	service.TFA().PerformRiskTFA(ctx, userId, riskserial)
 	service.Cache().Set(ctx, riskserial+consts.KEY_RiskUId, userId, 0)
 	return riskserial, code, err
 }
