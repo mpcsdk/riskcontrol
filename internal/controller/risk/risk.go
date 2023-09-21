@@ -4,6 +4,7 @@ import (
 	"context"
 	v1 "riskcontral/api/risk/v1"
 	"riskcontral/common/ethtx"
+	"riskcontral/internal/consts"
 	"riskcontral/internal/consts/conrisk"
 	"riskcontral/internal/service"
 	"strings"
@@ -122,8 +123,21 @@ func (*Controller) PerformRiskTxs(ctx context.Context, req *v1.TxRiskReq) (res *
 		g.Log().Error(ctx, "PerformRiskTx", serial, err)
 	}
 	//
+	//notice: wait verify
+	kinds, err := service.TFA().PerformRiskTFA(ctx, req.UserId, serial)
+	if err != nil {
+		g.Log().Warning(ctx, "PerformRiskTxs:", "PerformRiskTFA:", req.UserId, serial)
+		return nil, gerror.NewCode(consts.CodeRiskPerformFailed)
+	}
+	///
 	return &v1.TxRiskRes{
 		Ok:         code,
 		RiskSerial: serial,
+		//todo:
+		RiskKind: kinds,
 	}, err
+}
+
+func (*Controller) PerformRiskTFA(ctx context.Context, req *v1.TFARiskReq) (res *v1.TFARiskRes, err error) {
+	return nil, gerror.NewCode(gcode.CodeNotImplemented)
 }

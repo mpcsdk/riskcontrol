@@ -19,7 +19,7 @@ type (
 		CreateTFA(ctx context.Context, userId string, phone string, mail string) (string, error)
 		UpPhone(ctx context.Context, userId string, phone string) (string, error)
 		UpMail(ctx context.Context, userId string, mail string) (string, error)
-		PerformRiskTFA(ctx context.Context, userId string, riskSerial string) (err error)
+		PerformRiskTFA(ctx context.Context, userId string, riskSerial string) ([]string, error)
 		VerifyCode(ctx context.Context, userId string, riskSerial string, code string) error
 	}
 )

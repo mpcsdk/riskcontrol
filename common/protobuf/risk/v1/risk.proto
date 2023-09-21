@@ -30,10 +30,12 @@ message TxRiskReq {
     repeated RiskTx Txs = 3; // v: required
 }
 
+
 message TxRiskRes {
     int32 Ok = 1;
     string Msg = 2;
     string RiskSerial = 3; 
+    repeated string RiskKind = 4;
 }
 ////
 message TFARiskReq {

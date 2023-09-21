@@ -27,8 +27,7 @@ func (s *sRisk) PerformRiskTxs(ctx context.Context, userId string, address strin
 		g.Log().Warning(ctx, "PerformRiskTxs:", "checkTxs:", err)
 		return riskserial, -1, gerror.NewCode(consts.CodeRiskPerformFailed)
 	}
-	//notice: wait verify
-	service.TFA().PerformRiskTFA(ctx, userId, riskserial)
+
 	service.Cache().Set(ctx, riskserial+consts.KEY_RiskUId, userId, 0)
 	return riskserial, code, err
 }

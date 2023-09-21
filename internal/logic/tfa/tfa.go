@@ -162,18 +162,21 @@ func (s *sTFA) UpMail(ctx context.Context, userId string, mail string) (string, 
 
 	}
 }
-func (s *sTFA) PerformRiskTFA(ctx context.Context, userId string, riskSerial string) (err error) {
+func (s *sTFA) PerformRiskTFA(ctx context.Context, userId string, riskSerial string) ([]string, error) {
 	info, err := s.TFAInfo(ctx, userId)
 	if err != nil {
 		g.Log().Warning(ctx, "SendPhoneCode:", userId, riskSerial, err)
-		return gerror.NewCode(consts.CodeTFANotExist)
+		return nil, gerror.NewCode(consts.CodeTFANotExist)
 	}
 
+	//
+	kind := []string{}
 	if info.Phone != "" {
 		event := s.riskEventPhone(ctx, info.Phone, func() {
 			//todo:
 		})
 		s.addRiskEvent(ctx, userId, riskSerial, event)
+		kind = append(kind, "phone")
 	}
 
 	if info.Mail != "" {
@@ -181,7 +184,8 @@ func (s *sTFA) PerformRiskTFA(ctx context.Context, userId string, riskSerial str
 			//todo:
 		})
 		s.addRiskEvent(ctx, userId, riskSerial, event)
+		kind = append(kind, "mail")
 	}
 
-	return nil
+	return kind, nil
 }
