@@ -28,7 +28,7 @@ func (c *ControllerV1) TFAInfo(ctx context.Context, req *v1.TFAInfoReq) (res *v1
 	rst := entity.Tfa{}
 	err = dao.Tfa.Ctx(ctx).Where(dao.Tfa.Columns().UserId, userInfo.UserId).Scan(&rst)
 	if err != nil {
-		g.Log().Error(ctx, "TFAinfo no info?:", err, req)
+		g.Log().Error(ctx, "TFAinfo no info?:", userInfo, err, req)
 		return nil, err
 	}
 	res = &v1.TFAInfoRes{
