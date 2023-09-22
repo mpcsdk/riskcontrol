@@ -5,6 +5,7 @@ import (
 	"riskcontral/internal/consts"
 
 	"github.com/gogf/gf/v2/errors/gerror"
+	"github.com/gogf/gf/v2/frame/g"
 )
 
 func (s *sTFA) VerifyCode(ctx context.Context, userId string, riskSerial string, code string) error {
@@ -23,5 +24,6 @@ func (s *sTFA) VerifyCode(ctx context.Context, userId string, riskSerial string,
 		delete(s.verifyPendding, key)
 		return nil
 	}
+	g.Log().Warning(ctx, "VerifyCode:", userId, riskSerial, code)
 	return gerror.NewCode(consts.CodeRiskVerifyInvalid)
 }

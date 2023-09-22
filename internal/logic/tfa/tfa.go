@@ -92,7 +92,7 @@ func (s *sTFA) CreateTFA(ctx context.Context, userId string, phone string, mail 
 	/// need verification
 	if phone != "" {
 		event := s.riskEventPhone(ctx, phone, func() {
-			s.recordPhone(ctx, userId, phone)
+			s.insertPhone(ctx, userId, phone)
 		})
 		s.addRiskEvent(ctx, userId, riskSerial, event)
 		kind = append(kind, "phone")
@@ -101,7 +101,7 @@ func (s *sTFA) CreateTFA(ctx context.Context, userId string, phone string, mail 
 	/// need verification
 	if mail != "" {
 		event := s.riskEventMail(ctx, mail, func() {
-			s.recordPhone(ctx, userId, mail)
+			s.insertMail(ctx, userId, mail)
 		})
 		s.addRiskEvent(ctx, userId, riskSerial, event)
 		kind = append(kind, "mail")

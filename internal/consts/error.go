@@ -26,6 +26,7 @@ var (
 	CodeTokenInvalid  = &errCode{11, "Token Invalid", nil}  // The token is invalid.
 	CodeTokenNotExist = &errCode{12, "Token NotExist", nil} // The token does not exist.
 	CodeTFANotExist   = &errCode{12, "TFA NotExist", nil}   // The token does not exist.
+	CodeTFAExist      = &errCode{13, "TFA Exist", nil}      // The token does not exist.
 	///
 	CodeRiskNeedVerification   = &errCode{21, "Risk Need a VerificationCode", nil} // The risk need verification code
 	CodeRiskVerifyCodeInvalid  = &errCode{22, "Verify Code Invalid", nil}          // The verify code is invalid.

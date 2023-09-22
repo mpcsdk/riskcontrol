@@ -57,3 +57,24 @@ func (s *sTFA) recordMail(ctx context.Context, userId, mail string) error {
 }
 
 // //
+func (s *sTFA) insertPhone(ctx context.Context, userId, phone string) error {
+	_, err := dao.Tfa.Ctx(s.ctx).
+		Data(do.Tfa{
+			UserId:         userId,
+			Phone:          phone,
+			PhoneUpdatedAt: gtime.Now(),
+		}).
+		Where(dao.Tfa.Columns().UserId, userId).
+		Insert()
+	return err
+}
+func (s *sTFA) insertMail(ctx context.Context, userId, mail string) error {
+	_, err := dao.Tfa.Ctx(s.ctx).
+		Data(do.Tfa{
+			UserId:        userId,
+			Mail:          mail,
+			MailUpdatedAt: gtime.Now(),
+		}).
+		Insert()
+	return err
+}

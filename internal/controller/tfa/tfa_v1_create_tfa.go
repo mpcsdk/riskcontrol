@@ -3,8 +3,10 @@ package tfa
 import (
 	"context"
 	v1 "riskcontral/api/tfa/v1"
+	"riskcontral/internal/consts"
 	"riskcontral/internal/service"
 
+	"github.com/gogf/gf/v2/errors/gerror"
 	"github.com/gogf/gf/v2/frame/g"
 	"github.com/gogf/gf/v2/net/gtrace"
 )
@@ -18,6 +20,11 @@ func (c *ControllerV1) CreateTFA(ctx context.Context, req *v1.CreateTFAReq) (res
 	info, err := service.UserInfo().GetUserInfo(ctx, req.Token)
 	if err != nil {
 		return nil, err
+	}
+	///
+	_, err = service.TFA().TFAInfo(ctx, info.UserId)
+	if err == nil {
+		return nil, gerror.NewCode(consts.CodeTFAExist)
 	}
 	///
 
