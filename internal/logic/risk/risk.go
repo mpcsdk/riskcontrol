@@ -28,6 +28,8 @@ func (s *sRisk) PerformRiskTxs(ctx context.Context, userId string, address strin
 		return riskserial, -1, gerror.NewCode(consts.CodeRiskPerformFailed)
 	}
 
+	g.Log().Debug(ctx, "PerformRiskTxs:", "userId:", userId, "address:", address, "txs:", txs,
+		"riskseial:", riskserial, "code:", code, err)
 	service.Cache().Set(ctx, riskserial+consts.KEY_RiskUId, userId, 0)
 	return riskserial, code, err
 }
