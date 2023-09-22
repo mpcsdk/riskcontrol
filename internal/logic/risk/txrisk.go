@@ -11,6 +11,7 @@ import (
 
 	"github.com/gogf/gf/v2/errors/gcode"
 	"github.com/gogf/gf/v2/errors/gerror"
+	"github.com/gogf/gf/v2/frame/g"
 	"github.com/gogf/gf/v2/os/gcfg"
 	"github.com/gogf/gf/v2/os/gtime"
 )
@@ -121,7 +122,11 @@ func rule_Token(ctx context.Context, tokenAddress string, methdoName string, dat
 	).
 		Fields(dao.EthTx.Columns().Value).
 		All()
-	fmt.Println("rule_USDT24HCnt:", rst)
+	g.Log().Debug(ctx, "rule_Token:", rst,
+		"tokenAddress:", tokenAddress,
+		"methdoName:", methdoName,
+		"data.Address:", data.Address,
+	)
 	if err != nil {
 		return 0, err
 	}
