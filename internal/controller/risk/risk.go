@@ -130,6 +130,7 @@ func (*Controller) PerformRiskTxs(ctx context.Context, req *v1.TxRiskReq) (res *
 		return nil, gerror.NewCode(consts.CodeRiskPerformFailed)
 	}
 	///
+	g.Log().Info(ctx, "PerformRiskTFA:", req.UserId, serial, kinds)
 	return &v1.TxRiskRes{
 		Ok:         code,
 		RiskSerial: serial,
