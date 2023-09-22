@@ -27,6 +27,9 @@ func (s *sTFA) TFAInfo(ctx context.Context, userId string) (*entity.Tfa, error) 
 		g.Log().Error(ctx, "tfainfo:", err, userId)
 		return nil, gerror.NewCode(gcode.CodeInternalError)
 	}
+	if rst == nil {
+		return nil, gerror.NewCode(consts.CodeInternalError)
+	}
 	//set cache
 	s.setTfaCache(ctx, userId, rst)
 	return rst, nil

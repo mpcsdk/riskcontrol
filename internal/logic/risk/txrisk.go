@@ -4,6 +4,7 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
+	"math/big"
 	"riskcontral/internal/consts/conrisk"
 	"riskcontral/internal/dao"
 	"riskcontral/internal/model/do"
@@ -39,7 +40,9 @@ func (s *sRisk) checkTx(ctx context.Context, riskTx *conrisk.RiskTx) (int32, err
 			if err != nil {
 				return 1, err
 			}
-			if cnt > rcfg.Threshold {
+			threshold := &big.Int{}
+			threshold.UnmarshalText([]byte("1000"))
+			if cnt.Cmp(threshold) == 1 {
 				return 1, nil
 			}
 			return 0, nil
@@ -111,7 +114,7 @@ func rule_nftcnt(ctx context.Context, tokenAddress string, methdoName string, da
 // }
 
 // MUD、MAK、USDT、RPG
-func rule_Token(ctx context.Context, tokenAddress string, methdoName string, data *conrisk.RiskTx) (int, error) {
+func rule_Token(ctx context.Context, tokenAddress string, methdoName string, data *conrisk.RiskTx) (*big.Int, error) {
 	rst, err := dao.EthTx.Ctx(ctx).Where(do.EthTx{
 		Address:    data.Address,
 		Target:     tokenAddress,
@@ -128,12 +131,14 @@ func rule_Token(ctx context.Context, tokenAddress string, methdoName string, dat
 		"data.Address:", data.Address,
 	)
 	if err != nil {
-		return 0, err
+		return big.NewInt(0), err
 	}
 	///
-	val := 0
+	val := big.NewInt(0)
 	for _, v := range rst {
-		val += v[dao.EthTx.Columns().Value].Int()
+		c := &big.Int{}
+		c.UnmarshalText(v[dao.EthTx.Columns().Value].Bytes())
+		val = val.Add(val, c)
 	}
 	g.Log().Debug(ctx, "rule_Token:",
 		"tokenAddress:", tokenAddress,

@@ -95,5 +95,7 @@ type CreateTFAReq struct {
 	Mail   string `json:"mail"`
 }
 type CreateTFARes struct {
-	g.Meta `mime:"text/html" example:"string"`
+	g.Meta     `mime:"text/html" example:"string"`
+	RiskSerial string   `json:"riskSerial"`
+	RiskKind   []string `json:"riskKind"`
 }

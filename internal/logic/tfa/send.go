@@ -12,11 +12,11 @@ import (
 // /
 func (s *sTFA) SendPhoneCode(ctx context.Context, userId string, riskSerial string) (string, error) {
 
-	_, err := s.TFAInfo(ctx, userId)
-	if err != nil {
-		g.Log().Warning(ctx, "SendPhoneCode:", userId, riskSerial, err)
-		return "", gerror.NewCode(consts.CodeTFANotExist)
-	}
+	// _, err := s.TFAInfo(ctx, userId)
+	// if err != nil {
+	// 	g.Log().Warning(ctx, "SendPhoneCode:", userId, riskSerial, err)
+	// 	return "", gerror.NewCode(consts.CodeTFANotExist)
+	// }
 	///
 	event := s.fetchRiskEvent(ctx, userId, riskSerial, Key_RiskEventPhone)
 	if event == nil {
@@ -38,11 +38,11 @@ func (s *sTFA) SendPhoneCode(ctx context.Context, userId string, riskSerial stri
 }
 
 func (s *sTFA) SendMailCode(ctx context.Context, userId string, riskSerial string) (string, error) {
-	_, err := s.TFAInfo(ctx, userId)
-	if err != nil {
-		g.Log().Warning(ctx, "SendMailCode:", userId, riskSerial, err)
-		return "", gerror.NewCode(consts.CodeTFANotExist)
-	}
+	// _, err := s.TFAInfo(ctx, userId)
+	// if err != nil {
+	// 	g.Log().Warning(ctx, "SendMailCode:", userId, riskSerial, err)
+	// 	return "", gerror.NewCode(consts.CodeTFANotExist)
+	// }
 	event := s.fetchRiskEvent(ctx, userId, riskSerial, Key_RiskEventMail)
 	if event == nil {
 		//todo

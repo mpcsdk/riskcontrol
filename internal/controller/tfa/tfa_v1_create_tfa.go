@@ -3,11 +3,10 @@ package tfa
 import (
 	"context"
 	v1 "riskcontral/api/tfa/v1"
-	"riskcontral/internal/dao"
-	"riskcontral/internal/model/entity"
+	"riskcontral/internal/service"
 
+	"github.com/gogf/gf/v2/frame/g"
 	"github.com/gogf/gf/v2/net/gtrace"
-	"github.com/gogf/gf/v2/os/gtime"
 )
 
 // // @Summary 验证token，注册用户tfa
@@ -16,17 +15,30 @@ func (c *ControllerV1) CreateTFA(ctx context.Context, req *v1.CreateTFAReq) (res
 	ctx, span := gtrace.NewSpan(ctx, "CreateTFA")
 	defer span.End()
 	///
-
+	info, err := service.UserInfo().GetUserInfo(ctx, req.Token)
+	if err != nil {
+		return nil, err
+	}
 	///
-	_, err = dao.Tfa.Ctx(ctx).Insert(entity.Tfa{
-		UserId:         req.Token,
-		CreatedAt:      gtime.Now(),
-		Mail:           req.Mail,
-		Phone:          req.Phone,
-		PhoneUpdatedAt: gtime.Now(),
-		MailUpdatedAt:  gtime.Now(),
-	})
-	return nil, err
+
+	r, kind, err := service.TFA().CreateTFA(ctx, info.UserId, req.Phone, req.Mail)
+	if err != nil {
+		g.Log().Error(ctx, "CreateTFA:")
+		return nil, err
+	}
+	res = &v1.CreateTFARes{
+		RiskSerial: r,
+		RiskKind:   kind,
+	}
+	// _, err = dao.Tfa.Ctx(ctx).Insert(entity.Tfa{
+	// 	UserId:         req.Token,
+	// 	CreatedAt:      gtime.Now(),
+	// 	Mail:           req.Mail,
+	// 	Phone:          req.Phone,
+	// 	PhoneUpdatedAt: gtime.Now(),
+	// 	MailUpdatedAt:  gtime.Now(),
+	// })
+	return res, err
 }
 
 func (c *ControllerV1) DialCode(ctx context.Context, req *v1.DialCodeReq) (res *v1.DialCodeRes, err error) {

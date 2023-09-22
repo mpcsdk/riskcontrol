@@ -119,6 +119,11 @@ func (*Controller) PerformRiskTxs(ctx context.Context, req *v1.TxRiskReq) (res *
 	}
 	serial, code, err := service.Risk().PerformRiskTxs(ctx, req.UserId, req.Address, txs)
 	g.Log().Info(ctx, "PerformRiskTx:", req, serial)
+	if code == 0 {
+		return &v1.TxRiskRes{
+			Ok: code,
+		}, nil
+	}
 	if err != nil {
 		g.Log().Error(ctx, "PerformRiskTx", serial, err)
 	}

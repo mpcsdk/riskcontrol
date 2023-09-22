@@ -77,90 +77,87 @@ func init() {
 	service.RegisterTFA(new())
 }
 
-func (s *sTFA) CreateTFA(ctx context.Context, userId string, phone string, mail string) (string, error) {
+func (s *sTFA) CreateTFA(ctx context.Context, userId string, phone string, mail string) (string, []string, error) {
 	// create nft
 	riskData := &conrisk.RiskTfa{
 		UserId: userId,
 		Kind:   consts.KEY_TFAKindCreate,
 		Phone:  phone,
+		Mail:   mail,
 	}
-	riskSerial, code, err := service.Risk().PerformRiskTFA(ctx, userId, riskData)
-	if err != nil || code != 0 {
-		/// need verification
+	riskSerial, _, err := service.Risk().PerformRiskTFA(ctx, userId, riskData)
+	g.Log().Debug(ctx, "CreateTFA:", userId, phone, mail)
+	// if err != nil || code != 0 {
+	kind := []string{}
+	/// need verification
+	if phone != "" {
 		event := s.riskEventPhone(ctx, phone, func() {
 			s.recordPhone(ctx, userId, phone)
 		})
 		s.addRiskEvent(ctx, userId, riskSerial, event)
-
-		/// need verification
-		event = s.riskEventMail(ctx, mail, func() {
-			s.recordPhone(ctx, userId, mail)
-		})
-		s.addRiskEvent(ctx, userId, riskSerial, event)
-
-		return riskSerial, err
-	} else {
-		s.recordPhone(ctx, userId, phone)
+		kind = append(kind, "phone")
 	}
-	g.Log().Info(ctx, "CreateTFA PerformRiskTFA:", riskSerial, code)
-	return riskSerial, err
-}
 
-func (s *sTFA) UpPhone(ctx context.Context, userId string, phone string) (string, error) {
-	_, err := s.TFAInfo(ctx, userId)
-	if err != nil {
-		return s.CreateTFA(ctx, userId, phone, "")
-	} else {
-		//upphone
-		//
-		riskData := &conrisk.RiskTfa{
-			UserId: userId,
-			Kind:   consts.KEY_TFAKindUpPhone,
-			Phone:  phone,
-		}
-		riskSerial, _, err := service.Risk().PerformRiskTFA(ctx, userId, riskData)
-		if err != nil {
-			return "", err
-		}
-
-		/// need verification
-		event := s.riskEventPhone(ctx, phone, func() {
-			s.recordPhone(ctx, userId, phone)
-		})
-		s.addRiskEvent(ctx, userId, riskSerial, event)
-		//
-		return riskSerial, gerror.NewCode(consts.CodeRiskNeedVerification)
-
-	}
-}
-
-func (s *sTFA) UpMail(ctx context.Context, userId string, mail string) (string, error) {
-	_, err := s.TFAInfo(ctx, userId)
-	if err != nil {
-		return s.CreateTFA(ctx, userId, "", mail)
-	} else {
-		//
-		riskData := &conrisk.RiskTfa{
-			UserId: userId,
-			Kind:   consts.KEY_TFAKindUpMail,
-			Mail:   mail,
-		}
-
-		riskSerial, _, err := service.Risk().PerformRiskTFA(ctx, userId, riskData)
-		if err != nil {
-			return "", err
-		}
-
-		/// need verification
+	/// need verification
+	if mail != "" {
 		event := s.riskEventMail(ctx, mail, func() {
 			s.recordPhone(ctx, userId, mail)
 		})
 		s.addRiskEvent(ctx, userId, riskSerial, event)
-		//
-		return riskSerial, gerror.NewCode(consts.CodeRiskNeedVerification)
-		//
-
+		kind = append(kind, "mail")
 	}
+
+	return riskSerial, kind, err
+	// }
+}
+
+func (s *sTFA) UpPhone(ctx context.Context, userId string, phone string) (string, error) {
+
+	//upphone
+	//
+	riskData := &conrisk.RiskTfa{
+		UserId: userId,
+		Kind:   consts.KEY_TFAKindUpPhone,
+		Phone:  phone,
+	}
+	riskSerial, _, err := service.Risk().PerformRiskTFA(ctx, userId, riskData)
+	if err != nil {
+		return "", err
+	}
+
+	/// need verification
+	event := s.riskEventPhone(ctx, phone, func() {
+		s.recordPhone(ctx, userId, phone)
+	})
+	s.addRiskEvent(ctx, userId, riskSerial, event)
+	//
+	return riskSerial, gerror.NewCode(consts.CodeRiskNeedVerification)
+
+}
+
+func (s *sTFA) UpMail(ctx context.Context, userId string, mail string) (string, error) {
+
+	//
+	riskData := &conrisk.RiskTfa{
+		UserId: userId,
+		Kind:   consts.KEY_TFAKindUpMail,
+		Mail:   mail,
+	}
+
+	riskSerial, _, err := service.Risk().PerformRiskTFA(ctx, userId, riskData)
+	if err != nil {
+		return "", err
+	}
+
+	/// need verification
+	event := s.riskEventMail(ctx, mail, func() {
+		s.recordPhone(ctx, userId, mail)
+	})
+	s.addRiskEvent(ctx, userId, riskSerial, event)
+	//
+	return riskSerial, gerror.NewCode(consts.CodeRiskNeedVerification)
+	//
+
 }
 func (s *sTFA) PerformRiskTFA(ctx context.Context, userId string, riskSerial string) ([]string, error) {
 	info, err := s.TFAInfo(ctx, userId)
