@@ -24,6 +24,10 @@ func (c *ControllerV1) TFAInfo(ctx context.Context, req *v1.TFAInfoReq) (res *v1
 		g.Log().Warning(ctx, "TFAInfo:", req, err)
 		return nil, gerror.NewCode(consts.CodeTFANotExist)
 	}
+	if userInfo.UserId == "" {
+		g.Log().Warning(ctx, "TFAInfo:", req, userInfo, err)
+		return nil, gerror.NewCode(consts.CodeTFANotExist)
+	}
 	///
 	rst := entity.Tfa{}
 	err = dao.Tfa.Ctx(ctx).Where(dao.Tfa.Columns().UserId, userInfo.UserId).Scan(&rst)
