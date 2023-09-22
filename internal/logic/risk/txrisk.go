@@ -122,7 +122,7 @@ func rule_Token(ctx context.Context, tokenAddress string, methdoName string, dat
 	).
 		Fields(dao.EthTx.Columns().Value).
 		All()
-	g.Log().Debug(ctx, "rule_Token:", rst,
+	g.Log().Debug(ctx, "rule_Token:", rst, err,
 		"tokenAddress:", tokenAddress,
 		"methdoName:", methdoName,
 		"data.Address:", data.Address,
@@ -135,6 +135,12 @@ func rule_Token(ctx context.Context, tokenAddress string, methdoName string, dat
 	for _, v := range rst {
 		val += v[dao.EthTx.Columns().Value].Int()
 	}
+	g.Log().Debug(ctx, "rule_Token:",
+		"tokenAddress:", tokenAddress,
+		"methdoName:", methdoName,
+		"data.Address:", data.Address,
+		"val:", val,
+	)
 	return val, nil
 
 }
