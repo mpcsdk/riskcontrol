@@ -42,18 +42,18 @@ grpc:
 userTokenUrl: "https://auth-dev.mixmarvel-sdk.com/info"
 
 contractRisk:
-  - contract: "0xdAC17F958D2ee523a2206206994597C13D831ec7"
-    kind: "erc20"
-    methodName: "transfer"
-    threshold: 100
-  - contract: "0x71d9cfd1b7adb1e8eb4c193ce6ffbe19b4aee0db"
-    kind: "erc20"
-    methodName: "transfer"
-    threshold: 100
-  - contract: "0x123"
-    kind: "erc721"
-    methodName: "transferFrom"
-    threshold: 5
+  # - contract: "0xdAC17F958D2ee523a2206206994597C13D831ec7"
+  #   kind: "erc20"
+  #   methodName: "transfer"
+  #   threshold: 100
+  # - contract: "0x71d9cfd1b7adb1e8eb4c193ce6ffbe19b4aee0db"
+  #   kind: "erc20"
+  #   methodName: "transfer"
+  #   threshold: 100
+  # - contract: "0x123"
+  #   kind: "erc721"
+  #   methodName: "transferFrom"
+  #   threshold: 5
 
 #
 etcd:
@@ -61,14 +61,14 @@ etcd:
 
 sms:
   huawei:
-    foreign:
+    domestic:
       APIAddress: "https://smsapi.cn-south-1.myhuaweicloud.com:443/sms/batchSendSms/v1"
       ApplicationKey: "DZcZWoIauKdHY1wD0179m4Jk5N9V"
       ApplicationSecret: "1GSPX8WyCwJbTfwEohqsBlOzbcam"
       Sender: "8823091933902"
       TemplateID: "000ab97205d34659a78b47c9e1a805fb"
       Signature: "幂玛"
-    # domestic:
+    # foreign:
     #   APIAddress : "https://smsapi.ap-southeast-1.myhuaweicloud.com:443/sms/batchSendSms/v1"
     #   ApplicationKey : "07wcF2NQy1M7pQ48tp3kvQXgm9PT"                                           
     #   ApplicationSecret : "xegZ0VXmh5BDygT69sYm5DnKmIou"                                        
