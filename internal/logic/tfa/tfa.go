@@ -151,7 +151,7 @@ func (s *sTFA) UpMail(ctx context.Context, userId string, mail string) (string, 
 
 	/// need verification
 	event := s.riskEventMail(ctx, mail, func() {
-		s.recordPhone(ctx, userId, mail)
+		s.recordMail(ctx, userId, mail)
 	})
 	s.addRiskEvent(ctx, userId, riskSerial, event)
 	//
@@ -184,5 +184,11 @@ func (s *sTFA) PerformRiskTFA(ctx context.Context, userId string, riskSerial str
 		kind = append(kind, "mail")
 	}
 
+	g.Log().Debug(ctx, "PerformRiskTFA:",
+		"userId:", userId,
+		"riskSerial:", riskSerial,
+		"kind:", kind,
+		"info:", info,
+	)
 	return kind, nil
 }
