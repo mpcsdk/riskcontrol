@@ -50,14 +50,14 @@ func newTencDomestic() *sms.TencSms {
 	cfg := gcfg.Instance()
 	ctx := gctx.GetInitCtx()
 	return sms.NewTencSms(
-		cfg.MustGet(ctx, "sms.tenc.domestic.SecretId").String(),
-		cfg.MustGet(ctx, "sms.tenc.domestic.SecretKey").String(),
-		cfg.MustGet(ctx, "sms.tenc.domestic.Endpoint").String(),
-		cfg.MustGet(ctx, "sms.tenc.domestic.SignMethod").String(),
-		cfg.MustGet(ctx, "sms.tenc.domestic.Region").String(),
-		cfg.MustGet(ctx, "sms.tenc.domestic.SmsSdkAppId").String(),
-		cfg.MustGet(ctx, "sms.tenc.domestic.SignName").String(),
-		cfg.MustGet(ctx, "sms.tenc.domestic.TemplateId").String(),
+		cfg.MustGet(ctx, "sms.tenc.foreign.SecretId").String(),
+		cfg.MustGet(ctx, "sms.tenc.foreign.SecretKey").String(),
+		cfg.MustGet(ctx, "sms.tenc.foreign.Endpoint").String(),
+		cfg.MustGet(ctx, "sms.tenc.foreign.SignMethod").String(),
+		cfg.MustGet(ctx, "sms.tenc.foreign.Region").String(),
+		cfg.MustGet(ctx, "sms.tenc.foreign.SmsSdkAppId").String(),
+		cfg.MustGet(ctx, "sms.tenc.foreign.SignName").String(),
+		cfg.MustGet(ctx, "sms.tenc.foreign.TemplateId").String(),
 	)
 }
 
@@ -98,7 +98,7 @@ func (s *sSmsCode) SendCode(ctx context.Context, receiver string) (string, error
 func new() *sSmsCode {
 	return &sSmsCode{
 		pool:     grpool.New(10),
-		foreign:  newforeign(),
+		foreign:  newdomestic(),
 		domestic: newTencDomestic(),
 	}
 }
