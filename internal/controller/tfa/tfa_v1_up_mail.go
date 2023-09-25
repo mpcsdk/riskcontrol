@@ -24,7 +24,7 @@ func (c *ControllerV1) UpMail(ctx context.Context, req *v1.UpMailReq) (res *v1.U
 		return nil, gerror.NewCode(consts.CodeTFANotExist)
 	}
 	///
-	serial, err := service.TFA().UpMail(ctx, userInfo.UserId, req.Mail)
+	serial, err := service.TFA().TFAUpMail(ctx, userInfo.UserId, req.Mail)
 	if serial == "" {
 		g.Log().Warning(ctx, "UpMail:", req, err)
 		return nil, err

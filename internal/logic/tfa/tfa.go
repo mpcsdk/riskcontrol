@@ -77,7 +77,7 @@ func init() {
 	service.RegisterTFA(new())
 }
 
-func (s *sTFA) CreateTFA(ctx context.Context, userId string, phone string, mail string) (string, []string, error) {
+func (s *sTFA) TFACreate(ctx context.Context, userId string, phone string, mail string) (string, []string, error) {
 	// create nft
 	riskData := &conrisk.RiskTfa{
 		UserId: userId,
@@ -111,8 +111,13 @@ func (s *sTFA) CreateTFA(ctx context.Context, userId string, phone string, mail 
 	// }
 }
 
-func (s *sTFA) UpPhone(ctx context.Context, userId string, phone string) (string, error) {
-
+func (s *sTFA) TFAUpPhone(ctx context.Context, userId string, phone string) (string, error) {
+	info, err := s.TFAInfo(ctx, userId)
+	if err != nil {
+		g.Log().Error(ctx, "TFAUpPhone:", userId, phone, err)
+		return "", gerror.NewCode(consts.CodeTFANotExist)
+	}
+	//
 	//upphone
 	//
 	riskData := &conrisk.RiskTfa{
@@ -131,12 +136,24 @@ func (s *sTFA) UpPhone(ctx context.Context, userId string, phone string) (string
 	})
 	s.addRiskEvent(ctx, userId, riskSerial, event)
 	//
+	///tfa mailif
+	if info.Mail != "" {
+		event := s.riskEventMail(ctx, info.Mail, func() {
+
+		})
+		s.addRiskEvent(ctx, userId, riskSerial, event)
+	}
+	///
 	return riskSerial, gerror.NewCode(consts.CodeRiskNeedVerification)
 
 }
 
-func (s *sTFA) UpMail(ctx context.Context, userId string, mail string) (string, error) {
-
+func (s *sTFA) TFAUpMail(ctx context.Context, userId string, mail string) (string, error) {
+	info, err := s.TFAInfo(ctx, userId)
+	if err != nil {
+		g.Log().Error(ctx, "TFAUpMail:", userId, mail, err)
+		return "", gerror.NewCode(consts.CodeTFANotExist)
+	}
 	//
 	riskData := &conrisk.RiskTfa{
 		UserId: userId,
@@ -149,17 +166,26 @@ func (s *sTFA) UpMail(ctx context.Context, userId string, mail string) (string, 
 		return "", err
 	}
 
+	// modtidy mail
 	/// need verification
 	event := s.riskEventMail(ctx, mail, func() {
 		s.recordMail(ctx, userId, mail)
 	})
 	s.addRiskEvent(ctx, userId, riskSerial, event)
+	///tfa phone if
+	if info.Phone != "" {
+		event := s.riskEventPhone(ctx, info.Phone, func() {
+
+		})
+		s.addRiskEvent(ctx, userId, riskSerial, event)
+	}
+
 	//
 	return riskSerial, gerror.NewCode(consts.CodeRiskNeedVerification)
 	//
 
 }
-func (s *sTFA) PerformRiskTFA(ctx context.Context, userId string, riskSerial string) ([]string, error) {
+func (s *sTFA) TFATx(ctx context.Context, userId string, riskSerial string) ([]string, error) {
 	info, err := s.TFAInfo(ctx, userId)
 	if err != nil {
 		g.Log().Warning(ctx, "SendPhoneCode:", userId, riskSerial, err)

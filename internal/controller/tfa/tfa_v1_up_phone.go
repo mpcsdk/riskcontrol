@@ -24,7 +24,7 @@ func (c *ControllerV1) UpPhone(ctx context.Context, req *v1.UpPhoneReq) (res *v1
 		return nil, gerror.NewCode(consts.CodeTFANotExist)
 	}
 	///
-	serial, err := service.TFA().UpPhone(ctx, userInfo.UserId, req.Phone)
+	serial, err := service.TFA().TFAUpPhone(ctx, userInfo.UserId, req.Phone)
 	if serial == "" {
 		g.Log().Warning(ctx, "UpPhone:", req, err)
 		return nil, err

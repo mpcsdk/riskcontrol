@@ -28,7 +28,7 @@ func (c *ControllerV1) CreateTFA(ctx context.Context, req *v1.CreateTFAReq) (res
 	}
 	///
 
-	r, kind, err := service.TFA().CreateTFA(ctx, info.UserId, req.Phone, req.Mail)
+	r, kind, err := service.TFA().TFACreate(ctx, info.UserId, req.Phone, req.Mail)
 	if err != nil {
 		g.Log().Error(ctx, "CreateTFA:")
 		return nil, err

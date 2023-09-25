@@ -128,8 +128,8 @@ func (*Controller) PerformRiskTxs(ctx context.Context, req *v1.TxRiskReq) (res *
 		g.Log().Error(ctx, "PerformRiskTx", serial, err)
 	}
 	//
-	//notice: wait verify
-	kinds, err := service.TFA().PerformRiskTFA(ctx, req.UserId, serial)
+	//notice: wait tfatx
+	kinds, err := service.TFA().TFATx(ctx, req.UserId, serial)
 	if err != nil {
 		g.Log().Warning(ctx, "PerformRiskTxs:", "PerformRiskTFA:", req.UserId, serial)
 		return nil, gerror.NewCode(consts.CodeRiskPerformFailed)
