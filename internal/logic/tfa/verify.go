@@ -25,8 +25,12 @@ func (s *sTFA) VerifyCode(ctx context.Context, userId string, riskSerial string,
 			return err
 		}
 		err = s.doneRiskPendding(ctx, userId, riskSerial, code, risk)
+		if err != nil {
+			g.Log().Warning(ctx, "VerifyCode:", userId, riskSerial, code, risk, err)
+			return gerror.NewCode(consts.CodeRiskVerifyInvalid)
+		}
 		g.Log().Debug(ctx, "VerifyCode:", userId, riskSerial, code, risk)
-		return err
+		return nil
 	}
 	return gerror.NewCode(consts.CodeRiskVerifyInvalid)
 }

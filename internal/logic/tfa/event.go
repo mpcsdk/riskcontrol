@@ -7,7 +7,7 @@ import (
 	"github.com/gogf/gf/v2/errors/gerror"
 )
 
-func (s *sTFA) riskEventPhone(ctx context.Context, phone string, after func()) *riskEvent {
+func (s *sTFA) riskEventPhone(ctx context.Context, phone string, after func() error) *riskEvent {
 	return &riskEvent{
 		Kind:           Key_RiskEventPhone,
 		Phone:          phone,
@@ -17,7 +17,7 @@ func (s *sTFA) riskEventPhone(ctx context.Context, phone string, after func()) *
 		DoneMail:  true,
 	}
 }
-func (s *sTFA) riskEventMail(ctx context.Context, mail string, after func()) *riskEvent {
+func (s *sTFA) riskEventMail(ctx context.Context, mail string, after func() error) *riskEvent {
 	return &riskEvent{
 		Kind:          Key_RiskEventMail,
 		Mail:          mail,
@@ -104,12 +104,19 @@ func (s *sTFA) doneRiskPendding(ctx context.Context, userId string, riskSerial s
 	for kind, event := range risk.riskEvent {
 		if kind == Key_RiskEventMail {
 			if event.afterMailFunc != nil {
-				event.afterMailFunc()
+				err := event.afterMailFunc()
+				if err != nil {
+					return err
+				}
+
 			}
 		}
 		if kind == Key_RiskEventPhone {
 			if event.afterMailFunc != nil {
-				event.afterMailFunc()
+				err := event.afterMailFunc()
+				if err != nil {
+					return err
+				}
 			}
 		}
 	}
