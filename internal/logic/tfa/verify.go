@@ -18,6 +18,7 @@ func (s *sTFA) VerifyCode(ctx context.Context, userId string, vreq []*v1.VerifyR
 
 	// key := s.verifyPenddingKey(userId, riskSerial, code)
 	// tasks := []func(){}
+
 	for _, v := range vreq {
 		key := keyUserRiskId(userId, v.RiskSerial)
 		if risk, ok := s.riskPendding[key]; ok {

@@ -73,13 +73,13 @@ func (s *sTFA) verifyRiskPendding(ctx context.Context, userId string, riskSerial
 
 	for kind, event := range risk.riskEvent {
 		if kind == Key_RiskEventMail {
-			if event.VerifyMailCode == code || event.VerifyMailCode != "" {
+			if event.VerifyMailCode == code {
 				event.DoneMail = true
 				return nil
 			}
 		}
 		if kind == Key_RiskEventPhone {
-			if event.VerifyPhoneCode == code || event.VerifyPhoneCode != "" {
+			if event.VerifyPhoneCode == code {
 				event.DonePhone = true
 				return nil
 			}
