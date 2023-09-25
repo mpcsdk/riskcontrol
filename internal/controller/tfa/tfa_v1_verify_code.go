@@ -35,6 +35,6 @@ func (c *ControllerV1) VerifyCode(ctx context.Context, req *v1.VerifyCodeReq) (r
 	// 	// 	return nil, nil
 	// 	// }
 	// }
-	return nil, nil
+	return nil, err
 
 }

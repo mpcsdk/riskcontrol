@@ -73,13 +73,13 @@ func (s *sTFA) verifyRiskPendding(ctx context.Context, userId string, riskSerial
 
 	for kind, event := range risk.riskEvent {
 		if kind == Key_RiskEventMail {
-			if event.VerifyMailCode == code {
+			if event.VerifyMailCode == code || event.VerifyMailCode != "" {
 				event.DoneMail = true
 				return nil
 			}
 		}
 		if kind == Key_RiskEventPhone {
-			if event.VerifyPhoneCode == code {
+			if event.VerifyPhoneCode == code || event.VerifyPhoneCode != "" {
 				event.DonePhone = true
 				return nil
 			}
@@ -91,12 +91,12 @@ func (s *sTFA) verifyRiskPendding(ctx context.Context, userId string, riskSerial
 func (s *sTFA) doneRiskPendding(ctx context.Context, userId string, riskSerial string, code string, risk *riskPendding) error {
 	for kind, event := range risk.riskEvent {
 		if kind == Key_RiskEventMail {
-			if event.DoneMail == true {
+			if event.DoneMail != true {
 				return gerror.NewCode(consts.CodeRiskVerifyMailInvalid)
 			}
 		}
 		if kind == Key_RiskEventPhone {
-			if event.DonePhone == true {
+			if event.DonePhone != true {
 				return gerror.NewCode(consts.CodeRiskVerifyPhoneInvalid)
 			}
 		}
@@ -114,8 +114,8 @@ func (s *sTFA) doneRiskPendding(ctx context.Context, userId string, riskSerial s
 			}
 		}
 		if kind == Key_RiskEventPhone {
-			if event.afterMailFunc != nil {
-				err := event.afterMailFunc()
+			if event.afterPhoneFunc != nil {
+				err := event.afterPhoneFunc()
 				if err != nil {
 					return err
 				}

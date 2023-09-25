@@ -32,7 +32,7 @@ func (s *sTFA) VerifyCode(ctx context.Context, userId string, vreq []*v1.VerifyR
 	for _, v := range vreq {
 		key := keyUserRiskId(userId, v.RiskSerial)
 		if risk, ok := s.riskPendding[key]; ok {
-			g.Log().Debug(ctx, "VerifyCode:", userId, vreq, risk)
+			g.Log().Debug(ctx, "VerifyCode doneRiskPendding:", userId, vreq, risk)
 			err := s.doneRiskPendding(ctx, userId, v.RiskSerial, v.Code, risk)
 			if err != nil {
 				g.Log().Warning(ctx, "VerifyCode:", userId, v.RiskSerial, v.Code, risk, err)
