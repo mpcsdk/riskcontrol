@@ -91,13 +91,13 @@ func (s *sTFA) verifyRiskPendding(ctx context.Context, userId string, riskSerial
 func (s *sTFA) doneRiskPendding(ctx context.Context, userId string, riskSerial string, code string, risk *riskPendding) error {
 	for kind, event := range risk.riskEvent {
 		if kind == Key_RiskEventMail {
-			if event.DoneMail == false {
-				return nil
+			if event.DoneMail == true {
+				return gerror.NewCode(consts.CodeRiskVerifyMailInvalid)
 			}
 		}
 		if kind == Key_RiskEventPhone {
-			if event.DonePhone == false {
-				return nil
+			if event.DonePhone == true {
+				return gerror.NewCode(consts.CodeRiskVerifyPhoneInvalid)
 			}
 		}
 	}

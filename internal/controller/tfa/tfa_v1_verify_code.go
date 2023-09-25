@@ -27,12 +27,14 @@ func (c *ControllerV1) VerifyCode(ctx context.Context, req *v1.VerifyCodeReq) (r
 		if v.Code == "" || v.RiskSerial == "" {
 			continue
 		}
-		err = service.TFA().VerifyCode(ctx, userInfo.UserId, v.RiskSerial, v.Code)
-		if err != nil {
-			g.Log().Warning(ctx, "VerifyCode", req, err)
-			return nil, err
-		}
 	}
+
+	err = service.TFA().VerifyCode(ctx, userInfo.UserId, req.VerifyReq)
+	// if err != nil {
+	g.Log().Warning(ctx, "VerifyCode", req, err)
+	// 	// 	return nil, nil
+	// 	// }
+	// }
 	return nil, nil
 
 }

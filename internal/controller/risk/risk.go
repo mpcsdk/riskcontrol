@@ -9,6 +9,8 @@ import (
 	"riskcontral/internal/service"
 	"strings"
 
+	tfav1 "riskcontral/api/tfa/v1"
+
 	"github.com/gogf/gf/contrib/rpc/grpcx/v2"
 	"github.com/gogf/gf/v2/errors/gcode"
 	"github.com/gogf/gf/v2/errors/gerror"
@@ -70,7 +72,10 @@ func (*Controller) PerformVerifyCode(ctx context.Context, req *v1.VerifyCodekReq
 		return nil, err
 	}
 	// err = service.Risk().VerifyCode(ctx, req.RiskSerial, req.Code)
-	err = service.TFA().VerifyCode(ctx, info.UserId, req.RiskSerial, req.Code)
+	vreq := []*tfav1.VerifyReq{
+		{RiskSerial: req.RiskSerial, Code: req.Code},
+	}
+	err = service.TFA().VerifyCode(ctx, info.UserId, vreq)
 	if err != nil {
 		g.Log().Error(ctx, "PerformVerifyCode:", req, err)
 	}
