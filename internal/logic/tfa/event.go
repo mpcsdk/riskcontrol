@@ -28,9 +28,7 @@ func (s *sTFA) riskEventMail(ctx context.Context, mail string, after func()) *ri
 		doneMail:  false,
 	}
 }
-func (s *sTFA) riskEventKind(ctx context.Context, event *riskEvent) RiskKind {
-	return ""
-}
+
 func (s *sTFA) addRiskEvent(ctx context.Context, userId, riskSerial string, event *riskEvent) {
 
 	key := keyUserRiskId(userId, riskSerial)
@@ -48,6 +46,18 @@ func (s *sTFA) addRiskEvent(ctx context.Context, userId, riskSerial string, even
 		s.riskPendding[key] = risk
 	}
 }
+
+func (s *sTFA) upRiskEventCode(ctx context.Context, event *riskEvent, code string) {
+	if event.Kind == Key_RiskEventMail {
+		event.VerifyMailCode = code
+		event.doneMail = false
+	}
+	if event.Kind == Key_RiskEventPhone {
+		event.VerifyPhoneCode = code
+		event.donePhone = false
+	}
+}
+
 func (s *sTFA) fetchRiskEvent(ctx context.Context, userId string, riskSerial string, kind RiskKind) *riskEvent {
 	key := keyUserRiskId(userId, riskSerial)
 	if r, ok := s.riskPendding[key]; ok {

@@ -30,6 +30,7 @@ func (s *sTFA) SendPhoneCode(ctx context.Context, userId string, riskSerial stri
 		g.Log().Warning(ctx, "SendPhoneCode:", userId, riskSerial, event, err, code)
 		return "", gerror.NewCode(consts.CodeRiskPerformFailed)
 	}
+	s.upRiskEventCode(ctx, event, code)
 	///wait verification
 	// s.verifyRiskPendding(ctx, userId, riskSerial, code, event)
 	// key := s.verifyPenddingKey(userId, riskSerial, code)
@@ -56,6 +57,7 @@ func (s *sTFA) SendMailCode(ctx context.Context, userId string, riskSerial strin
 		g.Log().Warning(ctx, "SendMailCode:", userId, riskSerial, event, err, code)
 		return "", gerror.NewCode(consts.CodeRiskPerformFailed)
 	}
+	s.upRiskEventCode(ctx, event, code)
 	///wait verification
 	// s.verifyRiskPendding(ctx, userId, riskSerial, code, event)
 	// key := s.verifyPenddingKey(userId, riskSerial, code)

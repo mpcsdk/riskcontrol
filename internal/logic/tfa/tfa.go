@@ -22,6 +22,44 @@ type verifier interface {
 	exec(risk *riskPendding, code string)
 	setNext(verifier)
 }
+type verifierPhone struct {
+	next verifier
+}
+
+func (s *verifierPhone) exec(risk *riskPendding, code string) {
+	for k, e := range risk.riskEvent {
+		if k == Key_RiskEventPhone {
+			if e.VerifyPhoneCode == code {
+				e.donePhone = true
+				return
+			}
+		}
+	}
+	return
+}
+func (s *verifierPhone) setNext(v verifier) {
+	s.next = v
+}
+
+type verifierMail struct {
+	next verifier
+}
+
+func (s *verifierMail) exec(risk *riskPendding, code string) {
+	for k, e := range risk.riskEvent {
+		if k == Key_RiskEventMail {
+			if e.VerifyMailCode == code {
+				e.doneMail = true
+				return
+			}
+		}
+	}
+	return
+}
+func (s *verifierMail) setNext(v verifier) {
+	s.next = v
+}
+
 type sTFA struct {
 	ctx context.Context
 	// riskClient riskv1.UserClient
