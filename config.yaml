@@ -8,9 +8,6 @@ jaegerUrl: "127.0.0.1:6831"
 logger:
   level : "all"
   stdout: true
-  rotateExpire: "1d"
-  path: "./"
-
 
 cache:
   sessionDur: 10000
@@ -50,25 +47,67 @@ contractRisk:
     kind: "erc20"
     methodName: "transfer"
     threshold: 100
-  - contract: "0x123"
+  - contract: "0x1d35fa1a131038760b6325492e236600003120f5"
+    kind: "erc20"
+    methodName: "transfer"
+    threshold: 100
+    name: "MAK"
+  - contract: "0x9e4ac58cfbdf5cfe0685ad034bb5c6e26363a72a"
+    kind: "erc20"
+    methodName: "transfer"
+    threshold: 100
+    name: "MUD"
+  - contract: "0x0f3a62db02f743b549053cc8d538c65ab01e3618"
+    kind: "erc20"
+    methodName: "transfer"
+    threshold: 100
+    name: "USDT"
+  - contract: "0xb895607bee24aa62ca090ce0445a1893e70ee5a0"
+    kind: "erc20"
+    methodName: "transfer"
+    threshold: 100
+    name: "MIX"
+
+
+  - contract: "0xfac679f8f88ffbec74e90ecbd7eea45ab294c826"
     kind: "erc721"
     methodName: "transferFrom"
     threshold: 5
-
+    name: "MAN"
+  - contract: "0xf706c471915de10ebabe1422862a49a7ab55445c"
+    kind: "erc721"
+    methodName: "transferFrom"
+    threshold: 5
+    name: "Miner"
+  - contract: "0x0407670718faae7d319f39e14fb992ef762e8d62"
+    kind: "erc721"
+    methodName: "transferFrom"
+    threshold: 5
+    name: "Equipment"
+  - contract: "0xb1682c08beb47328d4f98ac08d3cd01679ff5c3b"
+    kind: "erc721"
+    methodName: "transferFrom"
+    threshold: 5
+    name: "Weapon"
+  - contract: "0x52bf2fdc7f85f6d4e0c1cfcb5aa0a7033aa7a815"
+    kind: "erc721"
+    methodName: "transferFrom"
+    threshold: 5
+    name: "Fashion"
 #
 etcd:
   address: "127.0.0.1:2379"
 
 sms:
   huawei:
-    domestic:
+    foreign:
       APIAddress: "https://smsapi.cn-south-1.myhuaweicloud.com:443/sms/batchSendSms/v1"
       ApplicationKey: "DZcZWoIauKdHY1wD0179m4Jk5N9V"
       ApplicationSecret: "1GSPX8WyCwJbTfwEohqsBlOzbcam"
       Sender: "8823091933902"
       TemplateID: "000ab97205d34659a78b47c9e1a805fb"
       Signature: "幂玛"
-    # foreign:
+    # domestic:
     #   APIAddress : "https://smsapi.ap-southeast-1.myhuaweicloud.com:443/sms/batchSendSms/v1"
     #   ApplicationKey : "07wcF2NQy1M7pQ48tp3kvQXgm9PT"                                           
     #   ApplicationSecret : "xegZ0VXmh5BDygT69sYm5DnKmIou"                                        
@@ -76,13 +115,13 @@ sms:
     #   TemplateID : "e582fdc05e8043f8b69f9b0b05e970b4"                                    
     #   Signature: ""
   tenc:
-    foreign:
+    domestic:
       SecretId: "AKID51zveEaotSAnIez267vjsxrnfR1eCZwG"
       SecretKey: "KXlv05GIC0lN2ccq1IYggZJv1CPOLKDt"
       Endpoint: "sms.tencentcloudapi.com"
       SignMethod: "HMAC-SHA256"
       Region: "ap-guangzhou"
-      SmsSdkAppId: "1400856433"
+      SmsSdkAppId: "1400787878"
       SignName: "腾讯云"
       TemplateId: "1933346"
 
@@ -91,7 +130,7 @@ exemail:
   SecretId: "AKID51zveEaotSAnIez267vjsxrnfR1eCZwG"
   SecretKey: "KXlv05GIC0lN2ccq1IYggZJv1CPOLKDt"
   TemplateID: 26732
-  Subject: "MixMarvel"
+  Subject: "MixMarver"
 
 
 gfcli:
