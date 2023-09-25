@@ -61,8 +61,8 @@ func (s *verifierMail) setNext(v verifier) {
 }
 
 type sTFA struct {
-	ctx context.Context
 	// riskClient riskv1.UserClient
+	ctx context.Context
 	// verifyPendding map[string]func()
 	// mailVerifyPendding  map[string]func()
 	// phoneVerifyPendding map[string]func()
@@ -147,7 +147,7 @@ func (s *sTFA) TFACreate(ctx context.Context, userId string, phone string, mail 
 	/// need verification
 	if phone != "" {
 		event := s.riskEventPhone(ctx, phone, func() {
-			s.insertPhone(ctx, userId, phone)
+			s.insertPhone(s.ctx, userId, phone)
 		})
 		s.addRiskEvent(ctx, userId, riskSerial, event)
 		kind = append(kind, "phone")
@@ -156,7 +156,7 @@ func (s *sTFA) TFACreate(ctx context.Context, userId string, phone string, mail 
 	/// need verification
 	if mail != "" {
 		event := s.riskEventMail(ctx, mail, func() {
-			s.insertMail(ctx, userId, mail)
+			s.insertMail(s.ctx, userId, mail)
 		})
 		s.addRiskEvent(ctx, userId, riskSerial, event)
 		kind = append(kind, "mail")
@@ -187,7 +187,7 @@ func (s *sTFA) TFAUpPhone(ctx context.Context, userId string, phone string) (str
 
 	/// need verification
 	event := s.riskEventPhone(ctx, phone, func() {
-		s.recordPhone(ctx, userId, phone)
+		s.recordPhone(s.ctx, userId, phone)
 	})
 	s.addRiskEvent(ctx, userId, riskSerial, event)
 	//
@@ -224,7 +224,7 @@ func (s *sTFA) TFAUpMail(ctx context.Context, userId string, mail string) (strin
 	// modtidy mail
 	/// need verification
 	event := s.riskEventMail(ctx, mail, func() {
-		s.recordMail(ctx, userId, mail)
+		s.recordMail(s.ctx, userId, mail)
 	})
 	s.addRiskEvent(ctx, userId, riskSerial, event)
 	///tfa phone if
