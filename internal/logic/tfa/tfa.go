@@ -11,14 +11,25 @@ import (
 	"github.com/gogf/gf/v2/os/gctx"
 )
 
+type UserRiskId string
+type RiskKind string
+
+func keyUserRiskId(userId string, riskSerial string) UserRiskId {
+	return UserRiskId(userId + "keyUserRiskId" + riskSerial)
+}
+
+type verifier interface {
+	exec(risk *riskPendding, code string)
+	setNext(verifier)
+}
 type sTFA struct {
 	ctx context.Context
 	// riskClient riskv1.UserClient
-	verifyPendding map[string]func()
+	// verifyPendding map[string]func()
 	// mailVerifyPendding  map[string]func()
 	// phoneVerifyPendding map[string]func()
 	///
-	riskPendding map[string]*riskPendding
+	riskPendding map[UserRiskId]*riskPendding
 	url          string
 	////
 }
@@ -39,10 +50,10 @@ func new() *sTFA {
 	///
 	//
 	s := &sTFA{
-		verifyPendding: map[string]func(){},
+		// verifyPendding: map[string]func(){},
 		// mailVerifyPendding:  map[string]func(){},
 		// phoneVerifyPendding: map[string]func(){},
-		riskPendding: map[string]*riskPendding{},
+		riskPendding: map[UserRiskId]*riskPendding{},
 		ctx:          ctx,
 	}
 	///
@@ -57,7 +68,7 @@ type riskPendding struct {
 	UserId string
 
 	///
-	riskEvent map[string]*riskEvent
+	riskEvent map[RiskKind]*riskEvent
 }
 
 const (
@@ -66,10 +77,16 @@ const (
 )
 
 type riskEvent struct {
-	Kind           string
-	Phone          string
-	afterPhoneFunc func()
+	Kind RiskKind
+
+	Phone           string
+	VerifyPhoneCode string
+	donePhone       bool
+	afterPhoneFunc  func()
+
 	Mail           string
+	VerifyMailCode string
+	doneMail       bool
 	afterMailFunc  func()
 }
 

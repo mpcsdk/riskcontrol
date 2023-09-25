@@ -31,8 +31,9 @@ func (s *sTFA) SendPhoneCode(ctx context.Context, userId string, riskSerial stri
 		return "", gerror.NewCode(consts.CodeRiskPerformFailed)
 	}
 	///wait verification
-	key := s.verifyPenddingKey(userId, riskSerial, code)
-	s.verifyPendding[key] = event.afterPhoneFunc
+	// s.verifyRiskPendding(ctx, userId, riskSerial, code, event)
+	// key := s.verifyPenddingKey(userId, riskSerial, code)
+	// s.verifyPendding[key] = event.afterPhoneFunc
 	return "", nil
 
 }
@@ -56,7 +57,8 @@ func (s *sTFA) SendMailCode(ctx context.Context, userId string, riskSerial strin
 		return "", gerror.NewCode(consts.CodeRiskPerformFailed)
 	}
 	///wait verification
-	key := s.verifyPenddingKey(userId, riskSerial, code)
-	s.verifyPendding[key] = event.afterMailFunc
+	// s.verifyRiskPendding(ctx, userId, riskSerial, code, event)
+	// key := s.verifyPenddingKey(userId, riskSerial, code)
+	// s.verifyPendding[key] = event.afterMailFunc
 	return "", nil
 }

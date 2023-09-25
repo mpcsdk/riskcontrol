@@ -16,14 +16,17 @@ func (s *sTFA) VerifyCode(ctx context.Context, userId string, riskSerial string,
 	// }
 	// // 验证验证码
 
-	key := s.verifyPenddingKey(userId, riskSerial, code)
-	if task, ok := s.verifyPendding[key]; ok {
-		if task != nil {
-			task()
+	// key := s.verifyPenddingKey(userId, riskSerial, code)
+	// tasks := []func(){}
+	key := keyUserRiskId(userId, riskSerial)
+	if risk, ok := s.riskPendding[key]; ok {
+		err := s.verifyRiskPendding(ctx, userId, riskSerial, code, risk)
+		if err != nil {
+			return err
 		}
-		delete(s.verifyPendding, key)
-		return nil
+		err = s.doneRiskPendding(ctx, userId, riskSerial, code, risk)
+		g.Log().Debug(ctx, "VerifyCode:", userId, riskSerial, code, risk)
+		return err
 	}
-	g.Log().Warning(ctx, "VerifyCode:", userId, riskSerial, code)
 	return gerror.NewCode(consts.CodeRiskVerifyInvalid)
 }
