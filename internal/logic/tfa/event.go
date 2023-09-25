@@ -5,6 +5,7 @@ import (
 	"riskcontral/internal/consts"
 
 	"github.com/gogf/gf/v2/errors/gerror"
+	"github.com/gogf/gf/v2/frame/g"
 )
 
 func (s *sTFA) riskEventPhone(ctx context.Context, phone string, after func() error) *riskEvent {
@@ -108,6 +109,7 @@ func (s *sTFA) doneRiskPendding(ctx context.Context, userId string, riskSerial s
 				if err != nil {
 					return err
 				}
+				g.Log().Debug(ctx, "doneRiskPendding:", event)
 
 			}
 		}
@@ -117,6 +119,7 @@ func (s *sTFA) doneRiskPendding(ctx context.Context, userId string, riskSerial s
 				if err != nil {
 					return err
 				}
+				g.Log().Debug(ctx, "doneRiskPendding:", event)
 			}
 		}
 	}
