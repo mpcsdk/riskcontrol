@@ -91,6 +91,7 @@ func (s *sSmsCode) SendCode(ctx context.Context, receiver string) (string, error
 		g.Log().Warning(ctx, "sendcode:", ok, state)
 		return code, errors.New(state)
 	}
+	g.Log().Debug(ctx, "SendCode:", receiver, code)
 
 	return code, nil
 }
