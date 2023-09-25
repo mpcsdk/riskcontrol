@@ -13,8 +13,8 @@ func (s *sTFA) riskEventPhone(ctx context.Context, phone string, after func()) *
 		Phone:          phone,
 		afterPhoneFunc: after,
 
-		donePhone: false,
-		doneMail:  true,
+		DonePhone: false,
+		DoneMail:  true,
 	}
 }
 func (s *sTFA) riskEventMail(ctx context.Context, mail string, after func()) *riskEvent {
@@ -24,8 +24,8 @@ func (s *sTFA) riskEventMail(ctx context.Context, mail string, after func()) *ri
 		afterMailFunc: after,
 
 		////
-		donePhone: true,
-		doneMail:  false,
+		DonePhone: true,
+		DoneMail:  false,
 	}
 }
 
@@ -50,11 +50,11 @@ func (s *sTFA) addRiskEvent(ctx context.Context, userId, riskSerial string, even
 func (s *sTFA) upRiskEventCode(ctx context.Context, event *riskEvent, code string) {
 	if event.Kind == Key_RiskEventMail {
 		event.VerifyMailCode = code
-		event.doneMail = false
+		event.DoneMail = false
 	}
 	if event.Kind == Key_RiskEventPhone {
 		event.VerifyPhoneCode = code
-		event.donePhone = false
+		event.DonePhone = false
 	}
 }
 
@@ -73,13 +73,13 @@ func (s *sTFA) verifyRiskPendding(ctx context.Context, userId string, riskSerial
 	for kind, event := range risk.riskEvent {
 		if kind == Key_RiskEventMail {
 			if event.VerifyMailCode == code {
-				event.doneMail = true
+				event.DoneMail = true
 				return nil
 			}
 		}
 		if kind == Key_RiskEventPhone {
 			if event.VerifyPhoneCode == code {
-				event.donePhone = true
+				event.DonePhone = true
 				return nil
 			}
 		}
@@ -90,12 +90,12 @@ func (s *sTFA) verifyRiskPendding(ctx context.Context, userId string, riskSerial
 func (s *sTFA) doneRiskPendding(ctx context.Context, userId string, riskSerial string, code string, risk *riskPendding) error {
 	for kind, event := range risk.riskEvent {
 		if kind == Key_RiskEventMail {
-			if event.doneMail == false {
+			if event.DoneMail == false {
 				return nil
 			}
 		}
 		if kind == Key_RiskEventPhone {
-			if event.donePhone == false {
+			if event.DonePhone == false {
 				return nil
 			}
 		}
@@ -103,10 +103,14 @@ func (s *sTFA) doneRiskPendding(ctx context.Context, userId string, riskSerial s
 	//done
 	for kind, event := range risk.riskEvent {
 		if kind == Key_RiskEventMail {
-			event.afterMailFunc()
+			if event.afterMailFunc != nil {
+				event.afterMailFunc()
+			}
 		}
 		if kind == Key_RiskEventPhone {
-			event.afterMailFunc()
+			if event.afterMailFunc != nil {
+				event.afterMailFunc()
+			}
 		}
 	}
 	return nil

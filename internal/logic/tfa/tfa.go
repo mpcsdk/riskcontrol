@@ -30,7 +30,7 @@ func (s *verifierPhone) exec(risk *riskPendding, code string) {
 	for k, e := range risk.riskEvent {
 		if k == Key_RiskEventPhone {
 			if e.VerifyPhoneCode == code {
-				e.donePhone = true
+				e.DonePhone = true
 				return
 			}
 		}
@@ -49,7 +49,7 @@ func (s *verifierMail) exec(risk *riskPendding, code string) {
 	for k, e := range risk.riskEvent {
 		if k == Key_RiskEventMail {
 			if e.VerifyMailCode == code {
-				e.doneMail = true
+				e.DoneMail = true
 				return
 			}
 		}
@@ -119,12 +119,12 @@ type riskEvent struct {
 
 	Phone           string
 	VerifyPhoneCode string
-	donePhone       bool
+	DonePhone       bool
 	afterPhoneFunc  func()
 
 	Mail           string
 	VerifyMailCode string
-	doneMail       bool
+	DoneMail       bool
 	afterMailFunc  func()
 }
 
