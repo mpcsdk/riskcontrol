@@ -193,10 +193,7 @@ func (s *sTFA) TFAUpPhone(ctx context.Context, userId string, phone string) (str
 	//
 	///tfa mailif
 	if info.Mail != "" {
-		event := s.riskEventMail(ctx, info.Mail, func() error {
-			return nil
-
-		})
+		event := s.riskEventMail(ctx, info.Mail, nil)
 		s.addRiskEvent(ctx, userId, riskSerial, event)
 	}
 	///
@@ -230,10 +227,7 @@ func (s *sTFA) TFAUpMail(ctx context.Context, userId string, mail string) (strin
 	s.addRiskEvent(ctx, userId, riskSerial, event)
 	///tfa phone if
 	if info.Phone != "" {
-		event := s.riskEventPhone(ctx, info.Phone, func() error {
-			return nil
-
-		})
+		event := s.riskEventPhone(ctx, info.Phone, nil)
 		s.addRiskEvent(ctx, userId, riskSerial, event)
 	}
 
@@ -252,19 +246,13 @@ func (s *sTFA) TFATx(ctx context.Context, userId string, riskSerial string) ([]s
 	//
 	kind := []string{}
 	if info.Phone != "" {
-		event := s.riskEventPhone(ctx, info.Phone, func() error {
-			return nil
-			//todo:
-		})
+		event := s.riskEventPhone(ctx, info.Phone, nil)
 		s.addRiskEvent(ctx, userId, riskSerial, event)
 		kind = append(kind, "phone")
 	}
 
 	if info.Mail != "" {
-		event := s.riskEventMail(ctx, info.Mail, func() error {
-			return nil
-			//todo:
-		})
+		event := s.riskEventMail(ctx, info.Mail, nil)
 		s.addRiskEvent(ctx, userId, riskSerial, event)
 		kind = append(kind, "mail")
 	}
