@@ -8,7 +8,7 @@ import (
 	"github.com/gogf/gf/v2/os/gtime"
 )
 
-func (s *sTFA) createTFA(ctx context.Context, userId, mail, phone string) error {
+func (s *sTFA) createTFA(ctx context.Context, userId string, mail, phone *string) error {
 
 	// _, err := dao.Tfa.Ctx(s.ctx).
 	// 	Data(do.Tfa{
@@ -22,11 +22,11 @@ func (s *sTFA) createTFA(ctx context.Context, userId, mail, phone string) error 
 		UserId:    userId,
 		CreatedAt: gtime.Now(),
 	}
-	if mail != "" {
+	if mail != nil {
 		e.Mail = mail
 		e.MailUpdatedAt = gtime.Now()
 	}
-	if phone != "" {
+	if phone != nil {
 		e.Phone = phone
 		e.PhoneUpdatedAt = gtime.Now()
 	}
@@ -35,7 +35,7 @@ func (s *sTFA) createTFA(ctx context.Context, userId, mail, phone string) error 
 	return err
 }
 
-func (s *sTFA) recordPhone(ctx context.Context, userId, phone string) error {
+func (s *sTFA) recordPhone(ctx context.Context, userId string, phone *string) error {
 	err := service.DB().UpdateTfaInfo(ctx, userId, &do.Tfa{
 		UserId:         userId,
 		Phone:          phone,
@@ -44,7 +44,7 @@ func (s *sTFA) recordPhone(ctx context.Context, userId, phone string) error {
 
 	return err
 }
-func (s *sTFA) recordMail(ctx context.Context, userId, mail string) error {
+func (s *sTFA) recordMail(ctx context.Context, userId string, mail *string) error {
 
 	err := service.DB().UpdateTfaInfo(ctx, userId, &do.Tfa{
 		UserId:        userId,
@@ -56,7 +56,7 @@ func (s *sTFA) recordMail(ctx context.Context, userId, mail string) error {
 }
 
 // //
-func (s *sTFA) insertPhone(ctx context.Context, userId, phone string) error {
+func (s *sTFA) insertPhone(ctx context.Context, userId string, phone *string) error {
 	err := service.DB().InsertTfaInfo(ctx, userId, &do.Tfa{
 		UserId:         userId,
 		Phone:          phone,
@@ -65,7 +65,7 @@ func (s *sTFA) insertPhone(ctx context.Context, userId, phone string) error {
 
 	return err
 }
-func (s *sTFA) insertMail(ctx context.Context, userId, mail string) error {
+func (s *sTFA) insertMail(ctx context.Context, userId string, mail *string) error {
 
 	err := service.DB().InsertTfaInfo(ctx, userId, &do.Tfa{
 

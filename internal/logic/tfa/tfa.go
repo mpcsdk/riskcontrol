@@ -135,7 +135,7 @@ func (s *sTFA) TFACreate(ctx context.Context, userId string, phone string, mail 
 	/// need verification
 	if phone != "" {
 		event := newRiskEventPhone(phone, func(ctx context.Context) error {
-			return s.insertPhone(ctx, userId, phone)
+			return s.insertPhone(ctx, userId, &phone)
 		})
 		s.addRiskEvent(ctx, userId, riskSerial, event)
 		kind = append(kind, "phone")
@@ -145,7 +145,7 @@ func (s *sTFA) TFACreate(ctx context.Context, userId string, phone string, mail 
 	/// need verification
 	if mail != "" {
 		event := newRiskEventMail(mail, func(ctx context.Context) error {
-			return s.insertMail(ctx, userId, mail)
+			return s.insertMail(ctx, userId, &mail)
 		})
 		s.addRiskEvent(ctx, userId, riskSerial, event)
 		kind = append(kind, "mail")
@@ -176,7 +176,7 @@ func (s *sTFA) TFAUpPhone(ctx context.Context, userId string, phone string) (str
 
 	/// need verification
 	event := newRiskEventPhone(phone, func(ctx context.Context) error {
-		return s.recordPhone(ctx, userId, phone)
+		return s.recordPhone(ctx, userId, &phone)
 	})
 	s.addRiskEvent(ctx, userId, riskSerial, event)
 	//
@@ -211,7 +211,7 @@ func (s *sTFA) TFAUpMail(ctx context.Context, userId string, mail string) (strin
 	// modtidy mail
 	/// need verification
 	event := newRiskEventMail(mail, func(ctx context.Context) error {
-		return s.recordMail(ctx, userId, mail)
+		return s.recordMail(ctx, userId, &mail)
 	})
 	s.addRiskEvent(ctx, userId, riskSerial, event)
 	///tfa phone if
