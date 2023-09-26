@@ -14,16 +14,21 @@ import (
 // // @Summary 验证token，注册用户tfa
 func (c *ControllerV1) CreateTFA(ctx context.Context, req *v1.CreateTFAReq) (res *v1.CreateTFARes, err error) {
 	//	//trace
-	ctx, span := gtrace.NewSpan(ctx, "CreateTFA")
+	ctx, span := gtrace.NewSpan(ctx, "CreateTFA:")
 	defer span.End()
+	g.Log().Debug(ctx, "crateTFA:", req)
 	///
 	info, err := service.UserInfo().GetUserInfo(ctx, req.Token)
 	if err != nil {
 		return nil, err
 	}
 	///
-	_, err = service.TFA().TFAInfo(ctx, info.UserId)
-	if err == nil {
+	tfainfo, err := service.TFA().TFAInfo(ctx, info.UserId)
+	if err != nil {
+		g.Log().Error(ctx, "CreatTfa:", err, req)
+		return nil, gerror.NewCode(consts.CodeInternalError)
+	}
+	if tfainfo != nil {
 		return nil, gerror.NewCode(consts.CodeTFAExist)
 	}
 	///
