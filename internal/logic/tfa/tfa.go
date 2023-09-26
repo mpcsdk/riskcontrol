@@ -139,6 +139,7 @@ func (s *sTFA) TFACreate(ctx context.Context, userId string, phone string, mail 
 		})
 		s.addRiskEvent(ctx, userId, riskSerial, event)
 		kind = append(kind, "phone")
+		g.Log().Debug(ctx, "TFACreate:", userId, riskSerial, event)
 	}
 
 	/// need verification
@@ -148,8 +149,8 @@ func (s *sTFA) TFACreate(ctx context.Context, userId string, phone string, mail 
 		})
 		s.addRiskEvent(ctx, userId, riskSerial, event)
 		kind = append(kind, "mail")
+		g.Log().Debug(ctx, "TFACreate:", userId, riskSerial, event)
 	}
-
 	return riskSerial, kind, err
 	// }
 }

@@ -13,6 +13,9 @@ func (s *sRisk) checkTFAUpPhone(ctx context.Context, userId string) (int32, erro
 	if err != nil {
 		return -1, err
 	}
+	if info.PhoneUpdatedAt == nil {
+		return 0, nil
+	}
 
 	befor24h := gtime.Now().Add(BeforH24)
 	if info.PhoneUpdatedAt.Before(befor24h) {
@@ -28,7 +31,9 @@ func (s *sRisk) checkTfaUpMail(ctx context.Context, userId string) (int32, error
 	if err != nil {
 		return -1, err
 	}
-
+	if info.MailUpdatedAt == nil {
+		return 0, nil
+	}
 	befor24h := gtime.Now().Add(BeforH24)
 	if info.MailUpdatedAt.Before(befor24h) {
 		return 0, nil
