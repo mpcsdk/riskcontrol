@@ -2,7 +2,7 @@ package tfa
 
 import (
 	"context"
-	"riskcontral/internal/model/entity"
+	"riskcontral/internal/model/do"
 	"riskcontral/internal/service"
 
 	"github.com/gogf/gf/v2/os/gtime"
@@ -18,7 +18,7 @@ func (s *sTFA) createTFA(ctx context.Context, userId, mail, phone string) error 
 	// 	Where(dao.Tfa.Columns().UserId, userId).
 	// 	Update()
 
-	e := entity.Tfa{
+	e := do.Tfa{
 		UserId:    userId,
 		CreatedAt: gtime.Now(),
 	}
@@ -30,13 +30,13 @@ func (s *sTFA) createTFA(ctx context.Context, userId, mail, phone string) error 
 		e.Phone = phone
 		e.PhoneUpdatedAt = gtime.Now()
 	}
-	err := service.DB().InsertTfaInfo(ctx, &e)
+	err := service.DB().InsertTfaInfo(ctx, userId, &e)
 
 	return err
 }
 
 func (s *sTFA) recordPhone(ctx context.Context, userId, phone string) error {
-	err := service.DB().UpdateTfaInfo(ctx, &entity.Tfa{
+	err := service.DB().UpdateTfaInfo(ctx, userId, &do.Tfa{
 		UserId:         userId,
 		Phone:          phone,
 		PhoneUpdatedAt: gtime.Now(),
@@ -46,7 +46,7 @@ func (s *sTFA) recordPhone(ctx context.Context, userId, phone string) error {
 }
 func (s *sTFA) recordMail(ctx context.Context, userId, mail string) error {
 
-	err := service.DB().UpdateTfaInfo(ctx, &entity.Tfa{
+	err := service.DB().UpdateTfaInfo(ctx, userId, &do.Tfa{
 		UserId:        userId,
 		Mail:          mail,
 		MailUpdatedAt: gtime.Now(),
@@ -57,7 +57,7 @@ func (s *sTFA) recordMail(ctx context.Context, userId, mail string) error {
 
 // //
 func (s *sTFA) insertPhone(ctx context.Context, userId, phone string) error {
-	err := service.DB().InsertTfaInfo(ctx, &entity.Tfa{
+	err := service.DB().InsertTfaInfo(ctx, userId, &do.Tfa{
 		UserId:         userId,
 		Phone:          phone,
 		PhoneUpdatedAt: gtime.Now(),
@@ -67,7 +67,7 @@ func (s *sTFA) insertPhone(ctx context.Context, userId, phone string) error {
 }
 func (s *sTFA) insertMail(ctx context.Context, userId, mail string) error {
 
-	err := service.DB().InsertTfaInfo(ctx, &entity.Tfa{
+	err := service.DB().InsertTfaInfo(ctx, userId, &do.Tfa{
 
 		UserId:        userId,
 		Mail:          mail,

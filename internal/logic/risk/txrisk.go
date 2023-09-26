@@ -41,10 +41,8 @@ func (s *sRisk) checkTx(ctx context.Context, riskTx *conrisk.RiskTx) (int32, err
 				return 1, err
 			}
 			threshold := &big.Int{}
-			threshold.UnmarshalText([]byte("10000000000000000000"))
-			//todo:
-			return 1, nil
-			if cnt.Cmp(threshold) == 1 {
+			threshold.UnmarshalText([]byte("1000000000000000000"))
+			if cnt.Cmp(threshold) > 0 {
 				return 1, nil
 			}
 			return 0, nil

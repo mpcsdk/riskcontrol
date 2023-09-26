@@ -7,14 +7,15 @@ package service
 
 import (
 	"context"
+	"riskcontral/internal/model/do"
 	"riskcontral/internal/model/entity"
 )
 
 type (
 	IDB interface {
-		InsertTfaInfo(ctx context.Context, data *entity.Tfa) error
+		InsertTfaInfo(ctx context.Context, userId string, data *do.Tfa) error
 		// //
-		UpdateTfaInfo(ctx context.Context, data *entity.Tfa) error
+		UpdateTfaInfo(ctx context.Context, userId string, data *do.Tfa) error
 		FetchTfaInfo(ctx context.Context, userId string) (*entity.Tfa, error)
 	}
 )

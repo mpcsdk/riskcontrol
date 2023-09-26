@@ -70,12 +70,12 @@ contractRisk:
   - contract: "0xfac679f8f88ffbec74e90ecbd7eea45ab294c826"
     kind: "erc721"
     methodName: "transferFrom"
-    threshold: 5
+    threshold: 2
     name: "MAN"
   - contract: "0xf706c471915de10ebabe1422862a49a7ab55445c"
     kind: "erc721"
     methodName: "transferFrom"
-    threshold: 5
+    threshold: 2
     name: "Miner"
   - contract: "0x0407670718faae7d319f39e14fb992ef762e8d62"
     kind: "erc721"
@@ -85,12 +85,12 @@ contractRisk:
   - contract: "0xb1682c08beb47328d4f98ac08d3cd01679ff5c3b"
     kind: "erc721"
     methodName: "transferFrom"
-    threshold: 5
+    threshold: 2
     name: "Weapon"
   - contract: "0x52bf2fdc7f85f6d4e0c1cfcb5aa0a7033aa7a815"
     kind: "erc721"
     methodName: "transferFrom"
-    threshold: 5
+    threshold: 2
     name: "Fashion"
 #
 etcd:
