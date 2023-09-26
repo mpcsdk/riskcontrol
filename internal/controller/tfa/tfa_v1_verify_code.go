@@ -39,9 +39,9 @@ func (c *ControllerV1) VerifyCode(ctx context.Context, req *v1.VerifyCodeReq) (r
 		if v.Code == "" || v.RiskSerial == "" {
 			continue
 		}
-		err = service.TFA().DoneVerifyCode(ctx, userInfo.UserId, v.RiskSerial)
+		kind, err := service.TFA().DoneVerifyCode(ctx, userInfo.UserId, v.RiskSerial)
 		if err != nil {
-			g.Log().Warning(ctx, "VerifyCode", req, err)
+			g.Log().Warning(ctx, "VerifyCode", req, kind, err)
 			return nil, err
 		}
 	}

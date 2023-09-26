@@ -24,7 +24,7 @@ type sMailCode struct {
 }
 
 func (s *sMailCode) SendMailCode(ctx context.Context, to string) (string, error) {
-	// return "456", nil
+	return "456", nil
 	code := common.RandomDigits(6)
 	resp, err := s.t.SendMail(to, code)
 	g.Log().Debug(ctx, "SendMailCode:", to, code, resp)

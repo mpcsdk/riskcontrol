@@ -27,7 +27,7 @@ func (c *ControllerV1) TFAInfo(ctx context.Context, req *v1.TFAInfoReq) (res *v1
 		return nil, gerror.NewCode(consts.CodeTFANotExist)
 	}
 	info, err := service.DB().FetchTfaInfo(ctx, userInfo.UserId)
-	if err != nil {
+	if err != nil || info == nil {
 		g.Log().Warning(ctx, "TFAInfo:", req, userInfo, err)
 		return nil, gerror.NewCode(consts.CodeTFANotExist)
 	}

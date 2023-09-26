@@ -70,7 +70,9 @@ var BeforM1 time.Duration
 
 func init() {
 	var err error
-	BeforH24, err = gtime.ParseDuration("-24h")
+	// BeforH24, err = gtime.ParseDuration("-24h")
+	//todo:
+	BeforH24, err = gtime.ParseDuration("-10m")
 	if err != nil {
 		panic(err)
 	}

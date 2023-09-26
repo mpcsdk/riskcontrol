@@ -72,7 +72,7 @@ func (s *sSmsCode) sendCode(ctx context.Context, receiver, code string) error {
 }
 
 func (s *sSmsCode) SendCode(ctx context.Context, receiver string) (string, error) {
-	// return "123", nil
+	return "123", nil
 	code := common.RandomDigits(6)
 	ok := false
 	state := ""

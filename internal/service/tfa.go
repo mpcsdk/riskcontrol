@@ -12,7 +12,6 @@ import (
 
 type (
 	ITFA interface {
-		DoneVerifyCode(ctx context.Context, userId string, riskSerial string) error
 		TFAInfo(ctx context.Context, userId string) (*entity.Tfa, error)
 		// /
 		SendPhoneCode(ctx context.Context, userId string, riskSerial string) (string, error)
@@ -22,6 +21,7 @@ type (
 		TFAUpMail(ctx context.Context, userId string, mail string) (string, error)
 		TFATx(ctx context.Context, userId string, riskSerial string) ([]string, error)
 		VerifyCode(ctx context.Context, userId string, riskSerial string, code string) error
+		DoneVerifyCode(ctx context.Context, userId string, riskSerial string) (string, error)
 	}
 )
 

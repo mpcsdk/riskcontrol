@@ -7,35 +7,90 @@ import (
 	"github.com/gogf/gf/v2/errors/gerror"
 )
 
-func (s *sTFA) riskEventPhone(ctx context.Context, phone string, after func() error) *riskEvent {
+type riskEvent struct {
+	Kind      RiskKind
+	DoneEvent bool
+
+	Phone           string
+	VerifyPhoneCode string
+	afterPhoneFunc  func(context.Context) error
+
+	Mail           string
+	VerifyMailCode string
+	afterMailFunc  func(context.Context) error
+}
+
+func (s *riskEvent) afterFunc() func(context.Context) error {
+	if s.Kind == Key_RiskEventMail {
+		return s.afterMailFunc
+	}
+	if s.Kind == Key_RiskEventPhone {
+		return s.afterPhoneFunc
+	}
+	return nil
+}
+
+// /
+func (s *riskEvent) riskKind() RiskKind {
+	return s.Kind
+}
+func (s *riskEvent) isDone() bool {
+	return s.DoneEvent
+}
+func (s *riskEvent) verify(code string) (bool, RiskKind) {
+	if s.Kind == Key_RiskEventPhone {
+		if code == s.VerifyPhoneCode {
+			s.DoneEvent = true
+		}
+	}
+	///
+	if s.Kind == Key_RiskEventMail {
+		if code == s.VerifyMailCode {
+			s.DoneEvent = true
+		}
+	}
+	return s.DoneEvent, s.Kind
+}
+func (s *riskEvent) upCode(code string) {
+	if s.Kind == Key_RiskEventMail {
+		s.VerifyMailCode = code
+		s.DoneEvent = false
+	}
+	if s.Kind == Key_RiskEventPhone {
+		s.VerifyPhoneCode = code
+		s.DoneEvent = false
+	}
+}
+
+// /
+func newRiskEventPhone(phone string, after func(context.Context) error) *riskEvent {
 	return &riskEvent{
 		Kind:           Key_RiskEventPhone,
 		Phone:          phone,
 		afterPhoneFunc: after,
 
-		DonePhone: false,
-		DoneMail:  true,
+		DoneEvent: false,
 	}
 }
-func (s *sTFA) riskEventMail(ctx context.Context, mail string, after func() error) *riskEvent {
+func newRiskEventMail(mail string, after func(context.Context) error) *riskEvent {
 	return &riskEvent{
 		Kind:          Key_RiskEventMail,
 		Mail:          mail,
 		afterMailFunc: after,
 
 		////
-		DonePhone: true,
-		DoneMail:  false,
+		DoneEvent: false,
 	}
 }
 
+// //
+// /
+// /
 func (s *sTFA) addRiskEvent(ctx context.Context, userId, riskSerial string, event *riskEvent) {
-
 	key := keyUserRiskId(userId, riskSerial)
 	if v, ok := s.riskPendding[key]; ok {
 		v.riskEvent[event.Kind] = event
 	} else {
-
 		risk := &riskPendding{
 			UserId:     userId,
 			RiskSerial: riskSerial,
@@ -44,17 +99,6 @@ func (s *sTFA) addRiskEvent(ctx context.Context, userId, riskSerial string, even
 			},
 		}
 		s.riskPendding[key] = risk
-	}
-}
-
-func (s *sTFA) upRiskEventCode(ctx context.Context, event *riskEvent, code string) {
-	if event.Kind == Key_RiskEventMail {
-		event.VerifyMailCode = code
-		event.DoneMail = false
-	}
-	if event.Kind == Key_RiskEventPhone {
-		event.VerifyPhoneCode = code
-		event.DonePhone = false
 	}
 }
 
@@ -68,21 +112,17 @@ func (s *sTFA) fetchRiskEvent(ctx context.Context, userId string, riskSerial str
 	return nil
 }
 
-func (s *sTFA) verifyRiskPendding(ctx context.Context, userId string, riskSerial string, code string, risk *riskPendding) error {
+func (s *sTFA) verifyRiskPendding(ctx context.Context, userId string, riskSerial string, code string, risk *riskPendding) (RiskKind, error) {
+	for _, event := range risk.riskEvent {
+		if event.isDone() {
+			continue
+		}
+		if ok, k := event.verify(code); ok {
+			return k, nil
+		} else {
+			return k, gerror.NewCode(consts.CodeRiskVerifyCodeInvalid)
+		}
 
-	for kind, event := range risk.riskEvent {
-		if kind == Key_RiskEventMail {
-			if event.VerifyMailCode == code {
-				event.DoneMail = true
-				return nil
-			}
-		}
-		if kind == Key_RiskEventPhone {
-			if event.VerifyPhoneCode == code {
-				event.DonePhone = true
-				return nil
-			}
-		}
 	}
-	return gerror.NewCode(consts.CodeRiskVerifyCodeInvalid)
+	return "", gerror.NewCode(consts.CodeRiskVerifyCodeInvalid)
 }

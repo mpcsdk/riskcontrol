@@ -2,7 +2,7 @@ package tfa
 
 import (
 	"context"
-	"riskcontral/internal/model/do"
+	"riskcontral/internal/model/entity"
 	"riskcontral/internal/service"
 
 	"github.com/gogf/gf/v2/os/gtime"
@@ -18,7 +18,7 @@ func (s *sTFA) createTFA(ctx context.Context, userId, mail, phone string) error 
 	// 	Where(dao.Tfa.Columns().UserId, userId).
 	// 	Update()
 
-	e := do.Tfa{
+	e := entity.Tfa{
 		UserId:    userId,
 		CreatedAt: gtime.Now(),
 	}
@@ -36,7 +36,7 @@ func (s *sTFA) createTFA(ctx context.Context, userId, mail, phone string) error 
 }
 
 func (s *sTFA) recordPhone(ctx context.Context, userId, phone string) error {
-	err := service.DB().UpdateTfaInfo(ctx, &do.Tfa{
+	err := service.DB().UpdateTfaInfo(ctx, &entity.Tfa{
 		UserId:         userId,
 		Phone:          phone,
 		PhoneUpdatedAt: gtime.Now(),
@@ -46,7 +46,7 @@ func (s *sTFA) recordPhone(ctx context.Context, userId, phone string) error {
 }
 func (s *sTFA) recordMail(ctx context.Context, userId, mail string) error {
 
-	err := service.DB().UpdateTfaInfo(ctx, &do.Tfa{
+	err := service.DB().UpdateTfaInfo(ctx, &entity.Tfa{
 		UserId:        userId,
 		Mail:          mail,
 		MailUpdatedAt: gtime.Now(),
@@ -57,7 +57,7 @@ func (s *sTFA) recordMail(ctx context.Context, userId, mail string) error {
 
 // //
 func (s *sTFA) insertPhone(ctx context.Context, userId, phone string) error {
-	err := service.DB().InsertTfaInfo(ctx, &do.Tfa{
+	err := service.DB().InsertTfaInfo(ctx, &entity.Tfa{
 		UserId:         userId,
 		Phone:          phone,
 		PhoneUpdatedAt: gtime.Now(),
@@ -67,7 +67,7 @@ func (s *sTFA) insertPhone(ctx context.Context, userId, phone string) error {
 }
 func (s *sTFA) insertMail(ctx context.Context, userId, mail string) error {
 
-	err := service.DB().InsertTfaInfo(ctx, &do.Tfa{
+	err := service.DB().InsertTfaInfo(ctx, &entity.Tfa{
 
 		UserId:        userId,
 		Mail:          mail,

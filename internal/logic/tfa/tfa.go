@@ -30,7 +30,7 @@ func (s *verifierPhone) exec(risk *riskPendding, code string) {
 	for k, e := range risk.riskEvent {
 		if k == Key_RiskEventPhone {
 			if e.VerifyPhoneCode == code {
-				e.DonePhone = true
+				e.DoneEvent = true
 				return
 			}
 		}
@@ -49,7 +49,7 @@ func (s *verifierMail) exec(risk *riskPendding, code string) {
 	for k, e := range risk.riskEvent {
 		if k == Key_RiskEventMail {
 			if e.VerifyMailCode == code {
-				e.DoneMail = true
+				e.DoneEvent = true
 				return
 			}
 		}
@@ -114,19 +114,7 @@ const (
 	Key_RiskEventMail  = "Key_RiskEventMail"
 )
 
-type riskEvent struct {
-	Kind RiskKind
-
-	Phone           string
-	VerifyPhoneCode string
-	DonePhone       bool
-	afterPhoneFunc  func() error
-
-	Mail           string
-	VerifyMailCode string
-	DoneMail       bool
-	afterMailFunc  func() error
-}
+///
 
 func init() {
 	service.RegisterTFA(new())
@@ -146,8 +134,8 @@ func (s *sTFA) TFACreate(ctx context.Context, userId string, phone string, mail 
 	kind := []string{}
 	/// need verification
 	if phone != "" {
-		event := s.riskEventPhone(ctx, phone, func() error {
-			return s.insertPhone(s.ctx, userId, phone)
+		event := newRiskEventPhone(phone, func(ctx context.Context) error {
+			return s.insertPhone(ctx, userId, phone)
 		})
 		s.addRiskEvent(ctx, userId, riskSerial, event)
 		kind = append(kind, "phone")
@@ -155,8 +143,8 @@ func (s *sTFA) TFACreate(ctx context.Context, userId string, phone string, mail 
 
 	/// need verification
 	if mail != "" {
-		event := s.riskEventMail(ctx, mail, func() error {
-			return s.insertMail(s.ctx, userId, mail)
+		event := newRiskEventMail(mail, func(ctx context.Context) error {
+			return s.insertMail(ctx, userId, mail)
 		})
 		s.addRiskEvent(ctx, userId, riskSerial, event)
 		kind = append(kind, "mail")
@@ -186,14 +174,14 @@ func (s *sTFA) TFAUpPhone(ctx context.Context, userId string, phone string) (str
 	}
 
 	/// need verification
-	event := s.riskEventPhone(ctx, phone, func() error {
-		return s.recordPhone(s.ctx, userId, phone)
+	event := newRiskEventPhone(phone, func(ctx context.Context) error {
+		return s.recordPhone(ctx, userId, phone)
 	})
 	s.addRiskEvent(ctx, userId, riskSerial, event)
 	//
 	///tfa mailif
 	if info.Mail != "" {
-		event := s.riskEventMail(ctx, info.Mail, nil)
+		event := newRiskEventMail(info.Mail, nil)
 		s.addRiskEvent(ctx, userId, riskSerial, event)
 	}
 	///
@@ -221,13 +209,13 @@ func (s *sTFA) TFAUpMail(ctx context.Context, userId string, mail string) (strin
 
 	// modtidy mail
 	/// need verification
-	event := s.riskEventMail(ctx, mail, func() error {
-		return s.recordMail(s.ctx, userId, mail)
+	event := newRiskEventMail(mail, func(ctx context.Context) error {
+		return s.recordMail(ctx, userId, mail)
 	})
 	s.addRiskEvent(ctx, userId, riskSerial, event)
 	///tfa phone if
 	if info.Phone != "" {
-		event := s.riskEventPhone(ctx, info.Phone, nil)
+		event := newRiskEventPhone(info.Phone, nil)
 		s.addRiskEvent(ctx, userId, riskSerial, event)
 	}
 
@@ -246,13 +234,13 @@ func (s *sTFA) TFATx(ctx context.Context, userId string, riskSerial string) ([]s
 	//
 	kind := []string{}
 	if info.Phone != "" {
-		event := s.riskEventPhone(ctx, info.Phone, nil)
+		event := newRiskEventPhone(info.Phone, nil)
 		s.addRiskEvent(ctx, userId, riskSerial, event)
 		kind = append(kind, "phone")
 	}
 
 	if info.Mail != "" {
-		event := s.riskEventMail(ctx, info.Mail, nil)
+		event := newRiskEventMail(info.Mail, nil)
 		s.addRiskEvent(ctx, userId, riskSerial, event)
 		kind = append(kind, "mail")
 	}

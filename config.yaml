@@ -24,7 +24,7 @@ redis:
 
 database:
   default:
-  - link: "pgsql:postgres:123456@tcp(127.0.0.1:10100)/riskcontrol"
+  - link: "pgsql:postgres:123456@tcp(123.60.148.168:10100)/riskcontrol"
 grpc:
   name:             "riskrpc"  # 服务名称
   address:          ":8001" # 自定义服务监听地址
@@ -42,30 +42,30 @@ contractRisk:
   - contract: "0xdAC17F958D2ee523a2206206994597C13D831ec7"
     kind: "erc20"
     methodName: "transfer"
-    threshold: 100
+    threshold: 1000000000000000000
   - contract: "0x71d9cfd1b7adb1e8eb4c193ce6ffbe19b4aee0db"
     kind: "erc20"
     methodName: "transfer"
-    threshold: 100
+    threshold: 1000000000000000000
   - contract: "0x1d35fa1a131038760b6325492e236600003120f5"
     kind: "erc20"
     methodName: "transfer"
-    threshold: 100
+    threshold: 1000000000000000000
     name: "MAK"
   - contract: "0x9e4ac58cfbdf5cfe0685ad034bb5c6e26363a72a"
     kind: "erc20"
     methodName: "transfer"
-    threshold: 100
+    threshold: 1000000000000000000
     name: "MUD"
   - contract: "0x0f3a62db02f743b549053cc8d538c65ab01e3618"
     kind: "erc20"
     methodName: "transfer"
-    threshold: 100
+    threshold: 1000000000000000000
     name: "USDT"
   - contract: "0xb895607bee24aa62ca090ce0445a1893e70ee5a0"
     kind: "erc20"
     methodName: "transfer"
-    threshold: 100
+    threshold: 1000000000000000000
     name: "MIX"
   - contract: "0xfac679f8f88ffbec74e90ecbd7eea45ab294c826"
     kind: "erc721"

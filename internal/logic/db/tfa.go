@@ -35,7 +35,8 @@ func init() {
 ///
 ///
 
-func (s *sDB) InsertTfaInfo(ctx context.Context, data *do.Tfa) error {
+func (s *sDB) InsertTfaInfo(ctx context.Context, data *entity.Tfa) error {
+
 	cnt, err := g.Model(dao.Tfa.Table()).Ctx(ctx).Where(do.Tfa{
 		UserId: data.UserId,
 	}).CountColumn(dao.Tfa.Columns().UserId)
@@ -48,7 +49,7 @@ func (s *sDB) InsertTfaInfo(ctx context.Context, data *do.Tfa) error {
 
 	_, err = g.Model(dao.Tfa.Table()).Ctx(ctx).Cache(gdb.CacheOption{
 		Duration: -1,
-		Name:     dao.Tfa.Table(),
+		Name:     dao.Tfa.Table() + data.UserId,
 		Force:    false,
 	}).Data(data).
 		Insert()
@@ -57,10 +58,10 @@ func (s *sDB) InsertTfaInfo(ctx context.Context, data *do.Tfa) error {
 }
 
 // //
-func (s *sDB) UpdateTfaInfo(ctx context.Context, data *do.Tfa) error {
+func (s *sDB) UpdateTfaInfo(ctx context.Context, data *entity.Tfa) error {
 	_, err := g.Model(dao.Tfa.Table()).Ctx(ctx).Cache(gdb.CacheOption{
 		Duration: -1,
-		Name:     dao.Tfa.Table(),
+		Name:     dao.Tfa.Table() + data.UserId,
 		Force:    false,
 	}).Data(data).Where(do.Tfa{
 		UserId: data.UserId,
@@ -76,7 +77,7 @@ func (s *sDB) FetchTfaInfo(ctx context.Context, userId string) (*entity.Tfa, err
 	var data *entity.Tfa
 	rst, err := g.Model(dao.Tfa.Table()).Ctx(ctx).Cache(gdb.CacheOption{
 		Duration: time.Hour,
-		Name:     dao.Tfa.Table(),
+		Name:     dao.Tfa.Table() + userId,
 		Force:    false,
 		// }).Where("user_id", 1).One()
 	}).Where(do.Tfa{
