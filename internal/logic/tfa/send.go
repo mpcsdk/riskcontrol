@@ -48,6 +48,7 @@ func (s *sTFA) SendMailCode(ctx context.Context, userId string, riskSerial strin
 	// }
 	event := s.fetchRiskEvent(ctx, userId, riskSerial, Key_RiskEventMail)
 	if event == nil {
+		g.Log().Warning(ctx, "SendMailCode:", ctx, userId, riskSerial)
 		//todo
 		return "", gerror.NewCode(consts.CodeRiskPerformFailed)
 	}

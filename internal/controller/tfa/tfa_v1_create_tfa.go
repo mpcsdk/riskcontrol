@@ -42,14 +42,7 @@ func (c *ControllerV1) CreateTFA(ctx context.Context, req *v1.CreateTFAReq) (res
 		RiskSerial: r,
 		RiskKind:   kind,
 	}
-	// _, err = dao.Tfa.Ctx(ctx).Insert(entity.Tfa{
-	// 	UserId:         req.Token,
-	// 	CreatedAt:      gtime.Now(),
-	// 	Mail:           req.Mail,
-	// 	Phone:          req.Phone,
-	// 	PhoneUpdatedAt: gtime.Now(),
-	// 	MailUpdatedAt:  gtime.Now(),
-	// })
+
 	return res, err
 }
 
