@@ -45,7 +45,7 @@ func (s *UserTokenInfoGeter) GetUserInfo(ctx context.Context, token string) (*Us
 	userInfo := respUserInfo{}
 	err = json.Unmarshal(resp.Body(), &userInfo)
 	if err != nil {
-		g.Log().Error(ctx, "getUserInfo:", err, token)
+		g.Log().Error(ctx, "getUserInfo:", err, token, userInfo)
 		return nil, err
 	}
 	return userInfo.Data, nil

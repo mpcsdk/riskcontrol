@@ -4,6 +4,7 @@ import (
 	"context"
 	v1 "riskcontral/api/tfa/v1"
 	"riskcontral/internal/consts"
+	"riskcontral/internal/consts/conrisk"
 	"riskcontral/internal/service"
 
 	"github.com/gogf/gf/v2/errors/gerror"
@@ -19,12 +20,29 @@ func (c *ControllerV1) UpPhone(ctx context.Context, req *v1.UpPhoneReq) (res *v1
 	//
 	///check token
 	userInfo, err := service.UserInfo().GetUserInfo(ctx, req.Token)
-	if err != nil {
+	if err != nil || userInfo == nil {
 		g.Log().Warning(ctx, "UpPhone:", req, err)
 		return nil, gerror.NewCode(consts.CodeTFANotExist)
 	}
+	///upphoe riskcontrol
+	//
+	riskData := &conrisk.RiskTfa{
+		UserId: userInfo.UserId,
+		Kind:   consts.KEY_TFAKindUpPhone,
+		Phone:  req.Phone,
+	}
+	riskSerial, code, err := service.Risk().PerformRiskTFA(ctx, userInfo.UserId, riskData)
+	if err != nil {
+		return nil, err
+	}
+	if code != 0 {
+		return nil, gerror.NewCode(consts.CodeRiskPerformFailed)
+	}
+	if code == 0 {
+
+	}
 	///
-	serial, err := service.TFA().TFAUpPhone(ctx, userInfo.UserId, req.Phone)
+	serial, err := service.TFA().TFAUpPhone(ctx, userInfo.UserId, req.Phone, riskSerial)
 	if serial == "" {
 		g.Log().Warning(ctx, "UpPhone:", req, err)
 		return nil, err

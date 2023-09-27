@@ -47,6 +47,7 @@ contractRisk:
     kind: "erc20"
     methodName: "transfer"
     threshold: 1000000000000000000
+    name: ""
   - contract: "0x1d35fa1a131038760b6325492e236600003120f5"
     kind: "erc20"
     methodName: "transfer"

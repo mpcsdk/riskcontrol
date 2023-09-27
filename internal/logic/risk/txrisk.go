@@ -38,24 +38,32 @@ func (s *sRisk) checkTx(ctx context.Context, riskTx *conrisk.RiskTx) (int32, err
 		if rcfg.Kind == "erc20" {
 			cnt, err := rule_Token(ctx, rcfg.Contract, rcfg.MethodName, data)
 			if err != nil {
+				g.Log().Warning(ctx, "checTx rule_Token:", riskTx, err)
 				return 1, err
 			}
 			threshold := &big.Int{}
+			//todo:
 			threshold.UnmarshalText([]byte("1000000000000000000"))
 			if cnt.Cmp(threshold) > 0 {
+				g.Log().Warning(ctx, "checTx > threshold:", riskTx, cnt.String(), threshold.String())
 				return 1, nil
 			}
+			g.Log().Debug(ctx, "checTx < threshold:", riskTx, cnt.String(), threshold.String())
 			return 0, nil
 		} else if rcfg.Kind == "erc721" {
 			cnt, err := rule_nftcnt(ctx, rcfg.Contract, rcfg.MethodName, data)
 			if err != nil {
+				g.Log().Warning(ctx, "checTx rule_Token:", riskTx, err)
 				return 1, err
 			}
 			if cnt > rcfg.Threshold {
+				g.Log().Debug(ctx, "checTx > threshold:", riskTx, cnt, rcfg.Threshold)
 				return 1, nil
 			}
+			g.Log().Debug(ctx, "checTx < threshold:", riskTx, cnt, rcfg.Threshold)
 			return 0, nil
 		} else {
+			g.Log().Warning(ctx, "checkTx unkonwo contract:", riskTx)
 			return 1, gerror.NewCode(gcode.CodeInvalidParameter)
 		}
 	}

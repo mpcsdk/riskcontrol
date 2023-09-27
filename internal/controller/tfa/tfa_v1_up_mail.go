@@ -4,6 +4,7 @@ import (
 	"context"
 	v1 "riskcontral/api/tfa/v1"
 	"riskcontral/internal/consts"
+	"riskcontral/internal/consts/conrisk"
 	"riskcontral/internal/service"
 
 	"github.com/gogf/gf/v2/errors/gerror"
@@ -23,8 +24,26 @@ func (c *ControllerV1) UpMail(ctx context.Context, req *v1.UpMailReq) (res *v1.U
 		g.Log().Warning(ctx, "UpMail:", req, err)
 		return nil, gerror.NewCode(consts.CodeTFANotExist)
 	}
+	///upphoe riskcontrol
+	//
+	riskData := &conrisk.RiskTfa{
+		UserId: userInfo.UserId,
+		Kind:   consts.KEY_TFAKindUpMail,
+		Mail:   req.Mail,
+	}
+	riskSerial, code, err := service.Risk().PerformRiskTFA(ctx, userInfo.UserId, riskData)
+	if err != nil {
+		return nil, err
+	}
+	if code != 0 {
+		return nil, gerror.NewCode(consts.CodeRiskPerformFailed)
+	}
+	if code == 0 {
+
+	}
 	///
-	serial, err := service.TFA().TFAUpMail(ctx, userInfo.UserId, req.Mail)
+	///
+	serial, err := service.TFA().TFAUpMail(ctx, userInfo.UserId, req.Mail, riskSerial)
 	if serial == "" {
 		g.Log().Warning(ctx, "UpMail:", req, err)
 		return nil, err

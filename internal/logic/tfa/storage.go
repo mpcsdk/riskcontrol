@@ -56,22 +56,22 @@ func (s *sTFA) recordMail(ctx context.Context, userId string, mail *string) erro
 }
 
 // //
-func (s *sTFA) insertPhone(ctx context.Context, userId string, phone *string) error {
-	err := service.DB().InsertTfaInfo(ctx, userId, &do.Tfa{
-		UserId:         userId,
-		Phone:          phone,
-		PhoneUpdatedAt: gtime.Now(),
-	})
+// func (s *sTFA) insertPhone(ctx context.Context, userId string, phone *string) error {
+// 	err := service.DB().InsertTfaInfo(ctx, userId, &do.Tfa{
+// 		UserId:         userId,
+// 		Phone:          phone,
+// 		PhoneUpdatedAt: gtime.Now(),
+// 	})
 
-	return err
-}
-func (s *sTFA) insertMail(ctx context.Context, userId string, mail *string) error {
+// 	return err
+// }
+// func (s *sTFA) insertMail(ctx context.Context, userId string, mail *string) error {
 
-	err := service.DB().InsertTfaInfo(ctx, userId, &do.Tfa{
+// 	err := service.DB().InsertTfaInfo(ctx, userId, &do.Tfa{
 
-		UserId:        userId,
-		Mail:          mail,
-		MailUpdatedAt: gtime.Now(),
-	})
-	return err
-}
+// 		UserId:        userId,
+// 		Mail:          mail,
+// 		MailUpdatedAt: gtime.Now(),
+// 	})
+// 	return err
+// }

@@ -13,6 +13,7 @@ import (
 
 type (
 	IDB interface {
+		GetAbi(ctx context.Context, addr string) (string, error)
 		InsertTfaInfo(ctx context.Context, userId string, data *do.Tfa) error
 		// //
 		UpdateTfaInfo(ctx context.Context, userId string, data *do.Tfa) error
