@@ -3,11 +3,8 @@ package risk
 import (
 	"context"
 	v1 "riskcontral/api/risk/v1"
-	"riskcontral/common/ethtx"
 	"riskcontral/internal/consts"
-	"riskcontral/internal/consts/conrisk"
 	"riskcontral/internal/service"
-	"strings"
 
 	"github.com/gogf/gf/contrib/rpc/grpcx/v2"
 	"github.com/gogf/gf/v2/errors/gcode"
@@ -90,50 +87,27 @@ func (*Controller) PerformRiskTxs(ctx context.Context, req *v1.TxRiskReq) (res *
 	//trace
 	ctx, span := gtrace.NewSpan(ctx, "performRiskTxs")
 	defer span.End()
-	//
 	///
 	g.Log().Debug(ctx, "PerformRiskTxs:", req)
-	req.Address = strings.ToLower(req.Address)
-	///
-	txs := []*conrisk.RiskTx{}
-	for _, tx := range req.Txs {
-		contract := strings.ToLower(tx.Contract)
-		contractabi, err := service.RulesDb().GetAbi(ctx, contract)
-		if err != nil {
-			return nil, gerror.NewCode(gcode.CodeInternalError)
-		}
-		tx, err := ethtx.AnalzyTxData(contractabi, tx.TxData)
-		if err != nil {
-			return nil, gerror.NewCode(gcode.CodeInternalError)
-		}
-		////
-		txs = append(txs, &conrisk.RiskTx{
-			Address:  req.Address,
-			Contract: contract,
-			//
-			MethodName: tx.MethodName,
-			MethodId:   tx.MethodId,
-			Args:       tx.Args,
-			// From: tx.Args[]
-		})
-		g.Log().Debug(ctx, "PerformRiskTx:", tx)
+
+	/////
+	serial, code := service.Risk().PerformRiskTxs(ctx, req.UserId, req.SignTxData)
+	if code == consts.RiskCodeError {
+		return nil, gerror.NewCode(consts.CodePerformRiskFailed)
 	}
-	serial, code, err := service.Risk().PerformRiskTxs(ctx, req.UserId, req.Address, txs)
-	g.Log().Info(ctx, "PerformRiskTx:", req, serial)
-	if code == 0 {
+	g.Log().Info(ctx, "PerformRiskTx:", req, serial, code)
+	if code == consts.RiskCodePass {
 		return &v1.TxRiskRes{
 			Ok: code,
 		}, nil
 	}
-	if err != nil {
-		g.Log().Error(ctx, "PerformRiskTx", serial, err)
-	}
+	///
 	//
 	//notice: wait tfatx
 	kinds, err := service.TFA().TFATx(ctx, req.UserId, serial)
 	if err != nil {
 		g.Log().Warning(ctx, "PerformRiskTxs:", "PerformRiskTFA:", req.UserId, serial)
-		return nil, gerror.NewCode(consts.CodeRiskPerformFailed)
+		return nil, gerror.NewCode(consts.CodePerformRiskFailed)
 	}
 	///
 	g.Log().Info(ctx, "PerformRiskTFA:", req.UserId, serial, kinds)

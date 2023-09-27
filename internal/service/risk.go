@@ -12,8 +12,8 @@ import (
 
 type (
 	IRisk interface {
-		PerformRiskTxs(ctx context.Context, userId string, address string, txs []*conrisk.RiskTx) (string, int32, error)
-		PerformRiskTFA(ctx context.Context, userId string, riskData *conrisk.RiskTfa) (string, int32, error)
+		PerformRiskTxs(ctx context.Context, userId string, signTx string) (string, int32)
+		PerformRiskTFA(ctx context.Context, userId string, riskData *conrisk.RiskTfa) (string, int32)
 	}
 )
 

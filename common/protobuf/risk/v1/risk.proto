@@ -27,7 +27,7 @@ message TxRiskReq {
     string UserId = 1;// v: required
     string Address = 2; // v: required
     ////
-    repeated RiskTx Txs = 3; // v: required
+    string SignTxData = 3; // v: required
 }
 
 

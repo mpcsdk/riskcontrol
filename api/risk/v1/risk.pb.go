@@ -88,7 +88,7 @@ type TxRiskReq struct {
 	UserId  string `protobuf:"bytes,1,opt,name=UserId,proto3" json:"UserId,omitempty" v:"required"`   // v: required
 	Address string `protobuf:"bytes,2,opt,name=Address,proto3" json:"Address,omitempty" v:"required"` // v: required
 	// //
-	Txs []*RiskTx `protobuf:"bytes,3,rep,name=Txs,proto3" json:"Txs,omitempty" dc:"//" v:"required"` // v: required
+	SignTxData string `protobuf:"bytes,3,opt,name=SignTxData,proto3" json:"SignTxData,omitempty" dc:"//" v:"required"` // v: required
 }
 
 func (x *TxRiskReq) Reset() {
@@ -137,11 +137,11 @@ func (x *TxRiskReq) GetAddress() string {
 	return ""
 }
 
-func (x *TxRiskReq) GetTxs() []*RiskTx {
+func (x *TxRiskReq) GetSignTxData() string {
 	if x != nil {
-		return x.Txs
+		return x.SignTxData
 	}
-	return nil
+	return ""
 }
 
 type TxRiskRes struct {
@@ -687,9 +687,9 @@ var file_risk_v1_risk_proto_rawDesc = []byte{
 	0x65, 0x71, 0x12, 0x16, 0x0a, 0x06, 0x55, 0x73, 0x65, 0x72, 0x49, 0x64, 0x18, 0x01, 0x20, 0x01,
 	0x28, 0x09, 0x52, 0x06, 0x55, 0x73, 0x65, 0x72, 0x49, 0x64, 0x12, 0x18, 0x0a, 0x07, 0x41, 0x64,
 	0x64, 0x72, 0x65, 0x73, 0x73, 0x18, 0x02, 0x20, 0x01, 0x28, 0x09, 0x52, 0x07, 0x41, 0x64, 0x64,
-	0x72, 0x65, 0x73, 0x73, 0x12, 0x1e, 0x0a, 0x03, 0x54, 0x78, 0x73, 0x18, 0x03, 0x20, 0x03, 0x28,
-	0x0b, 0x32, 0x0c, 0x2e, 0x72, 0x69, 0x73, 0x6b, 0x2e, 0x52, 0x69, 0x73, 0x6b, 0x54, 0x78, 0x52,
-	0x03, 0x54, 0x78, 0x73, 0x22, 0x69, 0x0a, 0x09, 0x54, 0x78, 0x52, 0x69, 0x73, 0x6b, 0x52, 0x65,
+	0x72, 0x65, 0x73, 0x73, 0x12, 0x1e, 0x0a, 0x0a, 0x53, 0x69, 0x67, 0x6e, 0x54, 0x78, 0x44, 0x61,
+	0x74, 0x61, 0x18, 0x03, 0x20, 0x01, 0x28, 0x09, 0x52, 0x0a, 0x53, 0x69, 0x67, 0x6e, 0x54, 0x78,
+	0x44, 0x61, 0x74, 0x61, 0x22, 0x69, 0x0a, 0x09, 0x54, 0x78, 0x52, 0x69, 0x73, 0x6b, 0x52, 0x65,
 	0x73, 0x12, 0x0e, 0x0a, 0x02, 0x4f, 0x6b, 0x18, 0x01, 0x20, 0x01, 0x28, 0x05, 0x52, 0x02, 0x4f,
 	0x6b, 0x12, 0x10, 0x0a, 0x03, 0x4d, 0x73, 0x67, 0x18, 0x02, 0x20, 0x01, 0x28, 0x09, 0x52, 0x03,
 	0x4d, 0x73, 0x67, 0x12, 0x1e, 0x0a, 0x0a, 0x52, 0x69, 0x73, 0x6b, 0x53, 0x65, 0x72, 0x69, 0x61,
@@ -784,24 +784,23 @@ var file_risk_v1_risk_proto_goTypes = []interface{}{
 	(*empty.Empty)(nil),    // 11: google.protobuf.Empty
 }
 var file_risk_v1_risk_proto_depIdxs = []int32{
-	0,  // 0: risk.TxRiskReq.Txs:type_name -> risk.RiskTx
-	11, // 1: risk.User.PerformAlive:input_type -> google.protobuf.Empty
-	1,  // 2: risk.User.PerformRiskTxs:input_type -> risk.TxRiskReq
-	3,  // 3: risk.User.PerformRiskTFA:input_type -> risk.TFARiskReq
-	5,  // 4: risk.User.PerformSmsCode:input_type -> risk.SmsCodeReq
-	7,  // 5: risk.User.PerformMailCode:input_type -> risk.MailCodekReq
-	9,  // 6: risk.User.PerformVerifyCode:input_type -> risk.VerifyCodekReq
-	11, // 7: risk.User.PerformAlive:output_type -> google.protobuf.Empty
-	2,  // 8: risk.User.PerformRiskTxs:output_type -> risk.TxRiskRes
-	4,  // 9: risk.User.PerformRiskTFA:output_type -> risk.TFARiskRes
-	6,  // 10: risk.User.PerformSmsCode:output_type -> risk.SmsCodeRes
-	8,  // 11: risk.User.PerformMailCode:output_type -> risk.MailCodekRes
-	10, // 12: risk.User.PerformVerifyCode:output_type -> risk.VerifyCodeRes
-	7,  // [7:13] is the sub-list for method output_type
-	1,  // [1:7] is the sub-list for method input_type
-	1,  // [1:1] is the sub-list for extension type_name
-	1,  // [1:1] is the sub-list for extension extendee
-	0,  // [0:1] is the sub-list for field type_name
+	11, // 0: risk.User.PerformAlive:input_type -> google.protobuf.Empty
+	1,  // 1: risk.User.PerformRiskTxs:input_type -> risk.TxRiskReq
+	3,  // 2: risk.User.PerformRiskTFA:input_type -> risk.TFARiskReq
+	5,  // 3: risk.User.PerformSmsCode:input_type -> risk.SmsCodeReq
+	7,  // 4: risk.User.PerformMailCode:input_type -> risk.MailCodekReq
+	9,  // 5: risk.User.PerformVerifyCode:input_type -> risk.VerifyCodekReq
+	11, // 6: risk.User.PerformAlive:output_type -> google.protobuf.Empty
+	2,  // 7: risk.User.PerformRiskTxs:output_type -> risk.TxRiskRes
+	4,  // 8: risk.User.PerformRiskTFA:output_type -> risk.TFARiskRes
+	6,  // 9: risk.User.PerformSmsCode:output_type -> risk.SmsCodeRes
+	8,  // 10: risk.User.PerformMailCode:output_type -> risk.MailCodekRes
+	10, // 11: risk.User.PerformVerifyCode:output_type -> risk.VerifyCodeRes
+	6,  // [6:12] is the sub-list for method output_type
+	0,  // [0:6] is the sub-list for method input_type
+	0,  // [0:0] is the sub-list for extension type_name
+	0,  // [0:0] is the sub-list for extension extendee
+	0,  // [0:0] is the sub-list for field type_name
 }
 
 func init() { file_risk_v1_risk_proto_init() }

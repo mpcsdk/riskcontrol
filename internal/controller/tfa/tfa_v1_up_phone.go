@@ -31,14 +31,14 @@ func (c *ControllerV1) UpPhone(ctx context.Context, req *v1.UpPhoneReq) (res *v1
 		Kind:   consts.KEY_TFAKindUpPhone,
 		Phone:  req.Phone,
 	}
-	riskSerial, code, err := service.Risk().PerformRiskTFA(ctx, userInfo.UserId, riskData)
-	if err != nil {
-		return nil, err
+	riskSerial, code := service.Risk().PerformRiskTFA(ctx, userInfo.UserId, riskData)
+	if code == consts.RiskCodeError {
+		return nil, gerror.NewCode(consts.CodePerformRiskFailed)
 	}
-	if code != 0 {
-		return nil, gerror.NewCode(consts.CodeRiskPerformFailed)
+	if code == consts.RiskCodeNeedVerification {
+		// return nil, gerror.NewCode(consts.CodePerformRiskNeedVerification)
 	}
-	if code == 0 {
+	if code == consts.RiskCodePass {
 
 	}
 	///

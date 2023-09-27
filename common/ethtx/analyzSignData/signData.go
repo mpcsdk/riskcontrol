@@ -19,39 +19,40 @@ type SignTxData struct {
 	Target string `json:"target,omitempty"`
 	Data   string `json:"data,omitempty"`
 }
-type analzyer struct {
+type Analzyer struct {
 	abis map[string]string
 }
 
-func NewAnalzer() *analzyer {
-	return &analzyer{
+func NewAnalzer() *Analzyer {
+	return &Analzyer{
 		abis: map[string]string{},
 	}
 }
-func (s *analzyer) AnalzySignTxData(signData string) error {
+func (s *Analzyer) AnalzySignTxData(signData string) (*AnalzyedTx, error) {
 	signtx := &SignTx{}
 	err := json.Unmarshal([]byte(signData), signtx)
 	if err != nil {
-		return err
+		return nil, err
 	}
 	///
 	atx := &AnalzyedTx{}
+	atx.Address = signtx.Address
 	///
 	for _, tx := range signtx.Txs {
 		adata, err := s.analzyTx(tx)
 		if err != nil {
-			return err
+			return nil, err
 		}
 		atx.Txs = append(atx.Txs, adata)
 	}
-	return nil
+	return atx, nil
 }
-func (s *analzyer) AddAbi(addr string, abi string) {
+func (s *Analzyer) AddAbi(addr string, abi string) {
 	s.abis[addr] = abi
 }
 
 // //
-func (s *analzyer) analzyTx(tx *SignTxData) (*AnalzyedTxData, error) {
+func (s *Analzyer) analzyTx(tx *SignTxData) (*AnalzyedTxData, error) {
 
 	if abistr, ok := s.abis[tx.Target]; !ok {
 		return nil, nil
@@ -63,7 +64,7 @@ func (s *analzyer) analzyTx(tx *SignTxData) (*AnalzyedTxData, error) {
 			return nil, err
 		}
 		//data
-		dataByte, err := hex.DecodeString(tx.Data)
+		dataByte, err := hex.DecodeString(strings.TrimPrefix(tx.Data, "0x"))
 		if err != nil {
 			return nil, err
 		}
