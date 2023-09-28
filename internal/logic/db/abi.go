@@ -30,7 +30,7 @@ func (s *sDB) GetAbi(ctx context.Context, addr string) (string, error) {
 		g.Log().Warning(ctx, "GetAbi:", addr, err)
 		return "", gerror.NewCode(consts.CodeInternalError)
 	}
-	if data == nil {
+	if rst == nil {
 		g.Log().Warning(ctx, "GetAbi not exist:", addr)
 		return "", gerror.NewCode(consts.CodeInternalError)
 	}

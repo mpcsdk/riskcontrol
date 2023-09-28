@@ -9,6 +9,7 @@ import (
 
 	v1 "riskcontral/api/tfa/v1"
 	"riskcontral/internal/consts"
+	"riskcontral/internal/model"
 	"riskcontral/internal/service"
 )
 
@@ -23,16 +24,15 @@ func (c *ControllerV1) VerifyCode(ctx context.Context, req *v1.VerifyCodeReq) (r
 		return nil, gerror.NewCode(consts.CodeTFANotExist)
 	}
 
-	for _, v := range req.VerifyReq {
-		if v.Code == "" || v.RiskSerial == "" {
-			continue
-		}
+	code := &model.VerifyCode{
+		PhoneCode: req.PhoneCode,
+		MailCode:  req.MailCode,
+	}
 
-		err = service.TFA().VerifyCode(ctx, userInfo.UserId, v.RiskSerial, v.Code)
-		if err != nil {
-			g.Log().Warning(ctx, "VerifyCode", req, err)
-			return nil, err
-		}
+	err = service.TFA().VerifyCode(ctx, userInfo.UserId, req.RiskSerial, code)
+	if err != nil {
+		g.Log().Warning(ctx, "VerifyCode", req, err)
+		return nil, err
 	}
 
 	// }

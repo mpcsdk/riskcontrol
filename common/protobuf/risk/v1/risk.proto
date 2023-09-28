@@ -73,8 +73,10 @@ message MailCodekRes {
 message VerifyCodekReq {
     string RiskSerial = 1; // v: required
     string Token = 2; // v: required
-    string Code = 3; // v: required
+    string PhoneCode = 3; // v: required
+    string MailCode = 4; // v: required
 }
+
 message VerifyCodeRes {
     int32 Ok = 1;
     string Msg = 2;

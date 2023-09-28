@@ -163,7 +163,7 @@ func (s *sTFA) TFAUpPhone(ctx context.Context, userId string, phone string, risk
 		s.addRiskEvent(ctx, userId, riskSerial, event)
 	}
 	///
-	return riskSerial, gerror.NewCode(consts.CodeRiskNeedVerification)
+	return riskSerial, gerror.NewCode(consts.CodePerformRiskNeedVerification)
 
 }
 
@@ -187,7 +187,7 @@ func (s *sTFA) TFAUpMail(ctx context.Context, userId string, mail string, riskSe
 	}
 
 	//
-	return riskSerial, gerror.NewCode(consts.CodeRiskNeedVerification)
+	return riskSerial, gerror.NewCode(consts.CodePerformRiskNeedVerification)
 	//
 
 }

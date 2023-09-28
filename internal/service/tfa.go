@@ -8,6 +8,7 @@ package service
 import (
 	"context"
 	"riskcontral/internal/model/entity"
+	"riskcontral/internal/model"
 )
 
 type (
@@ -20,7 +21,7 @@ type (
 		TFAUpPhone(ctx context.Context, userId string, phone string, riskSerial string) (string, error)
 		TFAUpMail(ctx context.Context, userId string, mail string, riskSerial string) (string, error)
 		TFATx(ctx context.Context, userId string, riskSerial string) ([]string, error)
-		VerifyCode(ctx context.Context, userId string, riskSerial string, code string) error
+		VerifyCode(ctx context.Context, userId string, riskSerial string, code *model.VerifyCode) error
 	}
 )
 

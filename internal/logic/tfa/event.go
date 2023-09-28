@@ -3,26 +3,24 @@ package tfa
 import (
 	"context"
 	"riskcontral/internal/consts"
+	"riskcontral/internal/model"
 
 	"github.com/gogf/gf/v2/errors/gerror"
 )
 
 type verifier interface {
-	exec(risk *riskPendding, verifierCode *verifierCode)
+	exec(risk *riskPendding, verifierCode *model.VerifyCode)
 	setNext(verifier)
 }
-type verifierCode struct {
-	phoneCode string
-	mailCode  string
-}
+
 type verifierPhone struct {
 	next verifier
 }
 
-func (s *verifierPhone) exec(risk *riskPendding, verifierCode *verifierCode) {
+func (s *verifierPhone) exec(risk *riskPendding, verifierCode *model.VerifyCode) {
 	for k, e := range risk.riskEvent {
 		if k == Key_RiskEventPhone {
-			if e.VerifyPhoneCode == verifierCode.phoneCode {
+			if e.VerifyPhoneCode == verifierCode.PhoneCode {
 				e.DoneEvent = true
 				return
 			}
@@ -41,10 +39,10 @@ type verifierMail struct {
 	next verifier
 }
 
-func (s *verifierMail) exec(risk *riskPendding, verifierCode *verifierCode) {
+func (s *verifierMail) exec(risk *riskPendding, verifierCode *model.VerifyCode) {
 	for k, e := range risk.riskEvent {
 		if k == Key_RiskEventMail {
-			if e.VerifyMailCode == verifierCode.mailCode {
+			if e.VerifyMailCode == verifierCode.MailCode {
 				e.DoneEvent = true
 				return
 			}
@@ -166,19 +164,28 @@ func (s *sTFA) fetchRiskEvent(ctx context.Context, userId string, riskSerial str
 	return nil
 }
 
-func (s *sTFA) verifyRiskPendding(ctx context.Context, userId string, riskSerial string, code string, risk *riskPendding) (RiskKind, error) {
+func (s *sTFA) verifyRiskPendding(ctx context.Context, userId string, riskSerial string, code *model.VerifyCode, risk *riskPendding) (RiskKind, error) {
 	for _, event := range risk.riskEvent {
 		// if event.isDone() {
 		// 	continue
 		// }
-		if ok, k := event.verify(code); ok {
-			return k, nil
-		} else {
-			if event.Kind == Key_RiskEventMail {
+		if event.Kind == Key_RiskEventMail {
+			ok, k := event.verify(code.MailCode)
+			if ok {
+				return "", nil
+
+			} else {
 				return k, gerror.NewCode(consts.CodeRiskVerifyMailInvalid)
 			}
-			if event.Kind == Key_RiskEventPhone {
-				return k, gerror.NewCode(consts.CodeRiskVerifyPhoneInvalid)
+		}
+		if event.Kind == Key_RiskEventPhone {
+			ok, k := event.verify(code.PhoneCode)
+			if ok {
+				return "", nil
+
+			} else {
+				return event.Kind, gerror.NewCode(consts.CodeRiskVerifyPhoneInvalid)
+				return k, gerror.NewCode(consts.CodeRiskVerifyMailInvalid)
 			}
 		}
 	}

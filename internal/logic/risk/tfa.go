@@ -19,12 +19,15 @@ func (s *sRisk) checkTFAUpPhone(ctx context.Context, userId string) (int32, erro
 	/////
 	info, err := service.TFA().TFAInfo(ctx, userId)
 	if err != nil {
+		g.Log().Warning(ctx, "checkTFAUpPhone:", userId, "err:", err)
 		return consts.RiskCodeError, err
 	}
 	if info == nil {
+		g.Log().Debug(ctx, "checkTFAUpPhone:", userId, "info:", info)
 		return consts.RiskCodePass, nil
 	}
 	if info.PhoneUpdatedAt == nil {
+		g.Log().Debug(ctx, "checkTFAUpPhone:", userId, "info.PhoneUpdatedAt:", info.PhoneUpdatedAt)
 		return consts.RiskCodePass, nil
 	}
 

@@ -44,9 +44,11 @@ type VerifyReq struct {
 	Code       string `json:"code"`
 }
 type VerifyCodeReq struct {
-	g.Meta    `path:"/verifyCode" tags:"verifyCode" method:"post" summary:"verifyCode"`
-	Token     string       `json:"token"`
-	VerifyReq []*VerifyReq `json:"codes"`
+	g.Meta     `path:"/verifyCode" tags:"verifyCode" method:"post" summary:"verifyCode"`
+	Token      string `json:"token"`
+	RiskSerial string `json:"riskSerial"`
+	PhoneCode  string `json:"phoneCode"`
+	MailCode   string `json:"mailCode"`
 }
 type VerifyCodeRes struct {
 	g.Meta `mime:"text/html" example:"string"`

@@ -30,13 +30,10 @@ func (s *sRisk) PerformRiskTxs(ctx context.Context, userId string, signTx string
 	riskserial := common.GenNewSid()
 	///
 	info, err := service.TFA().TFAInfo(ctx, userId)
-	if err != nil {
+	if err != nil || info == nil {
+		g.Log().Warning(ctx, "PerformRiskTxs: tfinfo:", userId, signTx, err)
 		return "", consts.RiskCodeError
 		//, err
-	}
-	if info == nil {
-		return "", consts.RiskCodeError
-		///, gerror.NewCode(consts.CodeTFANotExist)
 	}
 	///
 	befor24h := gtime.Now().Add(BeforH24)

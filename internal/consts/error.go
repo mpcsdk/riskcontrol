@@ -30,8 +30,8 @@ var (
 	CodeTFASendSmsFailed  = &errCode{14, "TFA Send Sms Failed", nil}  // The token does not exist.
 	CodeTFASendMailFailed = &errCode{15, "TFA Send Mail Failed", nil} // The token does not exist.
 	///
-	CodeRiskNeedVerification   = &errCode{21, "Risk Need a VerificationCode", nil} // The risk need verification code
-	CodeRiskVerifyCodeInvalid  = &errCode{22, "Verify Code Invalid", nil}          // The verify code is invalid.
+	// CodeRiskNeedVerification   = &errCode{21, "Risk Need a VerificationCode", nil} // The risk need verification code
+	CodeRiskVerifyCodeInvalid  = &errCode{22, "Verify Code Invalid", nil} // The verify code is invalid.
 	CodeRiskSerialNotExist     = &errCode{23, "Verify RiskSerial NotExist", nil}
 	CodeRiskVerifyPhoneInvalid = &errCode{24, "Verify Phone Invalid", nil} //
 	CodeRiskVerifyMailInvalid  = &errCode{25, "Verify Mail Invalid", nil}  //
