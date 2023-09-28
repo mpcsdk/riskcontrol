@@ -21,7 +21,7 @@ func (s *sTFA) SendPhoneCode(ctx context.Context, userId string, riskSerial stri
 	event := s.fetchRiskEvent(ctx, userId, riskSerial, Key_RiskEventPhone)
 	if event == nil {
 		//todo
-		return "", gerror.NewCode(consts.CodeRiskNotExist)
+		return "", gerror.NewCode(consts.CodeRiskSerialNotExist)
 	}
 
 	code, err := service.SmsCode().SendCode(ctx, event.Phone)
@@ -50,7 +50,7 @@ func (s *sTFA) SendMailCode(ctx context.Context, userId string, riskSerial strin
 	if event == nil {
 		g.Log().Warning(ctx, "SendMailCode:", userId, riskSerial)
 		//todo
-		return "", gerror.NewCode(consts.CodeRiskNotExist)
+		return "", gerror.NewCode(consts.CodeRiskSerialNotExist)
 	}
 
 	code, err := service.MailCode().SendMailCode(ctx, event.Mail)

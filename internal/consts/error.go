@@ -32,11 +32,10 @@ var (
 	///
 	CodeRiskNeedVerification   = &errCode{21, "Risk Need a VerificationCode", nil} // The risk need verification code
 	CodeRiskVerifyCodeInvalid  = &errCode{22, "Verify Code Invalid", nil}          // The verify code is invalid.
-	CodeRiskVerifyCodeNotExist = &errCode{23, "Verify RiskSerial NotExist", nil}
-	CodeRiskVerifyPhoneInvalid = &errCode{24, "Verify Phone Invalid", nil}  //
-	CodeRiskVerifyMailInvalid  = &errCode{25, "Verify Mail Invalid", nil}   //
-	CodeRiskNotExist           = &errCode{26, "Verify Risk Not Exist", nil} //
-
+	CodeRiskSerialNotExist     = &errCode{23, "Verify RiskSerial NotExist", nil}
+	CodeRiskVerifyPhoneInvalid = &errCode{24, "Verify Phone Invalid", nil} //
+	CodeRiskVerifyMailInvalid  = &errCode{25, "Verify Mail Invalid", nil}  //
+	// CodeRiskNotExist           = &errCode{26, "Verify Risk Not Exist", nil} //
 	///
 	CodePerformRiskForbidden        = &errCode{31, "Perform Risk Forbidden", nil}         //
 	CodePerformRiskNeedVerification = &errCode{32, "Perform Risk Need Verification", nil} //
