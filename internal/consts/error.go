@@ -38,8 +38,9 @@ var (
 	CodeRiskNotExist           = &errCode{26, "Verify Risk Not Exist", nil} //
 
 	///
-	CodePerformRiskFailed           = &errCode{31, "Perform Risk Failed", nil}            //
+	CodePerformRiskForbidden        = &errCode{31, "Perform Risk Forbidden", nil}         //
 	CodePerformRiskNeedVerification = &errCode{32, "Perform Risk Need Verification", nil} //
+	CodePerformRiskError            = &errCode{33, "Perform Risk Error", nil}             //
 	///
 	///
 	CodeInternalError = &errCode{50, "Internal Error", nil} // An error occurred internally.
@@ -49,5 +50,6 @@ var (
 const (
 	RiskCodePass int32 = iota
 	RiskCodeNeedVerification
+	RiskCodeForbidden
 	RiskCodeError
 )

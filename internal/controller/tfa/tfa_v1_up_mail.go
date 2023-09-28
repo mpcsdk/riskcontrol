@@ -32,8 +32,11 @@ func (c *ControllerV1) UpMail(ctx context.Context, req *v1.UpMailReq) (res *v1.U
 		Mail:   req.Mail,
 	}
 	riskSerial, code := service.Risk().PerformRiskTFA(ctx, userInfo.UserId, riskData)
-	if code == consts.RiskCodeError {
-		return nil, gerror.NewCode(consts.CodePerformRiskFailed)
+	if code == consts.RiskCodeForbidden {
+		return nil, gerror.NewCode(consts.CodePerformRiskError)
+	}
+	if code == consts.RiskCodeForbidden {
+
 	}
 	if code == consts.RiskCodeNeedVerification {
 		// return nil, gerror.NewCode(consts.CodePerformRiskNeedVerification)

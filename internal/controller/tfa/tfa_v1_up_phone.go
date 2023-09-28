@@ -32,8 +32,11 @@ func (c *ControllerV1) UpPhone(ctx context.Context, req *v1.UpPhoneReq) (res *v1
 		Phone:  req.Phone,
 	}
 	riskSerial, code := service.Risk().PerformRiskTFA(ctx, userInfo.UserId, riskData)
-	if code == consts.RiskCodeError {
-		return nil, gerror.NewCode(consts.CodePerformRiskFailed)
+	if code == consts.RiskCodeForbidden {
+		return nil, gerror.NewCode(consts.CodePerformRiskError)
+	}
+	if code == consts.RiskCodeForbidden {
+		//todo:
 	}
 	if code == consts.RiskCodeNeedVerification {
 		// return nil, gerror.NewCode(consts.CodePerformRiskNeedVerification)

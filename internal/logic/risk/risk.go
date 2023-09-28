@@ -41,7 +41,7 @@ func (s *sRisk) PerformRiskTxs(ctx context.Context, userId string, signTx string
 	///
 	befor24h := gtime.Now().Add(BeforH24)
 	if !s.isBefor(info.MailUpdatedAt, befor24h) {
-		return "", consts.RiskCodeError
+		return "", consts.RiskCodeForbidden
 		///, nil
 	}
 	///

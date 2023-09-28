@@ -7,6 +7,60 @@ import (
 	"github.com/gogf/gf/v2/errors/gerror"
 )
 
+type verifier interface {
+	exec(risk *riskPendding, verifierCode *verifierCode)
+	setNext(verifier)
+}
+type verifierCode struct {
+	phoneCode string
+	mailCode  string
+}
+type verifierPhone struct {
+	next verifier
+}
+
+func (s *verifierPhone) exec(risk *riskPendding, verifierCode *verifierCode) {
+	for k, e := range risk.riskEvent {
+		if k == Key_RiskEventPhone {
+			if e.VerifyPhoneCode == verifierCode.phoneCode {
+				e.DoneEvent = true
+				return
+			}
+		}
+	}
+	if s.next == nil {
+		return
+	}
+	s.next.exec(risk, verifierCode)
+}
+func (s *verifierPhone) setNext(v verifier) {
+	s.next = v
+}
+
+type verifierMail struct {
+	next verifier
+}
+
+func (s *verifierMail) exec(risk *riskPendding, verifierCode *verifierCode) {
+	for k, e := range risk.riskEvent {
+		if k == Key_RiskEventMail {
+			if e.VerifyMailCode == verifierCode.mailCode {
+				e.DoneEvent = true
+				return
+			}
+		}
+	}
+	if s.next == nil {
+		return
+	}
+	s.next.exec(risk, verifierCode)
+}
+func (s *verifierMail) setNext(v verifier) {
+	s.next = v
+}
+
+// //
+// //
 type riskEvent struct {
 	Kind      RiskKind
 	DoneEvent bool
@@ -114,9 +168,9 @@ func (s *sTFA) fetchRiskEvent(ctx context.Context, userId string, riskSerial str
 
 func (s *sTFA) verifyRiskPendding(ctx context.Context, userId string, riskSerial string, code string, risk *riskPendding) (RiskKind, error) {
 	for _, event := range risk.riskEvent {
-		if event.isDone() {
-			continue
-		}
+		// if event.isDone() {
+		// 	continue
+		// }
 		if ok, k := event.verify(code); ok {
 			return k, nil
 		} else {

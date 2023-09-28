@@ -93,21 +93,27 @@ func (*Controller) PerformRiskTxs(ctx context.Context, req *v1.TxRiskReq) (res *
 	/////
 	serial, code := service.Risk().PerformRiskTxs(ctx, req.UserId, req.SignTxData)
 	if code == consts.RiskCodeError {
-		return nil, gerror.NewCode(consts.CodePerformRiskFailed)
+		return nil, gerror.NewCode(consts.CodePerformRiskError)
 	}
+	///: pass or forbidden
 	g.Log().Info(ctx, "PerformRiskTx:", req, serial, code)
 	if code == consts.RiskCodePass {
 		return &v1.TxRiskRes{
 			Ok: code,
 		}, nil
 	}
+	if code == consts.RiskCodeForbidden {
+		return &v1.TxRiskRes{
+			Ok: code,
+		}, nil
+	}
 	///
 	//
-	//notice: wait tfatx
+	//notice:  tfatx  need verification
 	kinds, err := service.TFA().TFATx(ctx, req.UserId, serial)
 	if err != nil {
 		g.Log().Warning(ctx, "PerformRiskTxs:", "PerformRiskTFA:", req.UserId, serial)
-		return nil, gerror.NewCode(consts.CodePerformRiskFailed)
+		return nil, gerror.NewCode(consts.CodePerformRiskError)
 	}
 	///
 	g.Log().Info(ctx, "PerformRiskTFA:", req.UserId, serial, kinds)

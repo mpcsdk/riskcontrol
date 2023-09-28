@@ -18,48 +18,6 @@ func keyUserRiskId(userId string, riskSerial string) UserRiskId {
 	return UserRiskId(userId + "keyUserRiskId" + riskSerial)
 }
 
-type verifier interface {
-	exec(risk *riskPendding, code string)
-	setNext(verifier)
-}
-type verifierPhone struct {
-	next verifier
-}
-
-func (s *verifierPhone) exec(risk *riskPendding, code string) {
-	for k, e := range risk.riskEvent {
-		if k == Key_RiskEventPhone {
-			if e.VerifyPhoneCode == code {
-				e.DoneEvent = true
-				return
-			}
-		}
-	}
-	return
-}
-func (s *verifierPhone) setNext(v verifier) {
-	s.next = v
-}
-
-type verifierMail struct {
-	next verifier
-}
-
-func (s *verifierMail) exec(risk *riskPendding, code string) {
-	for k, e := range risk.riskEvent {
-		if k == Key_RiskEventMail {
-			if e.VerifyMailCode == code {
-				e.DoneEvent = true
-				return
-			}
-		}
-	}
-	return
-}
-func (s *verifierMail) setNext(v verifier) {
-	s.next = v
-}
-
 type sTFA struct {
 	// riskClient riskv1.UserClient
 	ctx context.Context
@@ -107,6 +65,7 @@ type riskPendding struct {
 
 	///
 	riskEvent map[RiskKind]*riskEvent
+	verifier  verifier
 }
 
 func (s *riskPendding) DoAfter(ctx context.Context, risk *riskPendding) (string, error) {
@@ -157,7 +116,7 @@ func (s *sTFA) TFACreate(ctx context.Context, userId string, phone string, mail 
 	}
 	riskSerial, code := service.Risk().PerformRiskTFA(ctx, userId, riskData)
 	if code == consts.RiskCodeError {
-		return "", nil, gerror.NewCode(consts.CodePerformRiskFailed)
+		return "", nil, gerror.NewCode(consts.CodePerformRiskError)
 	}
 	g.Log().Debug(ctx, "CreateTFA:", userId, phone, mail, code)
 	// if err != nil || code != 0 {
