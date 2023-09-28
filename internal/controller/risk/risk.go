@@ -4,6 +4,7 @@ import (
 	"context"
 	v1 "riskcontral/api/risk/v1"
 	"riskcontral/internal/consts"
+	"riskcontral/internal/model"
 	"riskcontral/internal/service"
 
 	"github.com/gogf/gf/contrib/rpc/grpcx/v2"
@@ -68,7 +69,11 @@ func (*Controller) PerformVerifyCode(ctx context.Context, req *v1.VerifyCodekReq
 	}
 	// err = service.Risk().VerifyCode(ctx, req.RiskSerial, req.Code)
 
-	err = service.TFA().VerifyCode(ctx, info.UserId, req.RiskSerial, req.Code)
+	code := &model.VerifyCode{
+		MailCode:  req.MailCode,
+		PhoneCode: req.PhoneCode,
+	}
+	err = service.TFA().VerifyCode(ctx, info.UserId, req.RiskSerial, code)
 	if err != nil {
 		g.Log().Error(ctx, "PerformVerifyCode:", req, err)
 	}
