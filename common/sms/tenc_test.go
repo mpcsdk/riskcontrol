@@ -21,7 +21,7 @@ func Test_Tenc_foreign(t *testing.T) {
 		cfg.MustGet(ctx, "sms.foreign.tenc.VerificationTemplateId").String(),
 		cfg.MustGet(ctx, "sms.foreign.tenc.BindingCompletionTemplateId").String(),
 	)
-	resp, stat, err := domestic.SendSms("+447862429616", "4567")
+	resp, stat, err := domestic.SendSms("+447862429616", "456712")
 	if err != nil {
 		t.Error(err)
 	}

@@ -9,7 +9,6 @@ import (
 	"riskcontral/internal/consts"
 	"riskcontral/internal/consts/conrisk"
 	"riskcontral/internal/service"
-	"strings"
 	"time"
 
 	"github.com/gogf/gf/v2/frame/g"
@@ -37,7 +36,15 @@ func (s *sRisk) PerformRiskTxs(ctx context.Context, userId string, signTx string
 	}
 	///
 	befor24h := gtime.Now().Add(BeforH24)
+
+	g.Log().Debug(ctx, "PerformRiskTxs:", "befor24h:", befor24h.String(), "info.MailUpdatedAt:", info.MailUpdatedAt.String())
 	if !s.isBefor(info.MailUpdatedAt, befor24h) {
+		return "", consts.RiskCodeForbidden
+		///, nil
+	}
+	///
+	g.Log().Debug(ctx, "PerformRiskTxs:", "befor24h:", befor24h.String(), "info.PhoneUpdatedAt:", info.PhoneUpdatedAt.String())
+	if !s.isBefor(info.PhoneUpdatedAt, befor24h) {
 		return "", consts.RiskCodeForbidden
 		///, nil
 	}
@@ -85,6 +92,8 @@ func (s *sRisk) PerformRiskTFA(ctx context.Context, userId string, riskData *con
 	return riskserial, code
 }
 
+var BeforH24 time.Duration
+
 func new() *sRisk {
 	///
 	s := &sRisk{
@@ -104,7 +113,7 @@ func new() *sRisk {
 		} else {
 			Threshold, _ := valrisk["threshold"].(json.Number).Int64()
 			r := &contractRisk{
-				Contract:   strings.ToLower(valrisk["contract"].(string)),
+				Contract:   valrisk["contract"].(string),
 				Kind:       valrisk["kind"].(string),
 				MethodName: valrisk["methodName"].(string),
 				Threshold:  int(Threshold),
@@ -122,25 +131,21 @@ func new() *sRisk {
 		s.analzer.AddAbi(contract.Contract, abistr)
 	}
 	//
+
+	val, err := gcfg.Instance().Get(ctx, "userRisk.forbiddenTime")
+	if err != nil {
+		panic(err)
+	}
+	// BeforH24, err = gtime.ParseDuration("-24h")
+	BeforH24, err = gtime.ParseDuration(val.String())
+	if err != nil {
+		panic(err)
+	}
+
 	return s
 }
 
-var BeforH24 time.Duration
-var BeforM1 time.Duration
-
 func init() {
-	var err error
-	// BeforH24, err = gtime.ParseDuration("-24h")
-	//todo:
-	BeforH24, err = gtime.ParseDuration("-10m")
-	if err != nil {
-		panic(err)
-	}
-
-	BeforM1, err = gtime.ParseDuration("-1m")
-	if err != nil {
-		panic(err)
-	}
 
 	///
 	///

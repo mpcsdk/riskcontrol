@@ -177,7 +177,11 @@ func (s *sTFA) TFAUpMail(ctx context.Context, userId string, mail string, riskSe
 	// modtidy mail
 	/// need verification
 	event := newRiskEventMail(mail, func(ctx context.Context) error {
-		return s.recordMail(ctx, userId, &mail)
+		err := s.recordMail(ctx, userId, &mail)
+		if err != nil {
+			return err
+		}
+		return service.MailCode().SendBindingMail(ctx, mail)
 	})
 	s.addRiskEvent(ctx, userId, riskSerial, event)
 	///tfa phone if

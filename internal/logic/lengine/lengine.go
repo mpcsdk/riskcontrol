@@ -5,7 +5,6 @@ import (
 	"errors"
 	"fmt"
 	"riskcontral/internal/service"
-	"strings"
 
 	"github.com/bilibili/gengine/engine"
 	"github.com/gogf/gf/v2/os/gctx"
@@ -16,7 +15,6 @@ type sLEngine struct {
 }
 
 func (s *sLEngine) UpRules(ruleId, rules string) error {
-	ruleId = strings.ToLower(ruleId)
 	fmt.Println("uprules:", ruleId, rules)
 	err := s.newPool(ruleId, rules)
 	//ruleId/
@@ -30,7 +28,6 @@ func (s *sLEngine) UpRules(ruleId, rules string) error {
 }
 
 func (s *sLEngine) Exec(ruleId string, param map[string]interface{}) (bool, error) {
-	ruleId = strings.ToLower(ruleId)
 	fmt.Println("exec:", ruleId, param)
 	if p, ok := s.RuleEnginePool[ruleId]; !ok {
 		return false, errors.New("no rules:" + ruleId)
@@ -52,7 +49,6 @@ func (s *sLEngine) Exec(ruleId string, param map[string]interface{}) (bool, erro
 	}
 }
 func (s *sLEngine) List(ctx context.Context, ruleId string) map[string]string {
-	ruleId = strings.ToLower(ruleId)
 	r, err := service.RulesDb().Get(ctx, ruleId)
 	fmt.Println(err)
 
@@ -64,7 +60,6 @@ func (s *sLEngine) List(ctx context.Context, ruleId string) map[string]string {
 var apis map[string]interface{}
 
 func (s *sLEngine) newPool(ruleId, rules string) error {
-	ruleId = strings.ToLower(ruleId)
 	if rules == "" {
 		//todo: mutex
 		delete(s.RuleEnginePool, ruleId)

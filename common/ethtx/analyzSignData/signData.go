@@ -37,7 +37,7 @@ func (s *Analzyer) AnalzySignTxData(signData string) (*AnalzyedTx, error) {
 	}
 	///
 	atx := &AnalzyedTx{}
-	atx.Address = signtx.Address
+	// atx.Address = strings.ToLower(signtx.Address)
 	///
 	for _, tx := range signtx.Txs {
 		adata, err := s.analzyTx(tx)
@@ -54,9 +54,9 @@ func (s *Analzyer) AddAbi(addr string, abi string) {
 
 // //
 func (s *Analzyer) analzyTx(tx *SignTxData) (*AnalzyedTxData, error) {
-
+	tx.Target = strings.ToLower(tx.Target)
 	if abistr, ok := s.abis[tx.Target]; !ok {
-		return nil, errors.New("abi not found:"+tx.Target)
+		return nil, errors.New("abi not found:" + tx.Target)
 	} else {
 
 		///

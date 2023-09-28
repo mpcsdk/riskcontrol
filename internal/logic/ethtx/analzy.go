@@ -15,7 +15,7 @@ import (
 
 func (s *sEthTx) analzyTx(ctx context.Context, tx *analyzsigndata.SignTxData) (*model.AnalzyTxData, error) {
 
-	target := strings.ToLower(tx.Target)
+	target := tx.Target
 	data := strings.TrimPrefix(tx.Data, "0x")
 	///
 	contractabi := ""
@@ -64,7 +64,6 @@ func (s *sEthTx) analzyTx(ctx context.Context, tx *analyzsigndata.SignTxData) (*
 func (s *sEthTx) AnalzyTxs(ctx context.Context, signtxs *analyzsigndata.SignTx) (*model.AnalzyTx, error) {
 	// s.tidy(signtxs)
 	atx := &model.AnalzyTx{}
-	// atx.Address = strings.ToLower(signtxs.Address)
 	///
 	for _, tx := range signtxs.Txs {
 		adata, err := s.analzyTx(ctx, tx)

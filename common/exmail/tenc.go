@@ -10,13 +10,14 @@ import (
 )
 
 type TencMailClient struct {
-	client     *ses.Client
-	templateId uint64
-	from       string
-	subject    string
+	client                      *ses.Client
+	verificationTemplateID      uint64
+	bindingCompletionTemplateID uint64
+	from                        string
+	subject                     string
 }
 
-func NewTencMailClient(SecretId, SecretKey string, TemplateID uint64, From string, Subject string) *TencMailClient {
+func NewTencMailClient(SecretId, SecretKey string, VerificationTemplateID, BindingCompletionTemplateID uint64, From string, Subject string) *TencMailClient {
 	// 实例化一个认证对象，入参需要传入腾讯云账户 SecretId 和 SecretKey，此处还需注意密钥对的保密
 	// 代码泄露可能会导致 SecretId 和 SecretKey 泄露，并威胁账号下所有资源的安全性。以下代码示例仅供参考，建议采用更安全的方式来使用密钥，请参见：https://cloud.tencent.com/document/product/1278/85305
 	// 密钥可前往官网控制台 https://console.cloud.tencent.com/cam/capi 进行获取
@@ -30,24 +31,37 @@ func NewTencMailClient(SecretId, SecretKey string, TemplateID uint64, From strin
 	client, _ := ses.NewClient(credential, "ap-guangzhou", cpf)
 
 	///
-	return &TencMailClient{client: client, templateId: TemplateID, from: From, subject: Subject}
+	return &TencMailClient{client: client,
+		verificationTemplateID:      VerificationTemplateID,
+		bindingCompletionTemplateID: BindingCompletionTemplateID,
+		from:                        From, subject: Subject}
 }
-func (t *TencMailClient) SendMail(destination, code string) (string, error) {
+func (t *TencMailClient) SendBindingMail(destination string) (string, error) {
+	return t.sendMail(destination, t.bindingCompletionTemplateID, "")
+}
+func (t *TencMailClient) SendMail(destination string, code string) (string, error) {
+	return t.sendMail(destination, t.verificationTemplateID, code)
+}
+
+func (t *TencMailClient) sendMail(destination string, templateId uint64, code string) (string, error) {
 	// 实例化一个请求对象,每个接口都会对应一个request对象
 	request := ses.NewSendEmailRequest()
 
 	request.FromEmailAddress = common.StringPtr(t.from)
 	request.Destination = common.StringPtrs([]string{destination})
 	//
-	buf := bytes.Buffer{}
-	buf.WriteString(`{"code":"`)
-	buf.WriteString(code)
-	buf.WriteString(`"}`)
+	if code != "" {
+		buf := bytes.Buffer{}
+		buf.WriteString(`{"code":"`)
+		buf.WriteString(code)
+		buf.WriteString(`"}`)
+		code = buf.String()
+	}
 	//
 	request.Template = &ses.Template{
-		TemplateID: common.Uint64Ptr(t.templateId),
+		TemplateID: common.Uint64Ptr(templateId),
 		// TemplateData: common.StringPtr(`{"code":"123456"}`),
-		TemplateData: common.StringPtr(buf.String()),
+		TemplateData: common.StringPtr(code),
 	}
 	request.Subject = common.StringPtr(t.subject)
 

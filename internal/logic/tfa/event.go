@@ -172,7 +172,7 @@ func (s *sTFA) verifyRiskPendding(ctx context.Context, userId string, riskSerial
 		if event.Kind == Key_RiskEventMail {
 			ok, k := event.verify(code.MailCode)
 			if ok {
-				return "", nil
+				continue
 
 			} else {
 				return k, gerror.NewCode(consts.CodeRiskVerifyMailInvalid)
@@ -181,13 +181,12 @@ func (s *sTFA) verifyRiskPendding(ctx context.Context, userId string, riskSerial
 		if event.Kind == Key_RiskEventPhone {
 			ok, k := event.verify(code.PhoneCode)
 			if ok {
-				return "", nil
+				continue
 
 			} else {
-				return event.Kind, gerror.NewCode(consts.CodeRiskVerifyPhoneInvalid)
-				return k, gerror.NewCode(consts.CodeRiskVerifyMailInvalid)
+				return k, gerror.NewCode(consts.CodeRiskVerifyPhoneInvalid)
 			}
 		}
 	}
-	return "", gerror.NewCode(consts.CodeRiskVerifyCodeInvalid)
+	return "", nil
 }

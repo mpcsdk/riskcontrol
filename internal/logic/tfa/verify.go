@@ -2,8 +2,10 @@ package tfa
 
 import (
 	"context"
+	"riskcontral/internal/consts"
 	"riskcontral/internal/model"
 
+	"github.com/gogf/gf/v2/errors/gerror"
 	"github.com/gogf/gf/v2/frame/g"
 )
 
@@ -20,8 +22,9 @@ func (s *sTFA) VerifyCode(ctx context.Context, userId string, riskSerial string,
 
 		if risk.AllDone() {
 			risk.DoAfter(ctx, risk)
+			return nil
 		}
 	}
 
-	return nil
+	return gerror.NewCode(consts.CodeRiskVerifyCodeInvalid)
 }

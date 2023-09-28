@@ -10,12 +10,8 @@ logger:
   stdout: true
 
 cache:
-  sessionDur: 10000
-# redis mem
-  type: "redis"
-  redis:
-    Addr: "127.0.0.1:6379"
-    Db: 1
+  sessionDuration: 10000
+
 
 redis:
   default:
@@ -24,7 +20,8 @@ redis:
 
 database:
   default:
-  - link: "pgsql:postgres:123456@tcp(123.60.148.168:10100)/riskcontrol"
+  - link: "pgsql:postgres:123456@tcp(127.0.0.1:10100)/riskcontrol"
+
 grpc:
   name:             "riskrpc"  # 服务名称
   address:          ":8001" # 自定义服务监听地址
@@ -38,11 +35,15 @@ grpc:
 # url
 userTokenUrl: "https://auth-dev.mixmarvel-sdk.com/info"
 
+userRisk:
+  forbiddenTime: "-10m"
+
 contractRisk:
-  - contract: "0xdAC17F958D2ee523a2206206994597C13D831ec7"
+  - contract: "0xdac17f958d2ee523a2206206994597c13d831ec7"
     kind: "erc20"
     methodName: "transfer"
     threshold: 1000000000000000000
+    valIndt: "wad"
   - contract: "0x71d9cfd1b7adb1e8eb4c193ce6ffbe19b4aee0db"
     kind: "erc20"
     methodName: "transfer"
@@ -81,7 +82,7 @@ contractRisk:
   - contract: "0x0407670718faae7d319f39e14fb992ef762e8d62"
     kind: "erc721"
     methodName: "transferFrom"
-    threshold: 5
+    threshold: 2
     name: "Equipment"
   - contract: "0xb1682c08beb47328d4f98ac08d3cd01679ff5c3b"
     kind: "erc721"
@@ -93,35 +94,41 @@ contractRisk:
     methodName: "transferFrom"
     threshold: 2
     name: "Fashion"
+
 #
 etcd:
   address: "127.0.0.1:2379"
 
+
+
+
 sms:
-  huawei:
-    domestic:
+  domestic:
+    huawei:
       APIAddress: "https://smsapi.cn-south-1.myhuaweicloud.com:443/sms/batchSendSms/v1"
       ApplicationKey: "DZcZWoIauKdHY1wD0179m4Jk5N9V"
       ApplicationSecret: "1GSPX8WyCwJbTfwEohqsBlOzbcam"
       Sender: "8823091933902"
       TemplateID: "000ab97205d34659a78b47c9e1a805fb"
       Signature: "幂玛"
-  tenc:
-    foreign:
+  foreign:
+    tenc:
       SecretId: "AKID51zveEaotSAnIez267vjsxrnfR1eCZwG"
       SecretKey: "KXlv05GIC0lN2ccq1IYggZJv1CPOLKDt"
       Endpoint: "sms.tencentcloudapi.com"
       SignMethod: "HMAC-SHA256"
       Region: "ap-guangzhou"
-      SmsSdkAppId: "1400787878"
-      SignName: "腾讯云"
-      TemplateId: "1933346"
+      SmsSdkAppId: "1400856433"
+      SignName: ""
+      VerificationTemplateId: "1933346"
+      BindingCompletionTemplateId: "1941647"
 
 exemail:
   From: "mixmarvel-sdk@mixmarvel-sdk.com"
   SecretId: "AKID51zveEaotSAnIez267vjsxrnfR1eCZwG"
   SecretKey: "KXlv05GIC0lN2ccq1IYggZJv1CPOLKDt"
-  TemplateID: 26732
+  VerificationTemplateID: 26732
+  BindingCompletionTemplateID: 26731
   Subject: "MixMarver"
 
 
