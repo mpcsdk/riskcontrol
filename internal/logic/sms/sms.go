@@ -79,10 +79,10 @@ func (s *sSmsCode) SendCode(ctx context.Context, receiver string) (string, error
 	state := ""
 	var err error
 	if strings.HasPrefix(receiver, "+86") {
-		ok, state, err = s.foreign.SendSms(receiver, code)
+		ok, state, err = s.domestic.SendSms(receiver, code)
 	} else {
 		// resp, state, err = s.domestic.SendSms(receiver, code)
-		ok, state, err = s.domestic.SendSms(receiver, code)
+		ok, state, err = s.foreign.SendSms(receiver, code)
 	}
 	///
 	if err != nil {
