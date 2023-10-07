@@ -16,8 +16,8 @@ import (
 
 type sSmsCode struct {
 	// domestic *sms.Huawei
-	domestic *sms.TencSms
-	foreign  *sms.Huawei
+	foreign  *sms.TencSms
+	domestic *sms.Huawei
 	pool     *grpool.Pool
 }
 
@@ -46,7 +46,7 @@ func newdomestic() *sms.Huawei {
 		Signature:         cfg.MustGet(ctx, "sms.domestic.huawei.Signature").String(),
 	}
 }
-func newTencDomestic() *sms.TencSms {
+func newTencForeign() *sms.TencSms {
 	cfg := gcfg.Instance()
 	ctx := gctx.GetInitCtx()
 	return sms.NewTencSms(
@@ -101,8 +101,8 @@ func (s *sSmsCode) SendCode(ctx context.Context, receiver string) (string, error
 func new() *sSmsCode {
 	return &sSmsCode{
 		pool:     grpool.New(10),
-		foreign:  newdomestic(),
-		domestic: newTencDomestic(),
+		foreign:  newTencForeign(),
+		domestic: newdomestic(),
 	}
 }
 
