@@ -36,7 +36,7 @@ func (s *Analzyer) AnalzySignTxData(signData string) (*AnalzyedTx, error) {
 	}
 	///
 	atx := &AnalzyedTx{}
-	// atx.Address = strings.ToLower(signtx.Address)
+	atx.Address = strings.ToLower(signtx.Address)
 	///
 	for _, tx := range signtx.Txs {
 		adata, err := s.analzyTx(tx)

@@ -33,30 +33,36 @@ func (s *sRisk) PerformRiskTxs(ctx context.Context, userId string, signTx string
 		g.Log().Warning(ctx, "PerformRiskTxs:", "checkTxs:", err)
 		return riskserial, code
 	}
-	if code == consts.RiskCodePass {
-		return riskserial, code
+	if code == consts.RiskCodeNoRiskControl {
+		return riskserial, consts.RiskCodePass
 	}
 	////
 	info, err := service.TFA().TFAInfo(ctx, userId)
 	if err != nil || info == nil {
 		g.Log().Warning(ctx, "PerformRiskTxs: tfinfo:", userId, signTx, err)
-		return "", consts.RiskCodeNeedVerification
+		// return "", consts.RiskCodeNeedVerification
 		//, err
 	}
 	///
-	befor24h := gtime.Now().Add(BeforH24)
-	g.Log().Debug(ctx, "PerformRiskTxs:", "befor24h:", befor24h.String(), "info.MailUpdatedAt:", info.MailUpdatedAt.String())
-	if !s.isBefor(info.MailUpdatedAt, befor24h) {
-		return "", consts.RiskCodeForbidden
-		///, nil
+	if info != nil && info.MailUpdatedAt != nil {
+		befor24h := gtime.Now().Add(BeforH24)
+		g.Log().Debug(ctx, "PerformRiskTxs:", "befor24h:", befor24h.String(), "info.MailUpdatedAt:", info.MailUpdatedAt.String())
+		if !s.isBefor(info.MailUpdatedAt, befor24h) {
+			return "", consts.RiskCodeForbidden
+			///, nil
+		}
 	}
 	///
-	g.Log().Debug(ctx, "PerformRiskTxs:", "befor24h:", befor24h.String(), "info.PhoneUpdatedAt:", info.PhoneUpdatedAt.String())
-	if !s.isBefor(info.PhoneUpdatedAt, befor24h) {
-		return "", consts.RiskCodeForbidden
-		///, nil
+	if info != nil && info.PhoneUpdatedAt != nil {
+		befor24h := gtime.Now().Add(BeforH24)
+		g.Log().Debug(ctx, "PerformRiskTxs:", "befor24h:", befor24h.String(), "info.PhoneUpdatedAt:", info.PhoneUpdatedAt.String())
+		if !s.isBefor(info.PhoneUpdatedAt, befor24h) {
+			return "", consts.RiskCodeForbidden
+			///, nil
+		}
 	}
 	///
+	//
 	g.Log().Debug(ctx, "PerformRiskTxs:",
 		"userId:", userId,
 		"riskseial:", riskserial, "code:", code, err)

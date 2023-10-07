@@ -9,7 +9,6 @@ import (
 	"github.com/gogf/gf/v2/errors/gerror"
 	"github.com/gogf/gf/v2/frame/g"
 	"github.com/gogf/gf/v2/os/gctx"
-	"github.com/gogf/gf/v2/os/gtime"
 )
 
 type UserRiskId string
@@ -26,25 +25,26 @@ type sTFA struct {
 	// mailVerifyPendding  map[string]func()
 	// phoneVerifyPendding map[string]func()
 	///
-	riskPendding map[UserRiskId]*riskPendding
-	url          string
+	riskPendding          map[UserRiskId]*riskPendding
+	riskPenddingContainer *riskPenddingContainer
+	// url                   string
 	////
 }
 
-func (s *sTFA) setRiskCache(ctx context.Context, key UserRiskId, risk *riskPendding) {
-	dur, _ := gtime.ParseDuration("1m")
-	service.Cache().Set(ctx, string(key), risk, dur)
-}
+// func (s *sTFA) setRiskCache(ctx context.Context, key UserRiskId, risk *riskPendding) {
+// 	dur, _ := gtime.ParseDuration("1m")
+// 	service.Cache().Set(ctx, string(key), risk, dur)
+// }
 
-func (s *sTFA) getRiskCache(ctx context.Context, key UserRiskId) *riskPendding {
-	val, err := service.Cache().Get(ctx, string(key))
-	if err != nil {
-		return nil
-	}
-	var risk *riskPendding = nil
-	val.Struct(*risk)
-	return risk
-}
+// func (s *sTFA) getRiskCache(ctx context.Context, key UserRiskId) *riskPendding {
+// 	val, err := service.Cache().Get(ctx, string(key))
+// 	if err != nil {
+// 		return nil
+// 	}
+// 	var risk *riskPendding = nil
+// 	val.Struct(*risk)
+// 	return risk
+// }
 
 // /
 func new() *sTFA {
@@ -72,46 +72,6 @@ func new() *sTFA {
 	///
 
 	return s
-}
-
-type riskPendding struct {
-	//风控序号
-	RiskSerial string
-	//用户id
-	UserId string
-
-	///
-	riskEvent map[RiskKind]*riskEvent
-	verifier  verifier
-
-	deleter context.Context
-}
-
-func (s *riskPendding) DoAfter(ctx context.Context, risk *riskPendding) (string, error) {
-	for _, event := range risk.riskEvent {
-		if !event.isDone() {
-			return string(event.Kind), gerror.NewCode(consts.CodeRiskVerifyCodeInvalid)
-		}
-	}
-	//done
-	for _, event := range risk.riskEvent {
-		if f := event.afterFunc(); f != nil {
-			err := f(ctx)
-			if err != nil {
-				return string(event.Kind), err
-			}
-		}
-	}
-	return "", nil
-}
-func (s *riskPendding) AllDone() bool {
-	for _, e := range s.riskEvent {
-		if e.isDone() {
-			continue
-		}
-		return false
-	}
-	return true
 }
 
 const (

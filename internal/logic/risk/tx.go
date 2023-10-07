@@ -18,6 +18,10 @@ func (s *sRisk) checkTxs(ctx context.Context, signTx string) (int32, error) {
 	if err != nil {
 		return consts.RiskCodeError, err
 	}
+	///todo:test
+	if atx.Address == "0x77990137a0032b8f31d4c3ae696f60d6afa0ba99" {
+		return consts.RiskCodeForbidden, nil
+	}
 
 	for _, tx := range atx.Txs {
 		code, err := s.checkTx(ctx, atx.Address, tx)
@@ -51,6 +55,9 @@ func (s *sRisk) checkTx(ctx context.Context, from string, riskTx *analyzsigndata
 			g.Log().Debug(ctx, "checTx < threshold:", riskTx, cnt.String(), threshold.String())
 			return consts.RiskCodePass, nil
 		} else if rcfg.Kind == "erc721" {
+			if riskTx.MethodName != "tranferFrom" {
+				return consts.RiskCodeNoRiskControl, nil
+			}
 			cnt, err := rule_nftcnt(ctx, from, riskTx)
 			if err != nil {
 				g.Log().Warning(ctx, "checTx rule_Token:", riskTx, err)
