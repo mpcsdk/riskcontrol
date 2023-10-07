@@ -3,7 +3,6 @@ package analyzsigndata
 import (
 	"encoding/hex"
 	"encoding/json"
-	"errors"
 	"strings"
 
 	"github.com/ethereum/go-ethereum/accounts/abi"
@@ -44,6 +43,9 @@ func (s *Analzyer) AnalzySignTxData(signData string) (*AnalzyedTx, error) {
 		if err != nil {
 			return nil, err
 		}
+		if adata == nil {
+			continue
+		}
 		atx.Txs = append(atx.Txs, adata)
 	}
 	return atx, nil
@@ -56,7 +58,8 @@ func (s *Analzyer) AddAbi(addr string, abi string) {
 func (s *Analzyer) analzyTx(tx *SignTxData) (*AnalzyedTxData, error) {
 	tx.Target = strings.ToLower(tx.Target)
 	if abistr, ok := s.abis[tx.Target]; !ok {
-		return nil, errors.New("abi not found:" + tx.Target)
+		return nil, nil
+		// return nil, errors.New("abi not found:" + tx.Target)
 	} else {
 
 		///

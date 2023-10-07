@@ -24,11 +24,11 @@ func (s *sTFA) createTFA(ctx context.Context, userId string, mail, phone *string
 	}
 	if mail != nil {
 		e.Mail = mail
-		e.MailUpdatedAt = gtime.Now()
+		// e.MailUpdatedAt = gtime.Now()
 	}
 	if phone != nil {
 		e.Phone = phone
-		e.PhoneUpdatedAt = gtime.Now()
+		// e.PhoneUpdatedAt = gtime.Now()
 	}
 	err := service.DB().InsertTfaInfo(ctx, userId, &e)
 

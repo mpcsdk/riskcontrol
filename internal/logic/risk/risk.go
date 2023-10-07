@@ -28,15 +28,23 @@ func (s *sRisk) PerformRiskTxs(ctx context.Context, userId string, signTx string
 	///
 	riskserial := common.GenNewSid()
 	///
+	code, err := s.checkTxs(ctx, signTx)
+	if err != nil {
+		g.Log().Warning(ctx, "PerformRiskTxs:", "checkTxs:", err)
+		return riskserial, code
+	}
+	if code == consts.RiskCodePass {
+		return riskserial, code
+	}
+	////
 	info, err := service.TFA().TFAInfo(ctx, userId)
 	if err != nil || info == nil {
 		g.Log().Warning(ctx, "PerformRiskTxs: tfinfo:", userId, signTx, err)
-		return "", consts.RiskCodeError
+		return "", consts.RiskCodeNeedVerification
 		//, err
 	}
 	///
 	befor24h := gtime.Now().Add(BeforH24)
-
 	g.Log().Debug(ctx, "PerformRiskTxs:", "befor24h:", befor24h.String(), "info.MailUpdatedAt:", info.MailUpdatedAt.String())
 	if !s.isBefor(info.MailUpdatedAt, befor24h) {
 		return "", consts.RiskCodeForbidden
@@ -49,12 +57,6 @@ func (s *sRisk) PerformRiskTxs(ctx context.Context, userId string, signTx string
 		///, nil
 	}
 	///
-	code, err := s.checkTxs(ctx, signTx)
-	if err != nil {
-		g.Log().Warning(ctx, "PerformRiskTxs:", "checkTxs:", err)
-		return riskserial, code
-	}
-
 	g.Log().Debug(ctx, "PerformRiskTxs:",
 		"userId:", userId,
 		"riskseial:", riskserial, "code:", code, err)

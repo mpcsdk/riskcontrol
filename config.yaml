@@ -95,7 +95,11 @@ contractRisk:
     methodName: "transferFrom"
     threshold: 2
     name: "Fashion"
-
+  # - contract: "0xb6d831657133e5c99dc28b9b96103a8dd7bacca4"
+  #   kind: "erc721"
+  #   methodName: "transferFrom"
+  #   threshold: 2
+  #   name: "Fashion"
 #
 etcd:
   address: "127.0.0.1:2379"

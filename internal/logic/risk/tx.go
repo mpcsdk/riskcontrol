@@ -9,8 +9,6 @@ import (
 	"riskcontral/internal/dao"
 	"riskcontral/internal/model/do"
 
-	"github.com/gogf/gf/v2/errors/gcode"
-	"github.com/gogf/gf/v2/errors/gerror"
 	"github.com/gogf/gf/v2/frame/g"
 	"github.com/gogf/gf/v2/os/gtime"
 )
@@ -66,7 +64,8 @@ func (s *sRisk) checkTx(ctx context.Context, from string, riskTx *analyzsigndata
 			return consts.RiskCodePass, nil
 		} else {
 			g.Log().Warning(ctx, "checkTx unkonwo contract:", riskTx)
-			return consts.RiskCodeError, gerror.NewCode(gcode.CodeInvalidParameter)
+			// return consts.RiskCodeError, gerror.NewCode(gcode.CodeInvalidParameter)
+			return consts.RiskCodePass, nil
 		}
 	}
 	//notice: default
