@@ -25,8 +25,7 @@ func (c *ControllerV1) CreateTFA(ctx context.Context, req *v1.CreateTFAReq) (res
 	///
 	tfainfo, err := service.TFA().TFAInfo(ctx, info.UserId)
 	if err != nil {
-		g.Log().Error(ctx, "CreatTfa:", err, req)
-		return nil, gerror.NewCode(consts.CodeInternalError)
+		return nil, err
 	}
 	if tfainfo != nil {
 		return nil, gerror.NewCode(consts.CodeTFAExist)

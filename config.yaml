@@ -16,7 +16,7 @@ cache:
 redis:
   default:
     address: "127.0.0.1:6379"
-    db: 2
+    db: 1
 
 database:
   default:
@@ -36,6 +36,7 @@ grpc:
 userTokenUrl: "https://auth-dev.mixmarvel-sdk.com/info"
 
 userRisk:
+  verificationDuration: "15m"
   forbiddenTime: "-10m"
 
 contractRisk:

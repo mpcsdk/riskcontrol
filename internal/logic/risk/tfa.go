@@ -24,19 +24,19 @@ func (s *sRisk) checkTFAUpPhone(ctx context.Context, userId string) (int32, erro
 	}
 	if info == nil {
 		g.Log().Debug(ctx, "checkTFAUpPhone:", userId, "info:", info)
-		return consts.RiskCodePass, nil
+		return consts.RiskCodeNeedVerification, nil
 	}
 	if info.PhoneUpdatedAt == nil {
 		g.Log().Debug(ctx, "checkTFAUpPhone:", userId, "info.PhoneUpdatedAt:", info.PhoneUpdatedAt)
-		return consts.RiskCodePass, nil
+		return consts.RiskCodeNeedVerification, nil
 	}
 
 	befor24h := gtime.Now().Add(BeforH24)
 	g.Log().Debug(ctx, "checkTFAUpPhone:", "befor24h:", befor24h.String(), "info.PhoneUpdatedAt:", info.PhoneUpdatedAt.String())
 	if info.PhoneUpdatedAt.Before(befor24h) {
-		return consts.RiskCodePass, nil
+		return consts.RiskCodeNeedVerification, nil
 	}
-	return consts.RiskCodeNeedVerification, nil
+	return consts.RiskCodeForbidden, nil
 }
 
 func (s *sRisk) checkTfaUpMail(ctx context.Context, userId string) (int32, error) {
@@ -46,17 +46,17 @@ func (s *sRisk) checkTfaUpMail(ctx context.Context, userId string) (int32, error
 		return consts.RiskCodeError, err
 	}
 	if info == nil {
-		return consts.RiskCodePass, nil
+		return consts.RiskCodeNeedVerification, nil
 	}
 	if info.MailUpdatedAt == nil {
-		return consts.RiskCodePass, nil
+		return consts.RiskCodeNeedVerification, nil
 	}
 	befor24h := gtime.Now().Add(BeforH24)
-	g.Log().Debug(ctx, "checkTFAUpPhone:", "befor24h:", befor24h.String(), "info.PhoneUpdatedAt:", info.PhoneUpdatedAt.String())
+	g.Log().Debug(ctx, "checkTfaUpMail:", "befor24h:", befor24h.String(), "info.PhoneUpdatedAt:", info.PhoneUpdatedAt.String())
 	if info.MailUpdatedAt.Before(befor24h) {
-		return consts.RiskCodePass, nil
+		return consts.RiskCodeNeedVerification, nil
 	}
-	return consts.RiskCodeNeedVerification, nil
+	return consts.RiskCodeForbidden, nil
 }
 
 func (s *sRisk) checkTfaCreate(ctx context.Context, userId string) (int32, error) {

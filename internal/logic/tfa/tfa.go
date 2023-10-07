@@ -9,6 +9,7 @@ import (
 	"github.com/gogf/gf/v2/errors/gerror"
 	"github.com/gogf/gf/v2/frame/g"
 	"github.com/gogf/gf/v2/os/gctx"
+	"github.com/gogf/gf/v2/os/gtime"
 )
 
 type UserRiskId string
@@ -30,6 +31,22 @@ type sTFA struct {
 	////
 }
 
+func (s *sTFA) setRiskCache(ctx context.Context, key UserRiskId, risk *riskPendding) {
+	dur, _ := gtime.ParseDuration("1m")
+	service.Cache().Set(ctx, string(key), risk, dur)
+}
+
+func (s *sTFA) getRiskCache(ctx context.Context, key UserRiskId) *riskPendding {
+	val, err := service.Cache().Get(ctx, string(key))
+	if err != nil {
+		return nil
+	}
+	var risk *riskPendding = nil
+	val.Struct(*risk)
+	return risk
+}
+
+// /
 func new() *sTFA {
 
 	ctx := gctx.GetInitCtx()
@@ -66,6 +83,8 @@ type riskPendding struct {
 	///
 	riskEvent map[RiskKind]*riskEvent
 	verifier  verifier
+
+	deleter context.Context
 }
 
 func (s *riskPendding) DoAfter(ctx context.Context, risk *riskPendding) (string, error) {
