@@ -90,8 +90,10 @@ func (s *riskPenddingContainer) VerifierCode(userId, riskSerial string, code *mo
 	if risk == nil {
 		return "", errRiskNotExist
 	}
+	err := risk.verifierCode(code)
+	return "", err
 	// risk.verifier()
-	return "", nil
+	// return "", nil
 }
 func (s *riskPenddingContainer) AllDone(userId, riskSerial string) (string, error) {
 	risk := s.Get(userId, riskSerial)
