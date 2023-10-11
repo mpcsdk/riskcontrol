@@ -37,6 +37,8 @@ userTokenUrl: "https://auth-dev.mixmarvel-sdk.com/info"
 chainId: 9527
 ethRpc: "https://robin.rangersprotocol.com/pubhub/api/jsonrpc"
 
+scrapeLogs: true 
+
 userRisk:
   verificationDuration: "15m"
   forbiddenTime: "-10m"

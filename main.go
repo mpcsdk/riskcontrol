@@ -13,6 +13,7 @@ import (
 	_ "github.com/gogf/gf/contrib/drivers/pgsql/v2"
 	_ "github.com/gogf/gf/contrib/nosql/redis/v2"
 	"github.com/gogf/gf/contrib/trace/jaeger/v2"
+	"github.com/gogf/gf/v2/frame/g"
 	"github.com/gogf/gf/v2/os/gcfg"
 	"github.com/gogf/gf/v2/os/gctx"
 
@@ -37,12 +38,18 @@ func main() {
 		panic(err)
 	}
 	defer tp.Shutdown(ctx)
-	// ///
-	err = service.EthEventGeter().InitByService()
-	if err != nil {
-		panic(err)
+	// ///scrapelogs
+	v, err := cfg.Get(ctx, "scrapeLogs", false)
+	if err != nil && v.Bool() {
+		g.Log().Notice(ctx, "Open ScrapeLogs")
+		err = service.EthEventGeter().InitByService()
+		if err != nil {
+			panic(err)
+		}
+		service.EthEventGeter().RunBySerivce()
+	} else {
+		g.Log().Notice(ctx, "ShutDown ScrapeLogs")
 	}
-	service.EthEventGeter().RunBySerivce()
 	///
 	///
 	cmd.Main.Run(gctx.GetInitCtx())
