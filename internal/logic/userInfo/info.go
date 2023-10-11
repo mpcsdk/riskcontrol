@@ -8,6 +8,7 @@ import (
 
 	"github.com/gogf/gf/v2/errors/gerror"
 	"github.com/gogf/gf/v2/frame/g"
+	"github.com/gogf/gf/v2/os/gcache"
 	"github.com/gogf/gf/v2/os/gcfg"
 )
 
@@ -15,6 +16,7 @@ type sUserInfo struct {
 	url string
 	///
 	userGeter *common.UserTokenInfoGeter
+	c         *gcache.Cache
 }
 
 func (s *sUserInfo) GetUserInfo(ctx context.Context, userToken string) (userInfo *common.UserInfo, err error) {
@@ -31,7 +33,7 @@ func (s *sUserInfo) GetUserInfo(ctx context.Context, userToken string) (userInfo
 	// "address": "0xe73E35d8Ecc3972481138D01799ED3934cc57853",
 	// "keyHash": "U2FsdGVkX1/O6j9czaWzdjjDo/XPjk1hI8pIoaxSuS52zIxVuStK/nS07ucgiM5si8NjN97rAux3aH7Ld2i5oO8UuL6tpNZmLMG9ZpwVTxvGkCa3H14vTxWNz+yBoWG8",
 	// "create_time": 1691118876
-	if v, ok := service.Cache().Get(ctx, userToken); ok == nil && !v.IsEmpty() {
+	if v, ok := s.c.Get(ctx, userToken); ok == nil && !v.IsEmpty() {
 		info := &common.UserInfo{}
 		err = v.Struct(info)
 		if err != nil {
@@ -47,7 +49,7 @@ func (s *sUserInfo) GetUserInfo(ctx context.Context, userToken string) (userInfo
 		return info, gerror.NewCode(consts.CodeTokenInvalid)
 	}
 	g.Log().Debug(ctx, "GetUserInfo:", userToken, info)
-	service.Cache().Set(ctx, userToken, info, 0)
+	s.c.Set(ctx, userToken, info, 0)
 	return info, err
 	// return &model.UserInfo{
 	// 	Id: 10,
@@ -75,6 +77,7 @@ func new() *sUserInfo {
 	//
 	s := &sUserInfo{
 		userGeter: userGeter,
+		c:         gcache.New(),
 	}
 	///
 

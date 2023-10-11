@@ -3,6 +3,7 @@ package main
 import (
 	"riskcontral/common"
 	_ "riskcontral/internal/packed"
+	"riskcontral/internal/service"
 
 	_ "riskcontral/internal/logic"
 	_ "riskcontral/internal/service"
@@ -10,6 +11,7 @@ import (
 	// _ "github.com/gogf/gf/contrib/drivers/mysql/v2"
 
 	_ "github.com/gogf/gf/contrib/drivers/pgsql/v2"
+	_ "github.com/gogf/gf/contrib/nosql/redis/v2"
 	"github.com/gogf/gf/contrib/trace/jaeger/v2"
 	"github.com/gogf/gf/v2/os/gcfg"
 	"github.com/gogf/gf/v2/os/gctx"
@@ -36,6 +38,12 @@ func main() {
 	}
 	defer tp.Shutdown(ctx)
 	// ///
-
+	err = service.EthEventGeter().InitByService()
+	if err != nil {
+		panic(err)
+	}
+	service.EthEventGeter().RunBySerivce()
+	///
+	///
 	cmd.Main.Run(gctx.GetInitCtx())
 }

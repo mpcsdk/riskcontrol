@@ -2,12 +2,11 @@ package risk
 
 import (
 	"context"
-	"encoding/json"
-	"fmt"
 	"riskcontral/common"
-	analyzsigndata "riskcontral/common/ethtx/analyzSignData"
+	analzyer "riskcontral/common/ethtx/analzyer"
 	"riskcontral/internal/consts"
 	"riskcontral/internal/consts/conrisk"
+	"riskcontral/internal/model"
 	"riskcontral/internal/service"
 	"time"
 
@@ -17,8 +16,9 @@ import (
 )
 
 type sRisk struct {
-	analzer         *analyzsigndata.Analzyer
-	contractRiskMap map[string]*contractRisk
+	analzer    *analzyer.Analzyer
+	ftruleMap  map[string]*model.FtRule
+	nftruleMap map[string]*model.NftRule
 }
 
 func (s *sRisk) PerformRiskTxs(ctx context.Context, userId string, signTx string) (string, int32) {
@@ -66,7 +66,7 @@ func (s *sRisk) PerformRiskTxs(ctx context.Context, userId string, signTx string
 	g.Log().Debug(ctx, "PerformRiskTxs:",
 		"userId:", userId,
 		"riskseial:", riskserial, "code:", code, err)
-	service.Cache().Set(ctx, riskserial+consts.KEY_RiskUId, userId, 0)
+	// service.Cache().Set(ctx, riskserial+consts.KEY_RiskUId, userId, 0)
 	return riskserial, code
 }
 
@@ -96,7 +96,7 @@ func (s *sRisk) PerformRiskTFA(ctx context.Context, userId string, riskData *con
 		///, err
 	}
 	///
-	service.Cache().Set(ctx, riskserial+consts.KEY_RiskUId, userId, 0)
+	// service.Cache().Set(ctx, riskserial+consts.KEY_RiskUId, userId, 0)
 	return riskserial, code
 }
 
@@ -105,42 +105,23 @@ var BeforH24 time.Duration
 func new() *sRisk {
 	///
 	s := &sRisk{
-		analzer:         analyzsigndata.NewAnalzer(),
-		contractRiskMap: map[string]*contractRisk{},
+		analzer:    analzyer.NewAnalzer(),
+		ftruleMap:  map[string]*model.FtRule{},
+		nftruleMap: map[string]*model.NftRule{},
 	}
-	////
-	ctx := context.Background()
-	riskcfg, err := gcfg.Instance().Get(ctx, "contractRisk")
+	///
+	s.ftruleMap, _ = service.DB().GetFtRules(context.TODO())
+	s.nftruleMap, _ = service.DB().GetNftRules(context.TODO())
+	///
+	abis, err := service.DB().GetAbiAll(context.Background())
 	if err != nil {
 		panic(err)
 	}
-	/////
-	for _, val := range riskcfg.Array() {
-		if valrisk, ok := val.(map[string]interface{}); !ok {
-			panic(fmt.Errorf("contractRisk:%v", val))
-		} else {
-			Threshold, _ := valrisk["threshold"].(json.Number).Int64()
-			r := &contractRisk{
-				Contract:   valrisk["contract"].(string),
-				Kind:       valrisk["kind"].(string),
-				MethodName: valrisk["methodName"].(string),
-				Threshold:  int(Threshold),
-			}
-			s.contractRiskMap[r.Contract] = r
-		}
+	for _, a := range abis {
+		s.analzer.AddAbi(a.Addr, a.Abi)
 	}
-	////todo: get abi
-	for _, contract := range s.contractRiskMap {
-		abistr, err := service.DB().GetAbi(ctx, contract.Contract)
-		if err != nil {
-			continue
-		}
-		///
-		s.analzer.AddAbi(contract.Contract, abistr)
-	}
-	//
-
-	val, err := gcfg.Instance().Get(ctx, "userRisk.forbiddenTime")
+	////
+	val, err := gcfg.Instance().Get(context.TODO(), "userRisk.forbiddenTime")
 	if err != nil {
 		panic(err)
 	}

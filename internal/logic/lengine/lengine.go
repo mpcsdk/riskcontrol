@@ -49,7 +49,7 @@ func (s *sLEngine) Exec(ruleId string, param map[string]interface{}) (bool, erro
 	}
 }
 func (s *sLEngine) List(ctx context.Context, ruleId string) map[string]string {
-	r, err := service.RulesDb().Get(ctx, ruleId)
+	r, err := service.DB().GetRules(ctx, ruleId)
 	fmt.Println(err)
 
 	return map[string]string{
@@ -76,7 +76,7 @@ func new() *sLEngine {
 	e := &sLEngine{
 		RuleEnginePool: make(map[string]*engine.GenginePool),
 	}
-	rs := service.RulesDb().AllRules(gctx.GetInitCtx())
+	rs := service.DB().AllRules(gctx.GetInitCtx())
 	for name, rule := range rs {
 		e.newPool(name, rule)
 	}

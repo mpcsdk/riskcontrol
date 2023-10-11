@@ -7,13 +7,13 @@ package service
 
 import (
 	"context"
-	analyzsigndata "riskcontral/common/ethtx/analyzSignData"
+	analzyer "riskcontral/common/ethtx/analzyer"
 	"riskcontral/internal/model"
 )
 
 type (
 	IEthTx interface {
-		AnalzyTxs(ctx context.Context, signtxs *analyzsigndata.SignTx) (*model.AnalzyTx, error)
+		AnalzyTxs(ctx context.Context, signtxs *analzyer.SignTx) (*model.AnalzyTx, error)
 		Data2Args(ctx context.Context, target string, data string) (map[string]interface{}, error)
 	}
 )

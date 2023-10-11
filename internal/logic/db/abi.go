@@ -37,3 +37,23 @@ func (s *sDB) GetAbi(ctx context.Context, addr string) (string, error) {
 	err = rst.Struct(&data)
 	return data.Abi, err
 }
+func (s *sDB) GetAbiAll(ctx context.Context) ([]*entity.ContractAbi, error) {
+	var data []*entity.ContractAbi
+
+	rst, err := g.Model(dao.ContractAbi.Table()).Ctx(ctx).Cache(gdb.CacheOption{
+		Duration: time.Hour,
+		Name:     dao.ContractAbi.Table() + "all",
+		Force:    false,
+		// }).Where("user_id", 1).One()
+	}).All()
+	if err != nil {
+		g.Log().Warning(ctx, "GetAbiAll:", err)
+		return nil, gerror.NewCode(consts.CodeInternalError)
+	}
+	if rst == nil {
+		g.Log().Warning(ctx, "GetAbiAll no abi")
+		return nil, gerror.NewCode(consts.CodeInternalError)
+	}
+	err = rst.Structs(&data)
+	return data, err
+}

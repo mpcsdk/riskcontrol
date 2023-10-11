@@ -1,4 +1,4 @@
-package rulesdb
+package db
 
 import (
 	"context"
@@ -20,14 +20,10 @@ import (
 	"github.com/gogf/gf/v2/os/gctx"
 )
 
-type sRulesDb struct {
-	sctx g.Ctx
-}
-
 var RuleChName = "rule_ch"
 var AbiChName = "abi_ch"
 
-func (s *sRulesDb) Get(ctx context.Context, ruleId string) (string, error) {
+func (s *sDB) GetRules(ctx context.Context, ruleId string) (string, error) {
 	//todo: cache
 	// v, _ := g.Redis().Get(s.ctx, name)
 	rule := &entity.Rule{}
@@ -39,7 +35,7 @@ func (s *sRulesDb) Get(ctx context.Context, ruleId string) (string, error) {
 	return rule.Rules, err
 }
 
-func (s *sRulesDb) AllRules(ctx context.Context) map[string]string {
+func (s *sDB) AllRules(ctx context.Context) map[string]string {
 	rule := []entity.Rule{}
 	err := dao.Rule.Ctx(ctx).Scan(&rule)
 	if err != nil {
@@ -51,18 +47,8 @@ func (s *sRulesDb) AllRules(ctx context.Context) map[string]string {
 	}
 	return rst
 }
-func (s *sRulesDb) GetAbi(ctx context.Context, to string) (string, error) {
-	//todo: cache
-	contracts := &entity.ContractAbi{}
-	err := dao.ContractAbi.Ctx(ctx).Where(dao.ContractAbi.Columns().Addr, to).Scan(contracts)
-	if err != nil {
-		g.Log().Error(ctx, "GetAbi:", to, err)
-		return "", gerror.NewCode(consts.CodeInternalError)
-	}
-	return contracts.Abi, err
-}
 
-func (s *sRulesDb) subscription(conn *pgxpool.Conn, name string, notificationChannel chan *pgconn.Notification) {
+func (s *sDB) subscription(conn *pgxpool.Conn, name string, notificationChannel chan *pgconn.Notification) {
 
 	channelName := name
 	_, err := conn.Exec(context.Background(), fmt.Sprintf("LISTEN %s", channelName))
@@ -82,7 +68,7 @@ func (s *sRulesDb) subscription(conn *pgxpool.Conn, name string, notificationCha
 						ruleId := ops[0]
 						op := ops[1]
 						if op == "up" {
-							rules, _ := s.Get(s.sctx, ruleId)
+							rules, _ := s.GetRules(s.ctx, ruleId)
 							service.LEngine().UpRules(ruleId, rules)
 						}
 						if op == "rm" {
@@ -98,7 +84,7 @@ func (s *sRulesDb) subscription(conn *pgxpool.Conn, name string, notificationCha
 	}()
 }
 
-func (s *sRulesDb) listenNotify(subNames []string) {
+func (s *sDB) listenNotify(subNames []string) {
 	l, _ := g.Cfg().Get(context.Background(), "database.default.0.link")
 	fmt.Println(l.String())
 	link := l.String()
@@ -142,18 +128,4 @@ func (s *sRulesDb) listenNotify(subNames []string) {
 		}
 		notificationChannel <- notifications
 	}
-}
-
-func new() *sRulesDb {
-	g.Redis().Exists(gctx.GetInitCtx())
-	s := &sRulesDb{
-		sctx: gctx.GetInitCtx(),
-	}
-	//todo: notify
-	go s.listenNotify([]string{RuleChName, AbiChName})
-	return s
-}
-
-func init() {
-	service.RegisterRulesDb(new())
 }

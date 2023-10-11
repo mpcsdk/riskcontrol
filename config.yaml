@@ -34,77 +34,184 @@ grpc:
 
 # url
 userTokenUrl: "https://auth-dev.mixmarvel-sdk.com/info"
+chainId: 9527
+ethRpc: "https://robin.rangersprotocol.com/pubhub/api/jsonrpc"
 
 userRisk:
   verificationDuration: "15m"
   forbiddenTime: "-10m"
+  aggBlock: 1000
 
-contractRisk:
-  - contract: "0xdac17f958d2ee523a2206206994597c13d831ec7"
-    kind: "erc20"
-    methodName: "transfer"
-    threshold: 1000000000000000000
-    valIndt: "wad"
+txRisk:
+  ft:
   - contract: "0x71d9cfd1b7adb1e8eb4c193ce6ffbe19b4aee0db"
-    kind: "erc20"
+    name: "RPG"
+
     methodName: "transfer"
-    threshold: 1000000000000000000
-    name: ""
+    methodSig: "transfer(address,uint256)"
+    methodFromField: ""
+    methodToField: "dst"
+    methodValueField: "wad"
+
+    eventName: "Transfer"
+    eventSig: "Transfer(address,address,uint256)"
+    eventFromField: "src"
+    eventToField : "dst"
+    eventValueField: "wad"
+
+    skipToAddr: ""
+    threshold: "1000000000000000000"
   - contract: "0x1d35fa1a131038760b6325492e236600003120f5"
-    kind: "erc20"
-    methodName: "transfer"
-    threshold: 1000000000000000000
     name: "MAK"
+
+    methodName: "transfer"
+    methodSig: "transfer(address,address,uint256)"
+    methodFromField: "from"
+    methodToField: "to"
+    methodValueField: "value"
+
+    eventName: "Transfer"
+    eventSig: "Transfer(address,address,uint256)"
+    eventFromField: "from"
+    eventToField : "to"
+    eventValueField: "value"
+
+    threshold: "1000000000000000000"
+
   - contract: "0x9e4ac58cfbdf5cfe0685ad034bb5c6e26363a72a"
-    kind: "erc20"
-    methodName: "transfer"
-    threshold: 1000000000000000000
     name: "MUD"
+
+    methodName: "transfer"
+    methodSig: "transfer(address,address,uint256)"
+    methodFromField: "from"
+    methodToField: "to"
+    methodValueField: "value"
+
+    eventName: "Transfer"
+    eventSig: "Transfer(address,address,uint256)"
+    eventFromField: "from"
+    eventToField : "to"
+    eventValueField: "value"
+
+    threshold: "1000000000000000000"
   - contract: "0x0f3a62db02f743b549053cc8d538c65ab01e3618"
-    kind: "erc20"
-    methodName: "transfer"
-    threshold: 1000000000000000000
     name: "USDT"
-  - contract: "0xb895607bee24aa62ca090ce0445a1893e70ee5a0"
-    kind: "erc20"
+
     methodName: "transfer"
-    threshold: 1000000000000000000
+    methodSig: "transfer(address,address,uint256)"
+    methodFromField: "from"
+    methodToField: "to"
+    methodValueField: "value"
+
+    eventName: "Transfer"
+    eventSig: "Transfer(address,address,uint256)"
+    eventFromField: "from"
+    eventToField : "to"
+    eventValueField: "value"
+
+    threshold: "1000000000000000000"
+  - contract: "0xb895607bee24aa62ca090ce0445a1893e70ee5a0"
     name: "MIX"
-  - contract: "0xfac679f8f88ffbec74e90ecbd7eea45ab294c826"
-    kind: "erc721"
-    methodName: "transferFrom"
-    threshold: 2
-    name: "MAN"
-  - contract: "0xf706c471915de10ebabe1422862a49a7ab55445c"
-    kind: "erc721"
-    methodName: "transferFrom"
-    threshold: 2
-    name: "Miner"
-  - contract: "0x0407670718faae7d319f39e14fb992ef762e8d62"
-    kind: "erc721"
-    methodName: "transferFrom"
-    threshold: 2
-    name: "Equipment"
+
+    methodName: "transfer"
+    methodSig: "transfer(address,address,uint256)"
+    methodFromField: "from"
+    methodToField: "to"
+    methodValueField: "value"
+
+    eventName: "Transfer"
+    eventSig: "Transfer(address,address,uint256)"
+    eventFromField: "from"
+    eventToField : "to"
+    eventValueField: "value"
+
+    threshold: "1000000000000000000"
+
+  nft:
   - contract: "0xb1682c08beb47328d4f98ac08d3cd01679ff5c3b"
-    kind: "erc721"
-    methodName: "transferFrom"
-    threshold: 2
     name: "Weapon"
-  - contract: "0x52bf2fdc7f85f6d4e0c1cfcb5aa0a7033aa7a815"
-    kind: "erc721"
+
     methodName: "transferFrom"
+    methodSig: "transferFrom(address,uint256)"
+    methodFromField: "from"
+    methodToField: "to"
+    MethodTokenIdField: "tokenId"
+
+    eventName: "Transfer"
+    eventSig: "Transfer(address,address,uint256)"
+    eventFromField: "from"
+    eventToField : "to"
+    eventTokenIdField: "tokenId"
+
     threshold: 2
+  - contract: "0xfac679f8f88ffbec74e90ecbd7eea45ab294c826"
+    name: "MAN"
+
+    methodName: "transferFrom"
+    methodSig: "transferFrom(address,uint256)"
+    methodFromField: "from"
+    methodToField: "to"
+    MethodTokenIdField: "tokenId"
+
+    eventName: "TransferFrom"
+    eventSig: "TransferFrom(address,uint256)"
+    eventFromField: ""
+    eventToField : "to"
+    eventTokenIdField: "tokenId"
+
+    threshold: 2
+  - contract: "0xf706c471915de10ebabe1422862a49a7ab55445c"
+    name: "Miner"
+
+    methodName: "transferFrom"
+    methodSig: "transferFrom(address,uint256)"
+    methodFromField: "from"
+    methodToField: "to"
+    MethodTokenIdField: "tokenId"
+
+    eventName: "TransferFrom"
+    eventSig: "TransferFrom(address,uint256)"
+    eventFromField: ""
+    eventToField : "to"
+    eventTokenIdField: "tokenId"
+
+    threshold: 2
+  - contract: "0x0407670718faae7d319f39e14fb992ef762e8d62"
+    name: "Equipment"
+
+    methodName: "transferFrom"
+    methodSig: "transferFrom(address,uint256)"
+    methodFromField: "from"
+    methodToField: "to"
+    MethodTokenIdField: "tokenId"
+
+    eventName: "TransferFrom"
+    eventSig: "TransferFrom(address,uint256)"
+    eventFromField: ""
+    eventToField : "to"
+    eventTokenIdField: "tokenId"
+
+    threshold: 2
+
+  - contract: "0x52bf2fdc7f85f6d4e0c1cfcb5aa0a7033aa7a815"
     name: "Fashion"
-  # - contract: "0xb6d831657133e5c99dc28b9b96103a8dd7bacca4"
-  #   kind: "erc721"
-  #   methodName: "transferFrom"
-  #   threshold: 2
-  #   name: "Fashion"
+
+    methodName: "transferFrom"
+    methodSig: "transferFrom(address,uint256)"
+    methodFromField: "from"
+    methodToField: "to"
+    MethodTokenIdField: "tokenId"
+
+    eventName: "TransferFrom"
+    eventSig: "TransferFrom(address,uint256)"
+    eventFromField: ""
+    eventToField : "to"
+    eventTokenIdField: "tokenId"
+
+    threshold: 2
 #
 etcd:
   address: "127.0.0.1:2379"
-
-
 
 
 sms:
@@ -141,5 +248,12 @@ gfcli:
   gen:
     dao:
     - link:     "pgsql:postgres:123456@tcp(127.0.0.1:10100)/riskcontrol"
-      tables:   "contract_abi,rule,eth_tx,tfa"
+      tables:   "contract_abi,rule,eth_tx,tfa,scrape_logs_stat,agg_ft_24h,agg_nft_24h"
       jsonCase: "CamelLower"
+      typeMapping:
+        decimal:
+          type:   decimal.Decimal
+          import: github.com/shopspring/decimal
+        numeric:
+          type:   decimal.Decimal
+          import: github.com/shopspring/decimal
