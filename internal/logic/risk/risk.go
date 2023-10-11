@@ -73,7 +73,7 @@ func (s *sRisk) PerformRiskTxs(ctx context.Context, userId string, signTx string
 		"userId:", userId,
 		"riskseial:", riskserial, "code:", code, err)
 	// service.Cache().Set(ctx, riskserial+consts.KEY_RiskUId, userId, 0)
-	return riskserial, code
+	return riskserial, consts.RiskCodePass
 }
 
 func (s *sRisk) PerformRiskTFA(ctx context.Context, userId string, riskData *conrisk.RiskTfa) (string, int32) {
@@ -84,7 +84,7 @@ func (s *sRisk) PerformRiskTFA(ctx context.Context, userId string, riskData *con
 	//
 	riskserial := common.GenNewSid()
 	///
-	code := consts.RiskCodeError
+	code := consts.RiskCodePass
 	var err error
 	///
 	switch riskData.Kind {
