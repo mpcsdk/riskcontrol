@@ -25,7 +25,7 @@ type EthTxColumns struct {
 	UpdatedAt  string //
 	DeletedAt  string //
 	Address    string //
-	Target     string //
+	Contract string //
 	MethodId   string //
 	MethodName string //
 	Sig        string //
@@ -43,7 +43,7 @@ var ethTxColumns = EthTxColumns{
 	UpdatedAt:  "updated_at",
 	DeletedAt:  "deleted_at",
 	Address:    "address",
-	Target:     "target",
+	Contract:     "contract",
 	MethodId:   "method_id",
 	MethodName: "method_name",
 	Sig:        "sig",

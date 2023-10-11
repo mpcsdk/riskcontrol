@@ -15,7 +15,7 @@ type EthTx struct {
 	UpdatedAt  *gtime.Time `json:"updatedAt"  ` //
 	DeletedAt  *gtime.Time `json:"deletedAt"  ` //
 	Address    string      `json:"address"    ` //
-	Target     string      `json:"target"     ` //
+	Contract string      `json:"contract"     ` //
 	MethodId   string      `json:"methodId"   ` //
 	MethodName string      `json:"methodName" ` //
 	Sig        string      `json:"sig"        ` //

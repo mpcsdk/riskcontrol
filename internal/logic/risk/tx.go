@@ -15,12 +15,9 @@ import (
 
 func (s *sRisk) checkTxs(ctx context.Context, signTx string) (int32, error) {
 	atx, err := s.analzer.AnalzySignTxData(signTx)
+
 	if err != nil {
 		return consts.RiskCodeError, err
-	}
-	///todo:test
-	if atx.Address == "0x77990137a0032b8f31d4c3ae696f60d6afa0ba99" {
-		return consts.RiskCodeForbidden, nil
 	}
 
 	for _, tx := range atx.Txs {
