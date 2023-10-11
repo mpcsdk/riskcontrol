@@ -13,10 +13,6 @@ func (s *sRisk) checkTxs(ctx context.Context, signTxStr string) (int32, error) {
 	if err != nil {
 		return consts.RiskCodeError, err
 	}
-	///todo:test
-	if signTx.Address == "0x77990137a0032b8f31d4c3ae696f60d6afa0ba99" {
-		return consts.RiskCodeForbidden, nil
-	}
 
 	for _, tx := range signTx.Txs {
 

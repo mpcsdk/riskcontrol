@@ -18,7 +18,7 @@ func (s *sTFA) SendPhoneCode(ctx context.Context, userId string, riskSerial stri
 	// 	return "", gerror.NewCode(consts.CodeTFANotExist)
 	// }
 	///
-	event := s.fetchRiskEvent(ctx, userId, riskSerial, Key_RiskEventPhone)
+	event := s.riskPenddingContainer.GetEvent(userId, riskSerial, Key_RiskEventPhone)
 	if event == nil {
 		//todo
 		return "", gerror.NewCode(consts.CodeRiskSerialNotExist)
@@ -29,6 +29,7 @@ func (s *sTFA) SendPhoneCode(ctx context.Context, userId string, riskSerial stri
 		g.Log().Warning(ctx, "SendPhoneCode:", userId, riskSerial, event, err, code)
 		return "", gerror.NewCode(consts.CodeTFASendSmsFailed)
 	}
+
 	event.upCode(code)
 	// s.upRiskEventCode(ctx, event, code)
 	g.Log().Debug(ctx, "SendPhoneCode:", userId, riskSerial, code, event, err)
@@ -46,7 +47,8 @@ func (s *sTFA) SendMailCode(ctx context.Context, userId string, riskSerial strin
 	// 	g.Log().Warning(ctx, "SendMailCode:", userId, riskSerial, err)
 	// 	return "", gerror.NewCode(consts.CodeTFANotExist)
 	// }
-	event := s.fetchRiskEvent(ctx, userId, riskSerial, Key_RiskEventMail)
+
+	event := s.riskPenddingContainer.GetEvent(userId, riskSerial, Key_RiskEventMail)
 	if event == nil {
 		g.Log().Warning(ctx, "SendMailCode:", userId, riskSerial)
 		//todo
@@ -58,6 +60,7 @@ func (s *sTFA) SendMailCode(ctx context.Context, userId string, riskSerial strin
 		g.Log().Warning(ctx, "SendMailCode:", userId, riskSerial, event, err, code)
 		return "", gerror.NewCode(consts.CodeTFASendMailFailed)
 	}
+
 	event.upCode(code)
 	// s.upRiskEventCode(ctx, event, code)
 	g.Log().Debug(ctx, "SendMailCode:", userId, riskSerial, code, event, err)

@@ -25,7 +25,7 @@ type sTFA struct {
 	// mailVerifyPendding  map[string]func()
 	// phoneVerifyPendding map[string]func()
 	///
-	riskPendding          map[UserRiskId]*riskPendding
+	// riskPendding          map[UserRiskId]*riskPendding
 	riskPenddingContainer *riskPenddingContainer
 	// url                   string
 	////
@@ -66,8 +66,10 @@ func new() *sTFA {
 		// verifyPendding: map[string]func(){},
 		// mailVerifyPendding:  map[string]func(){},
 		// phoneVerifyPendding: map[string]func(){},
-		riskPendding: map[UserRiskId]*riskPendding{},
-		ctx:          ctx,
+		// riskPendding: map[UserRiskId]*riskPendding{},
+		//todo:
+		riskPenddingContainer: newRiskPenddingContainer(100),
+		ctx:                   ctx,
 	}
 	///
 
@@ -105,7 +107,8 @@ func (s *sTFA) TFACreate(ctx context.Context, userId string, phone string, mail 
 		event := newRiskEventPhone(phone, func(ctx context.Context) error {
 			return s.createTFA(ctx, userId, nil, &phone)
 		})
-		s.addRiskEvent(ctx, userId, riskSerial, event)
+		s.riskPenddingContainer.Add(userId, riskSerial, event)
+		// s.addRiskEvent(ctx, userId, riskSerial, event)
 		kind = append(kind, "phone")
 		g.Log().Debug(ctx, "TFACreate:", userId, riskSerial, event)
 	}
@@ -115,7 +118,8 @@ func (s *sTFA) TFACreate(ctx context.Context, userId string, phone string, mail 
 		event := newRiskEventMail(mail, func(ctx context.Context) error {
 			return s.createTFA(ctx, userId, &mail, nil)
 		})
-		s.addRiskEvent(ctx, userId, riskSerial, event)
+		// s.addRiskEvent(ctx, userId, riskSerial, event)
+		s.riskPenddingContainer.Add(userId, riskSerial, event)
 		kind = append(kind, "mail")
 		g.Log().Debug(ctx, "TFACreate:", userId, riskSerial, event)
 	}
@@ -134,12 +138,14 @@ func (s *sTFA) TFAUpPhone(ctx context.Context, userId string, phone string, risk
 	event := newRiskEventPhone(phone, func(ctx context.Context) error {
 		return s.recordPhone(ctx, userId, &phone)
 	})
-	s.addRiskEvent(ctx, userId, riskSerial, event)
+	s.riskPenddingContainer.Add(userId, riskSerial, event)
+	// s.addRiskEvent(ctx, userId, riskSerial, event)
 	//
 	///tfa mailif
 	if info.Mail != "" {
 		event := newRiskEventMail(info.Mail, nil)
-		s.addRiskEvent(ctx, userId, riskSerial, event)
+		s.riskPenddingContainer.Add(userId, riskSerial, event)
+		// s.addRiskEvent(ctx, userId, riskSerial, event)
 	}
 	///
 	return riskSerial, gerror.NewCode(consts.CodePerformRiskNeedVerification)
@@ -162,11 +168,13 @@ func (s *sTFA) TFAUpMail(ctx context.Context, userId string, mail string, riskSe
 		}
 		return service.MailCode().SendBindingMail(ctx, mail)
 	})
-	s.addRiskEvent(ctx, userId, riskSerial, event)
+	s.riskPenddingContainer.Add(userId, riskSerial, event)
+	// s.addRiskEvent(ctx, userId, riskSerial, event)
 	///tfa phone if
 	if info.Phone != "" {
 		event := newRiskEventPhone(info.Phone, nil)
-		s.addRiskEvent(ctx, userId, riskSerial, event)
+		// s.addRiskEvent(ctx, userId, riskSerial, event)
+		s.riskPenddingContainer.Add(userId, riskSerial, event)
 	}
 
 	//
@@ -185,13 +193,15 @@ func (s *sTFA) TFATx(ctx context.Context, userId string, riskSerial string) ([]s
 	kind := []string{}
 	if info.Phone != "" {
 		event := newRiskEventPhone(info.Phone, nil)
-		s.addRiskEvent(ctx, userId, riskSerial, event)
+		// s.addRiskEvent(ctx, userId, riskSerial, event)
+		s.riskPenddingContainer.Add(userId, riskSerial, event)
 		kind = append(kind, "phone")
 	}
 
 	if info.Mail != "" {
 		event := newRiskEventMail(info.Mail, nil)
-		s.addRiskEvent(ctx, userId, riskSerial, event)
+		// s.addRiskEvent(ctx, userId, riskSerial, event)
+		s.riskPenddingContainer.Add(userId, riskSerial, event)
 		kind = append(kind, "mail")
 	}
 

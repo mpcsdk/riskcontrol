@@ -23,7 +23,7 @@ func newRiskPenddingContainer(times int) *riskPenddingContainer {
 		ctx:          context.Background(),
 	}
 	//
-	gtimer.AddTimes(s.ctx, time.Second, times, func(ctx context.Context) {
+	gtimer.Add(s.ctx, time.Second*time.Duration(times), func(ctx context.Context) {
 		for key, risk := range s.riskPendding {
 			if risk.dealline.Before(gtime.Now()) {
 				delete(s.riskPendding, key)
@@ -41,6 +41,15 @@ func (s *riskPenddingContainer) Get(userId, riskSerial string) *riskPendding {
 	}
 	return nil
 }
+
+func (s *riskPenddingContainer) GetEvent(userId, riskSerial string, kind RiskKind) *riskEvent {
+	risk := s.Get(userId, riskSerial)
+	if risk == nil {
+		return nil
+	}
+	return risk.fetchEvent(kind)
+}
+
 func (s *riskPenddingContainer) Add(userId, riskSerial string, event *riskEvent) {
 	risk := s.Get(userId, riskSerial)
 	if risk == nil {
@@ -90,8 +99,8 @@ func (s *riskPenddingContainer) VerifierCode(userId, riskSerial string, code *mo
 	if risk == nil {
 		return "", errRiskNotExist
 	}
-	err := risk.verifierCode(code)
-	return "", err
+	k, err := risk.verifierCode(code)
+	return string(k), err
 	// risk.verifier()
 	// return "", nil
 }
@@ -110,7 +119,9 @@ func (s *riskPenddingContainer) DoAfter(ctx context.Context, userId, riskSerial 
 	if risk == nil {
 		return errRiskNotExist
 	}
-	risk.AllDone()
+	if !risk.AllDone() {
+		return errRiskNotDone
+	}
 
 	risk.DoAfter(ctx, risk)
 	return nil
@@ -130,9 +141,8 @@ type riskPendding struct {
 	dealline  *gtime.Time
 }
 
-func (s *riskPendding) verifierCode(code *model.VerifyCode) error {
-	s.verifier.exec(s, code)
-	return nil
+func (s *riskPendding) verifierCode(code *model.VerifyCode) (RiskKind, error) {
+	return s.verifier.exec(s, code)
 }
 
 func (s *riskPendding) upCode(kind RiskKind, code string) (string, error) {
@@ -168,22 +178,28 @@ func (s *riskPendding) AllDone() bool {
 	}
 	return true
 }
+func (s *riskPendding) fetchEvent(kind RiskKind) *riskEvent {
+	if e, ok := s.riskEvent[kind]; ok {
+		return e
+	}
+	return nil
+}
 
 // //
 // //
 type verifier interface {
-	exec(risk *riskPendding, verifierCode *model.VerifyCode)
+	exec(risk *riskPendding, verifierCode *model.VerifyCode) (RiskKind, error)
 	setNext(verifier)
 }
 type emptyVerifier struct {
 	next verifier
 }
 
-func (s *emptyVerifier) exec(risk *riskPendding, verifierCode *model.VerifyCode) {
+func (s *emptyVerifier) exec(risk *riskPendding, verifierCode *model.VerifyCode) (RiskKind, error) {
 	if s.next == nil {
-		return
+		return "", nil
 	}
-	s.next.exec(risk, verifierCode)
+	return s.next.exec(risk, verifierCode)
 }
 func (s *emptyVerifier) setNext(v verifier) {
 	if s.next == nil {
@@ -198,19 +214,21 @@ type verifierPhone struct {
 	next verifier
 }
 
-func (s *verifierPhone) exec(risk *riskPendding, verifierCode *model.VerifyCode) {
+func (s *verifierPhone) exec(risk *riskPendding, verifierCode *model.VerifyCode) (RiskKind, error) {
 	for k, e := range risk.riskEvent {
 		if k == Key_RiskEventPhone {
 			if e.VerifyPhoneCode == verifierCode.PhoneCode {
 				e.DoneEvent = true
 				break
+			} else {
+				return Key_RiskEventPhone, gerror.NewCode(consts.CodeRiskVerifyPhoneInvalid)
 			}
 		}
 	}
 	if s.next == nil {
-		return
+		return "", nil
 	}
-	s.next.exec(risk, verifierCode)
+	return s.next.exec(risk, verifierCode)
 }
 func (s *verifierPhone) setNext(v verifier) {
 	s.next = v
@@ -220,19 +238,22 @@ type verifierMail struct {
 	next verifier
 }
 
-func (s *verifierMail) exec(risk *riskPendding, verifierCode *model.VerifyCode) {
+func (s *verifierMail) exec(risk *riskPendding, verifierCode *model.VerifyCode) (RiskKind, error) {
 	for k, e := range risk.riskEvent {
 		if k == Key_RiskEventMail {
 			if e.VerifyMailCode == verifierCode.MailCode {
 				e.DoneEvent = true
-				return
+				break
+			} else {
+				return Key_RiskEventMail, gerror.NewCode(consts.CodeRiskVerifyMailInvalid)
+
 			}
 		}
 	}
 	if s.next == nil {
-		return
+		return "", nil
 	}
-	s.next.exec(risk, verifierCode)
+	return s.next.exec(risk, verifierCode)
 }
 func (s *verifierMail) setNext(v verifier) {
 	s.next = v
@@ -336,31 +357,31 @@ func newRiskEventMail(mail string, after func(context.Context) error) *riskEvent
 // //
 // /
 // /
-func (s *sTFA) addRiskEvent(ctx context.Context, userId, riskSerial string, event *riskEvent) {
-	key := keyUserRiskId(userId, riskSerial)
-	if v, ok := s.riskPendding[key]; ok {
-		v.riskEvent[event.Kind] = event
-	} else {
-		risk := &riskPendding{
-			UserId:     userId,
-			RiskSerial: riskSerial,
-			riskEvent: map[RiskKind]*riskEvent{
-				event.Kind: event,
-			},
-		}
-		s.riskPendding[key] = risk
-	}
-}
+// func (s *sTFA) addRiskEvent(ctx context.Context, userId, riskSerial string, event *riskEvent) {
+// 	key := keyUserRiskId(userId, riskSerial)
+// 	if v, ok := s.riskPendding[key]; ok {
+// 		v.riskEvent[event.Kind] = event
+// 	} else {
+// 		risk := &riskPendding{
+// 			UserId:     userId,
+// 			RiskSerial: riskSerial,
+// 			riskEvent: map[RiskKind]*riskEvent{
+// 				event.Kind: event,
+// 			},
+// 		}
+// 		s.riskPendding[key] = risk
+// 	}
+// }
 
-func (s *sTFA) fetchRiskEvent(ctx context.Context, userId string, riskSerial string, kind RiskKind) *riskEvent {
-	key := keyUserRiskId(userId, riskSerial)
-	if r, ok := s.riskPendding[key]; ok {
-		if e, ok := r.riskEvent[kind]; ok {
-			return e
-		}
-	}
-	return nil
-}
+// func (s *sTFA) fetchRiskEvent(ctx context.Context, userId string, riskSerial string, kind RiskKind) *riskEvent {
+// 	key := keyUserRiskId(userId, riskSerial)
+// 	if r, ok := s.riskPendding[key]; ok {
+// 		if e, ok := r.riskEvent[kind]; ok {
+// 			return e
+// 		}
+// 	}
+// 	return nil
+// }
 
 func (s *sTFA) verifyRiskPendding(ctx context.Context, userId string, riskSerial string, code *model.VerifyCode, risk *riskPendding) (RiskKind, error) {
 	for _, event := range risk.riskEvent {
