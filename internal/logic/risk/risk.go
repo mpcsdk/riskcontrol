@@ -38,16 +38,18 @@ func (s *sRisk) PerformRiskTxs(ctx context.Context, userId string, signTx string
 		g.Log().Warning(ctx, "PerformRiskTxs:", "checkTxs:", err)
 		return riskserial, code
 	}
+	//no riskrule
 	if code == consts.RiskCodeNoRiskControl {
 		return riskserial, consts.RiskCodePass
 	}
-	////
+	if code != consts.RiskCodePass {
+		return riskserial, code
+	}
+	////if pass, chech tfa forbiddent
 	info, err := service.TFA().TFAInfo(ctx, userId)
 	if err != nil || info == nil {
 		g.Log().Warning(ctx, "PerformRiskTxs: tfinfo:", userId, signTx, err)
 		return "", consts.RiskCodePass
-		// return "", consts.RiskCodeNeedVerification
-		//, err
 	}
 	///
 	if info != nil && info.MailUpdatedAt != nil {
@@ -55,7 +57,6 @@ func (s *sRisk) PerformRiskTxs(ctx context.Context, userId string, signTx string
 		g.Log().Debug(ctx, "PerformRiskTxs:", "befor24h:", befor24h.String(), "info.MailUpdatedAt:", info.MailUpdatedAt.String())
 		if !s.isBefor(info.MailUpdatedAt, befor24h) {
 			return "", consts.RiskCodeForbidden
-			///, nil
 		}
 	}
 	///
@@ -68,11 +69,7 @@ func (s *sRisk) PerformRiskTxs(ctx context.Context, userId string, signTx string
 		}
 	}
 	///
-	//
-	g.Log().Debug(ctx, "PerformRiskTxs:",
-		"userId:", userId,
-		"riskseial:", riskserial, "code:", code, err)
-	// service.Cache().Set(ctx, riskserial+consts.KEY_RiskUId, userId, 0)
+
 	return riskserial, consts.RiskCodePass
 }
 

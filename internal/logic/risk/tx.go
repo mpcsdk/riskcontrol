@@ -50,11 +50,12 @@ func (s *sRisk) checkTx(ctx context.Context, from string, riskSignTx *analzyer.S
 			return consts.RiskCodeError, err
 		}
 
+		cnt = cnt.Add(cnt, ethtx.Value)
 		if cnt.Cmp(ftrule.Threshold) > 0 {
 			g.Log().Warning(ctx, "checTx > threshold:", riskSignTx, cnt.String())
 			return consts.RiskCodeNeedVerification, nil
 		}
-		g.Log().Debug(ctx, "checTx < threshold:", cnt.String(), ftrule, riskSignTx)
+		g.Log().Debug(ctx, "checTx < threshold:", cnt.String(), ethtx, ftrule, riskSignTx)
 		return consts.RiskCodePass, nil
 	} else if nftrule, ok := s.nftruleMap[riskSignTx.Target]; ok {
 		//nft
@@ -63,6 +64,7 @@ func (s *sRisk) checkTx(ctx context.Context, from string, riskSignTx *analzyer.S
 			g.Log().Warning(ctx, "checTx rule_Token:", riskSignTx, err)
 			return consts.RiskCodeError, err
 		}
+		cnt += 1
 		if cnt > nftrule.Threshold {
 			g.Log().Debug(ctx, "checTx > threshold:", riskSignTx, cnt, nftrule.Threshold)
 			return consts.RiskCodeNeedVerification, nil

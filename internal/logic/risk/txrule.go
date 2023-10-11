@@ -53,7 +53,9 @@ func rule_ftcnt(ctx context.Context, address string, contract string, method str
 	///
 
 	val := big.NewInt(0)
-	err = rst.Struct(val)
-	return val, err
+	if v, ok := rst.Map()[dao.AggFt24H.Columns().Value]; ok {
+		val.SetString(v.(string), 10)
+	}
 
+	return val, err
 }

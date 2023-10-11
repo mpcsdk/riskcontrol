@@ -40,7 +40,7 @@ func main() {
 	defer tp.Shutdown(ctx)
 	// ///scrapelogs
 	v, err := cfg.Get(ctx, "scrapeLogs", false)
-	if err != nil && v.Bool() {
+	if err == nil && v.Bool() {
 		g.Log().Notice(ctx, "Open ScrapeLogs")
 		err = service.EthEventGeter().InitByService()
 		if err != nil {

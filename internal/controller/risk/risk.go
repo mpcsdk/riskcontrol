@@ -101,7 +101,9 @@ func (*Controller) PerformRiskTxs(ctx context.Context, req *v1.TxRiskReq) (res *
 		return nil, gerror.NewCode(consts.CodePerformRiskError)
 	}
 	///: pass or forbidden
-	g.Log().Info(ctx, "PerformRiskTx:", req, serial, code)
+	g.Log().Debug(ctx, "PerformRiskTxs:", req, serial, code)
+	//
+
 	if code == consts.RiskCodePass {
 		return &v1.TxRiskRes{
 			Ok: code,

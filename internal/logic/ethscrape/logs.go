@@ -159,7 +159,7 @@ func (s *sEthEventGeter) Run(
 	go func() {
 		for {
 			///
-			time.Sleep(15 * time.Second)
+			time.Sleep(1 * time.Second)
 			number, err := s.GetBlockNumber(s.ctx)
 			if err != nil {
 				g.Log().Error(s.ctx, "GetBlockNumber:", err)
