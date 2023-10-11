@@ -40,6 +40,8 @@ ethRpc: "https://robin.rangersprotocol.com/pubhub/api/jsonrpc"
 scrapeLogs: true 
 
 userRisk:
+  userControl: true
+  txControl: true
   verificationDuration: "15m"
   forbiddenTime: "-10m"
   aggBlock: 1000

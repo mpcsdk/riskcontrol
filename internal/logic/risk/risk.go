@@ -19,12 +19,17 @@ type sRisk struct {
 	analzer    *analzyer.Analzyer
 	ftruleMap  map[string]*model.FtRule
 	nftruleMap map[string]*model.NftRule
+	////
+	userControl bool
+	txControl   bool
 }
 
 func (s *sRisk) PerformRiskTxs(ctx context.Context, userId string, signTx string) (string, int32) {
-	//
-	g.Log().Debug(ctx, "PerformRiskTxs:", "userId:", userId, "signTx:", signTx)
+	g.Log().Debug(ctx, "PerformRiskTxs:", "userId:", userId, "signTx:", signTx, s.txControl)
 	///
+	if !s.txControl {
+		return "", consts.RiskCodePass
+	}
 	///
 	riskserial := common.GenNewSid()
 	///
@@ -40,6 +45,7 @@ func (s *sRisk) PerformRiskTxs(ctx context.Context, userId string, signTx string
 	info, err := service.TFA().TFAInfo(ctx, userId)
 	if err != nil || info == nil {
 		g.Log().Warning(ctx, "PerformRiskTxs: tfinfo:", userId, signTx, err)
+		return "", consts.RiskCodePass
 		// return "", consts.RiskCodeNeedVerification
 		//, err
 	}
@@ -71,7 +77,10 @@ func (s *sRisk) PerformRiskTxs(ctx context.Context, userId string, signTx string
 }
 
 func (s *sRisk) PerformRiskTFA(ctx context.Context, userId string, riskData *conrisk.RiskTfa) (string, int32) {
-	g.Log().Debug(ctx, "PerformRiskTFA:", "userId:", userId, "riskData:", riskData)
+	g.Log().Debug(ctx, "PerformRiskTFA:", "userId:", userId, "riskData:", riskData, s.userControl)
+	if !s.userControl {
+		return "", consts.RiskCodePass
+	}
 	//
 	riskserial := common.GenNewSid()
 	///
@@ -88,7 +97,6 @@ func (s *sRisk) PerformRiskTFA(ctx context.Context, userId string, riskData *con
 	default:
 		g.Log().Error(ctx, "PerformRiskTFA:", "kind:", riskData.Kind, "not support")
 		return riskserial, consts.RiskCodeError
-		//, gerror.NewCode(consts.CodePerformUnKnowRisKind)
 	}
 	if err != nil {
 		g.Log().Error(ctx, "PerformRiskTFA:", err)
@@ -130,6 +138,10 @@ func new() *sRisk {
 	if err != nil {
 		panic(err)
 	}
+	v, _ := gcfg.Instance().Get(context.Background(), "userRisk.userControl", false)
+	s.userControl = v.Bool()
+	v, _ = gcfg.Instance().Get(context.Background(), "userRisk.txControl", false)
+	s.txControl = v.Bool()
 
 	return s
 }
