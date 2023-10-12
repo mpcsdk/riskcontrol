@@ -3,11 +3,11 @@ package sms
 import (
 	"context"
 	"errors"
-	"riskcontral/common"
-	"riskcontral/common/sms"
 	"riskcontral/internal/service"
 	"strings"
 
+	"github.com/franklihub/mpcCommon/rand"
+	"github.com/franklihub/mpcCommon/sms"
 	"github.com/gogf/gf/v2/frame/g"
 	"github.com/gogf/gf/v2/os/gcfg"
 	"github.com/gogf/gf/v2/os/gctx"
@@ -74,7 +74,7 @@ func (s *sSmsCode) sendCode(ctx context.Context, receiver, code string) error {
 
 func (s *sSmsCode) SendCode(ctx context.Context, receiver string) (string, error) {
 	// return "123", nil
-	code := common.RandomDigits(6)
+	code := rand.RandomDigits(6)
 	ok := false
 	state := ""
 	var err error

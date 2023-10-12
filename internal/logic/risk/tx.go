@@ -2,9 +2,9 @@ package risk
 
 import (
 	"context"
-	analzyer "riskcontral/common/ethtx/analzyer"
 	"riskcontral/internal/consts"
 
+	"github.com/franklihub/mpcCommon/ethtx/analzyer"
 	"github.com/gogf/gf/v2/frame/g"
 )
 

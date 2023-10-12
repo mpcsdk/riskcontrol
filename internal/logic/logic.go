@@ -7,7 +7,6 @@ package logic
 import (
 	_ "riskcontral/internal/logic/db"
 	_ "riskcontral/internal/logic/email"
-	_ "riskcontral/internal/logic/ethscrape"
 	_ "riskcontral/internal/logic/lengine"
 	_ "riskcontral/internal/logic/risk"
 	_ "riskcontral/internal/logic/sms"

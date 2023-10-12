@@ -27,6 +27,11 @@ type UserClient interface {
 	PerformAlive(ctx context.Context, in *empty.Empty, opts ...grpc.CallOption) (*empty.Empty, error)
 	PerformRiskTxs(ctx context.Context, in *TxRiskReq, opts ...grpc.CallOption) (*TxRiskRes, error)
 	PerformRiskTFA(ctx context.Context, in *TFARiskReq, opts ...grpc.CallOption) (*TFARiskRes, error)
+	// /
+	PerformAllAbi(ctx context.Context, in *AllAbiReq, opts ...grpc.CallOption) (*AllAbiRes, error)
+	PerformAllNftRules(ctx context.Context, in *NftRulesReq, opts ...grpc.CallOption) (*NftRulesRes, error)
+	PerformAllFtRules(ctx context.Context, in *FtRulesReq, opts ...grpc.CallOption) (*FtRulesRes, error)
+	// //
 	PerformSmsCode(ctx context.Context, in *SmsCodeReq, opts ...grpc.CallOption) (*SmsCodeRes, error)
 	PerformMailCode(ctx context.Context, in *MailCodekReq, opts ...grpc.CallOption) (*MailCodekRes, error)
 	PerformVerifyCode(ctx context.Context, in *VerifyCodekReq, opts ...grpc.CallOption) (*VerifyCodeRes, error)
@@ -67,6 +72,33 @@ func (c *userClient) PerformRiskTFA(ctx context.Context, in *TFARiskReq, opts ..
 	return out, nil
 }
 
+func (c *userClient) PerformAllAbi(ctx context.Context, in *AllAbiReq, opts ...grpc.CallOption) (*AllAbiRes, error) {
+	out := new(AllAbiRes)
+	err := c.cc.Invoke(ctx, "/risk.User/PerformAllAbi", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *userClient) PerformAllNftRules(ctx context.Context, in *NftRulesReq, opts ...grpc.CallOption) (*NftRulesRes, error) {
+	out := new(NftRulesRes)
+	err := c.cc.Invoke(ctx, "/risk.User/PerformAllNftRules", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *userClient) PerformAllFtRules(ctx context.Context, in *FtRulesReq, opts ...grpc.CallOption) (*FtRulesRes, error) {
+	out := new(FtRulesRes)
+	err := c.cc.Invoke(ctx, "/risk.User/PerformAllFtRules", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 func (c *userClient) PerformSmsCode(ctx context.Context, in *SmsCodeReq, opts ...grpc.CallOption) (*SmsCodeRes, error) {
 	out := new(SmsCodeRes)
 	err := c.cc.Invoke(ctx, "/risk.User/PerformSmsCode", in, out, opts...)
@@ -101,6 +133,11 @@ type UserServer interface {
 	PerformAlive(context.Context, *empty.Empty) (*empty.Empty, error)
 	PerformRiskTxs(context.Context, *TxRiskReq) (*TxRiskRes, error)
 	PerformRiskTFA(context.Context, *TFARiskReq) (*TFARiskRes, error)
+	// /
+	PerformAllAbi(context.Context, *AllAbiReq) (*AllAbiRes, error)
+	PerformAllNftRules(context.Context, *NftRulesReq) (*NftRulesRes, error)
+	PerformAllFtRules(context.Context, *FtRulesReq) (*FtRulesRes, error)
+	// //
 	PerformSmsCode(context.Context, *SmsCodeReq) (*SmsCodeRes, error)
 	PerformMailCode(context.Context, *MailCodekReq) (*MailCodekRes, error)
 	PerformVerifyCode(context.Context, *VerifyCodekReq) (*VerifyCodeRes, error)
@@ -119,6 +156,15 @@ func (UnimplementedUserServer) PerformRiskTxs(context.Context, *TxRiskReq) (*TxR
 }
 func (UnimplementedUserServer) PerformRiskTFA(context.Context, *TFARiskReq) (*TFARiskRes, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method PerformRiskTFA not implemented")
+}
+func (UnimplementedUserServer) PerformAllAbi(context.Context, *AllAbiReq) (*AllAbiRes, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method PerformAllAbi not implemented")
+}
+func (UnimplementedUserServer) PerformAllNftRules(context.Context, *NftRulesReq) (*NftRulesRes, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method PerformAllNftRules not implemented")
+}
+func (UnimplementedUserServer) PerformAllFtRules(context.Context, *FtRulesReq) (*FtRulesRes, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method PerformAllFtRules not implemented")
 }
 func (UnimplementedUserServer) PerformSmsCode(context.Context, *SmsCodeReq) (*SmsCodeRes, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method PerformSmsCode not implemented")
@@ -196,6 +242,60 @@ func _User_PerformRiskTFA_Handler(srv interface{}, ctx context.Context, dec func
 	return interceptor(ctx, in, info, handler)
 }
 
+func _User_PerformAllAbi_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(AllAbiReq)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(UserServer).PerformAllAbi(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/risk.User/PerformAllAbi",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(UserServer).PerformAllAbi(ctx, req.(*AllAbiReq))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _User_PerformAllNftRules_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(NftRulesReq)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(UserServer).PerformAllNftRules(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/risk.User/PerformAllNftRules",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(UserServer).PerformAllNftRules(ctx, req.(*NftRulesReq))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _User_PerformAllFtRules_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(FtRulesReq)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(UserServer).PerformAllFtRules(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/risk.User/PerformAllFtRules",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(UserServer).PerformAllFtRules(ctx, req.(*FtRulesReq))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 func _User_PerformSmsCode_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(SmsCodeReq)
 	if err := dec(in); err != nil {
@@ -268,6 +368,18 @@ var User_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "PerformRiskTFA",
 			Handler:    _User_PerformRiskTFA_Handler,
+		},
+		{
+			MethodName: "PerformAllAbi",
+			Handler:    _User_PerformAllAbi_Handler,
+		},
+		{
+			MethodName: "PerformAllNftRules",
+			Handler:    _User_PerformAllNftRules_Handler,
+		},
+		{
+			MethodName: "PerformAllFtRules",
+			Handler:    _User_PerformAllFtRules_Handler,
 		},
 		{
 			MethodName: "PerformSmsCode",

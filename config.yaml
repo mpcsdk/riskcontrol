@@ -23,28 +23,24 @@ database:
   - link: "pgsql:postgres:123456@tcp(127.0.0.1:10100)/riskcontrol"
 
 grpc:
-  name:             "riskrpc"  # 服务名称
+  name:             "riskRpc"  # 服务名称
   address:          ":8001" # 自定义服务监听地址
   logPath:          "./log" # 日志存储目录路径
   logStdout:        true    # 日志是否输出到终端
   errorLogEnabled:  true    # 是否开启错误日志记录
   accessLogEnabled: true    # 是否开启访问日志记录
   errorStack:       true    # 当产生错误时，是否记录错误堆栈
+#
+etcd:
+  address: "127.0.0.1:2379"
 
-
-# url
 userTokenUrl: "https://auth-dev.mixmarvel-sdk.com/info"
-chainId: 9527
-ethRpc: "https://robin.rangersprotocol.com/pubhub/api/jsonrpc"
-
-scrapeLogs: true 
 
 userRisk:
   userControl: true
   txControl: true
   verificationDuration: "15m"
   forbiddenTime: "-10m"
-  aggBlock: 1000
 
 txRisk:
   ft:
@@ -213,9 +209,7 @@ txRisk:
     eventTokenIdField: "tokenId"
 
     threshold: 2
-#
-etcd:
-  address: "127.0.0.1:2379"
+
 
 
 sms:

@@ -2,10 +2,10 @@ package email
 
 import (
 	"context"
-	"riskcontral/common"
-	"riskcontral/common/exmail"
 	"riskcontral/internal/service"
 
+	"github.com/franklihub/mpcCommon/exmail"
+	"github.com/franklihub/mpcCommon/rand"
 	"github.com/gogf/gf/v2/frame/g"
 	"github.com/gogf/gf/v2/os/gcfg"
 	"github.com/gogf/gf/v2/os/gctx"
@@ -26,12 +26,12 @@ type sMailCode struct {
 
 func (s *sMailCode) SendMailCode(ctx context.Context, to string) (string, error) {
 	// return "456", nil
-	code := common.RandomDigits(6)
+	code := rand.RandomDigits(6)
 	resp, err := s.t.SendMail(to, code)
 	g.Log().Debug(ctx, "SendMailCode:", to, code, resp)
 	return code, err
 }
-func (s *sMailCode) SendBindingMail(ctx context.Context, to string) ( error) {
+func (s *sMailCode) SendBindingMail(ctx context.Context, to string) error {
 
 	resp, err := s.t.SendBindingMail(to)
 	g.Log().Debug(ctx, "SendMailCode:", to, resp)

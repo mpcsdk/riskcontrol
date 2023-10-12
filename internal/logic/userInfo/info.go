@@ -2,10 +2,10 @@ package userInfo
 
 import (
 	"context"
-	"riskcontral/common"
 	"riskcontral/internal/consts"
 	"riskcontral/internal/service"
 
+	"github.com/franklihub/mpcCommon/userInfoGeter"
 	"github.com/gogf/gf/v2/errors/gerror"
 	"github.com/gogf/gf/v2/frame/g"
 	"github.com/gogf/gf/v2/os/gcache"
@@ -15,11 +15,11 @@ import (
 type sUserInfo struct {
 	url string
 	///
-	userGeter *common.UserTokenInfoGeter
+	userGeter *userInfoGeter.UserTokenInfoGeter
 	c         *gcache.Cache
 }
 
-func (s *sUserInfo) GetUserInfo(ctx context.Context, userToken string) (userInfo *common.UserInfo, err error) {
+func (s *sUserInfo) GetUserInfo(ctx context.Context, userToken string) (userInfo *userInfoGeter.UserInfo, err error) {
 	if userToken == "" {
 		g.Log().Error(ctx, "GetUserInfo:", userToken)
 		return nil, gerror.NewCode(consts.CodeTokenInvalid)
@@ -34,7 +34,7 @@ func (s *sUserInfo) GetUserInfo(ctx context.Context, userToken string) (userInfo
 	// "keyHash": "U2FsdGVkX1/O6j9czaWzdjjDo/XPjk1hI8pIoaxSuS52zIxVuStK/nS07ucgiM5si8NjN97rAux3aH7Ld2i5oO8UuL6tpNZmLMG9ZpwVTxvGkCa3H14vTxWNz+yBoWG8",
 	// "create_time": 1691118876
 	if v, ok := s.c.Get(ctx, userToken); ok == nil && !v.IsEmpty() {
-		info := &common.UserInfo{}
+		info := &userInfoGeter.UserInfo{}
 		err = v.Struct(info)
 		if err != nil {
 			g.Log().Error(ctx, "GetUserInfo:", err, userToken, info)
@@ -70,7 +70,8 @@ func new() *sUserInfo {
 		panic(err)
 	}
 	///
-	userGeter, err := common.NewUserInfoGeter(url.String())
+	userGeter := userInfoGeter.NewUserInfoGeter(url.String())
+	_, err = userGeter.GetUserInfo(context.Background(), "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhcHBQdWJLZXkiOiIwMjI1YmI1MmU5NTcyMDUwZmZjMGM4MGRjZDBhYTBmNjQyNDFjMDk5ZDAzZjFlYTFjODEzMmZkMzViY2Q3MDBiMWMiLCJpYXQiOjE2OTQ0Mjk5OTEsImV4cCI6MTcyNTk2NTk5MX0.8YaF5spnD1SjI-NNbBCIBj9H5pspXMMkPJrKk23LdnM")
 	if err != nil {
 		panic(err)
 	}

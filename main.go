@@ -1,9 +1,7 @@
 package main
 
 import (
-	"riskcontral/common"
 	_ "riskcontral/internal/packed"
-	"riskcontral/internal/service"
 
 	_ "riskcontral/internal/logic"
 	_ "riskcontral/internal/service"
@@ -13,17 +11,18 @@ import (
 	_ "github.com/gogf/gf/contrib/drivers/pgsql/v2"
 	_ "github.com/gogf/gf/contrib/nosql/redis/v2"
 	"github.com/gogf/gf/contrib/trace/jaeger/v2"
-	"github.com/gogf/gf/v2/frame/g"
 	"github.com/gogf/gf/v2/os/gcfg"
 	"github.com/gogf/gf/v2/os/gctx"
 
 	"riskcontral/internal/cmd"
+
+	"github.com/franklihub/mpcCommon/rand"
 )
 
 func main() {
 	ctx := gctx.GetInitCtx()
 	workId, _ := gcfg.Instance().Get(ctx, "server.workId")
-	common.InitIdGen(workId.Int())
+	rand.InitIdGen(workId.Int())
 	//
 
 	// ///jaeger
@@ -38,18 +37,7 @@ func main() {
 		panic(err)
 	}
 	defer tp.Shutdown(ctx)
-	// ///scrapelogs
-	v, err := cfg.Get(ctx, "scrapeLogs", false)
-	if err == nil && v.Bool() {
-		g.Log().Notice(ctx, "Open ScrapeLogs")
-		err = service.EthEventGeter().InitByService()
-		if err != nil {
-			panic(err)
-		}
-		service.EthEventGeter().RunBySerivce()
-	} else {
-		g.Log().Notice(ctx, "ShutDown ScrapeLogs")
-	}
+
 	///
 	///
 	cmd.Main.Run(gctx.GetInitCtx())

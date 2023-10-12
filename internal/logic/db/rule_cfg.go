@@ -2,23 +2,23 @@ package db
 
 import (
 	"context"
-	"riskcontral/internal/model"
 
 	"github.com/ethereum/go-ethereum/common/hexutil"
 	"github.com/ethereum/go-ethereum/crypto"
+	"github.com/franklihub/mpcCommon/mpcmodel"
 	"github.com/gogf/gf/v2/frame/g"
 	"github.com/gogf/gf/v2/os/gcfg"
 )
 
-var NftRules = map[string]*model.NftRule{}
+var NftRules = map[string]*mpcmodel.NftRule{}
 
-var FtRules = map[string]*model.FtRule{}
+var FtRules = map[string]*mpcmodel.FtRule{}
 
-func (s *sDB) GetNftRules(ctx context.Context) (map[string]*model.NftRule, error) {
+func (s *sDB) GetNftRules(ctx context.Context) (map[string]*mpcmodel.NftRule, error) {
 	return NftRules, nil
 }
 
-func (s *sDB) GetFtRules(ctx context.Context) (map[string]*model.FtRule, error) {
+func (s *sDB) GetFtRules(ctx context.Context) (map[string]*mpcmodel.FtRule, error) {
 	return FtRules, nil
 }
 func init() {
@@ -27,7 +27,7 @@ func init() {
 	if err != nil {
 		panic(err)
 	}
-	nftrules := []*model.NftRule{}
+	nftrules := []*mpcmodel.NftRule{}
 	err = v.Structs(&nftrules)
 	if err != nil {
 		panic(err)
@@ -38,7 +38,7 @@ func init() {
 	if err != nil {
 		panic(err)
 	}
-	ftrules := []*model.FtRule{}
+	ftrules := []*mpcmodel.FtRule{}
 	err = v.Structs(&ftrules)
 	if err != nil {
 		panic(err)

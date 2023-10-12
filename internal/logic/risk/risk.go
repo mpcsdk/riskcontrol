@@ -2,14 +2,14 @@ package risk
 
 import (
 	"context"
-	"riskcontral/common"
-	analzyer "riskcontral/common/ethtx/analzyer"
 	"riskcontral/internal/consts"
 	"riskcontral/internal/consts/conrisk"
-	"riskcontral/internal/model"
 	"riskcontral/internal/service"
 	"time"
 
+	"github.com/franklihub/mpcCommon/ethtx/analzyer"
+	"github.com/franklihub/mpcCommon/mpcmodel"
+	"github.com/franklihub/mpcCommon/rand"
 	"github.com/gogf/gf/v2/frame/g"
 	"github.com/gogf/gf/v2/os/gcfg"
 	"github.com/gogf/gf/v2/os/gtime"
@@ -17,8 +17,8 @@ import (
 
 type sRisk struct {
 	analzer    *analzyer.Analzyer
-	ftruleMap  map[string]*model.FtRule
-	nftruleMap map[string]*model.NftRule
+	ftruleMap  map[string]*mpcmodel.FtRule
+	nftruleMap map[string]*mpcmodel.NftRule
 	////
 	userControl bool
 	txControl   bool
@@ -31,7 +31,7 @@ func (s *sRisk) PerformRiskTxs(ctx context.Context, userId string, signTx string
 		return "", consts.RiskCodePass
 	}
 	///
-	riskserial := common.GenNewSid()
+	riskserial := rand.GenNewSid()
 	///
 	code, err := s.checkTxs(ctx, signTx)
 	if err != nil {
@@ -79,7 +79,7 @@ func (s *sRisk) PerformRiskTFA(ctx context.Context, userId string, riskData *con
 		return "", consts.RiskCodePass
 	}
 	//
-	riskserial := common.GenNewSid()
+	riskserial := rand.GenNewSid()
 	///
 	code := consts.RiskCodePass
 	var err error
@@ -111,8 +111,8 @@ func new() *sRisk {
 	///
 	s := &sRisk{
 		analzer:    analzyer.NewAnalzer(),
-		ftruleMap:  map[string]*model.FtRule{},
-		nftruleMap: map[string]*model.NftRule{},
+		ftruleMap:  map[string]*mpcmodel.FtRule{},
+		nftruleMap: map[string]*mpcmodel.NftRule{},
 	}
 	///
 	s.ftruleMap, _ = service.DB().GetFtRules(context.TODO())
