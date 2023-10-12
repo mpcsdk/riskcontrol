@@ -41,7 +41,7 @@ func (s *sRisk) checkTx(ctx context.Context, from string, riskSignTx *analzyer.S
 		}
 		if ethtx.MethodName != ftrule.MethodName {
 			g.Log().Debug(ctx, "AnalzyTxDataFT unControlmethod:", ethtx, ftrule)
-			return consts.RiskCodePass, nil
+			return consts.RiskCodeNoRiskControl, nil
 		}
 		if ethtx.Value.Cmp(ftrule.Threshold) > 0 {
 			g.Log().Notice(ctx, "riskTx.Value > threshold:", ethtx, ftrule.Threshold.String())
@@ -72,7 +72,7 @@ func (s *sRisk) checkTx(ctx context.Context, from string, riskSignTx *analzyer.S
 		}
 		if ethtx.MethodName != nftrule.MethodName {
 			g.Log().Debug(ctx, "AnalzyTxDataNFT unControlmethod:", ethtx, nftrule)
-			return consts.RiskCodePass, nil
+			return consts.RiskCodeNoRiskControl, nil
 		}
 		//nft
 		cnt, err := rule_nftcnt(ctx, from, nftrule.Contract, nftrule.MethodName)

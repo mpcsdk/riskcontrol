@@ -5,13 +5,14 @@ import (
 	"math/big"
 	"riskcontral/internal/dao"
 	"riskcontral/internal/model/do"
+	"riskcontral/internal/model/entity"
 
 	"github.com/gogf/gf/v2/frame/g"
 )
 
 // 矿机、装备、时装、武器
 func rule_nftcnt(ctx context.Context, address string, contract string, method string) (int, error) {
-	cnt, err := dao.AggNft24H.Ctx(ctx).Where(do.AggNft24H{
+	rst, err := dao.AggNft24H.Ctx(ctx).Where(do.AggNft24H{
 		From:       address,
 		Contract:   contract,
 		MethodName: method,
@@ -20,12 +21,21 @@ func rule_nftcnt(ctx context.Context, address string, contract string, method st
 			From:       address,
 			Contract:   contract,
 			MethodName: method,
-		}).Count()
-	g.Log().Debug(ctx, "AggNft24H:", address, contract, method, cnt)
+		}).
+		Fields(
+			dao.AggNft24H.Columns().Value,
+		).
+		One()
+	g.Log().Debug(ctx, "AggNft24H:", address, contract, method, rst)
 	if err != nil {
 		return 0, err
 	}
-	return cnt, nil
+	var data *entity.AggNft24H
+	err = rst.Struct(&data)
+	if err != nil {
+		return 0, err
+	}
+	return int(data.Value), nil
 }
 
 // MUD、MAK、USDT、RPG

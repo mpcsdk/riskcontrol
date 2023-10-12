@@ -38,39 +38,47 @@ func (s *sRisk) PerformRiskTxs(ctx context.Context, userId string, signTx string
 		g.Log().Warning(ctx, "PerformRiskTxs:", "checkTxs:", err)
 		return riskserial, code
 	}
-	//no riskrule
-	if code == consts.RiskCodeNoRiskControl {
-		return riskserial, consts.RiskCodePass
-	}
-	if code != consts.RiskCodePass {
+	switch code {
+	case consts.RiskCodePass, consts.RiskCodeNeedVerification:
+		////if pass, chech tfa forbiddent
+		info, err := service.TFA().TFAInfo(ctx, userId)
+		if err != nil {
+			g.Log().Warning(ctx, "PerformRiskTxs err tfinfo:", userId, signTx, err)
+			return "", consts.RiskCodeError
+		}
+		if info == nil {
+			g.Log().Warning(ctx, "PerformRiskTxs err tfinfo:", userId, signTx, err)
+			return "", consts.RiskCodeError
+		}
+		///
+		if info != nil && info.MailUpdatedAt != nil {
+			befor24h := gtime.Now().Add(BeforH24)
+			g.Log().Debug(ctx, "PerformRiskTxs:", "befor24h:", befor24h.String(), "info.MailUpdatedAt:", info.MailUpdatedAt.String())
+			if !s.isBefor(info.MailUpdatedAt, befor24h) {
+				return "", consts.RiskCodeForbidden
+			}
+		}
+		///
+		if info != nil && info.PhoneUpdatedAt != nil {
+			befor24h := gtime.Now().Add(BeforH24)
+			g.Log().Debug(ctx, "PerformRiskTxs:", "befor24h:", befor24h.String(), "info.PhoneUpdatedAt:", info.PhoneUpdatedAt.String())
+			if !s.isBefor(info.PhoneUpdatedAt, befor24h) {
+				return "", consts.RiskCodeForbidden
+				///, nil
+			}
+		}
+		///
 		return riskserial, code
+	case consts.RiskCodeForbidden:
+		return riskserial, consts.RiskCodeForbidden
+	case consts.RiskCodeError:
+		return riskserial, consts.RiskCodeError
+	case consts.RiskCodeNoRiskControl:
+		return riskserial, consts.RiskCodePass
+	default:
+		g.Log().Error(ctx, "PerformRiskTxs:", "code:", code)
+		return riskserial, consts.RiskCodeError
 	}
-	////if pass, chech tfa forbiddent
-	info, err := service.TFA().TFAInfo(ctx, userId)
-	if err != nil || info == nil {
-		g.Log().Warning(ctx, "PerformRiskTxs: tfinfo:", userId, signTx, err)
-		return "", consts.RiskCodePass
-	}
-	///
-	if info != nil && info.MailUpdatedAt != nil {
-		befor24h := gtime.Now().Add(BeforH24)
-		g.Log().Debug(ctx, "PerformRiskTxs:", "befor24h:", befor24h.String(), "info.MailUpdatedAt:", info.MailUpdatedAt.String())
-		if !s.isBefor(info.MailUpdatedAt, befor24h) {
-			return "", consts.RiskCodeForbidden
-		}
-	}
-	///
-	if info != nil && info.PhoneUpdatedAt != nil {
-		befor24h := gtime.Now().Add(BeforH24)
-		g.Log().Debug(ctx, "PerformRiskTxs:", "befor24h:", befor24h.String(), "info.PhoneUpdatedAt:", info.PhoneUpdatedAt.String())
-		if !s.isBefor(info.PhoneUpdatedAt, befor24h) {
-			return "", consts.RiskCodeForbidden
-			///, nil
-		}
-	}
-	///
-
-	return riskserial, consts.RiskCodePass
 }
 
 func (s *sRisk) PerformRiskTFA(ctx context.Context, userId string, riskData *conrisk.RiskTfa) (string, int32) {
