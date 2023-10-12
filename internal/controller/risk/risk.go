@@ -148,7 +148,7 @@ func (*Controller) PerformAllAbi(ctx context.Context, req *v1.AllAbiReq) (res *v
 		res.Abis[v.Addr] = v.Abi
 	}
 
-	return res, gerror.NewCode(gcode.CodeNotImplemented)
+	return res, nil
 }
 
 func (*Controller) PerformAllNftRules(ctx context.Context, req *v1.NftRulesReq) (res *v1.NftRulesRes, err error) {
