@@ -217,7 +217,7 @@ type verifierPhone struct {
 func (s *verifierPhone) exec(risk *riskPendding, verifierCode *model.VerifyCode) (RiskKind, error) {
 	for k, e := range risk.riskEvent {
 		if k == Key_RiskEventPhone {
-			if e.VerifyPhoneCode == verifierCode.PhoneCode {
+			if e.VerifyPhoneCode == verifierCode.PhoneCode && verifierCode.PhoneCode != "" {
 				e.DoneEvent = true
 				break
 			} else {
@@ -241,7 +241,7 @@ type verifierMail struct {
 func (s *verifierMail) exec(risk *riskPendding, verifierCode *model.VerifyCode) (RiskKind, error) {
 	for k, e := range risk.riskEvent {
 		if k == Key_RiskEventMail {
-			if e.VerifyMailCode == verifierCode.MailCode {
+			if e.VerifyMailCode == verifierCode.MailCode && verifierCode.MailCode != "" {
 				e.DoneEvent = true
 				break
 			} else {

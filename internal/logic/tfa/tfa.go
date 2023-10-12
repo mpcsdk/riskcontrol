@@ -8,6 +8,7 @@ import (
 
 	"github.com/gogf/gf/v2/errors/gerror"
 	"github.com/gogf/gf/v2/frame/g"
+	"github.com/gogf/gf/v2/os/gcfg"
 	"github.com/gogf/gf/v2/os/gctx"
 )
 
@@ -62,13 +63,14 @@ func new() *sTFA {
 	// client := risk.NewUserClient(conn)
 	///
 	//
+	t, _ := gcfg.Instance().Get(ctx, "userRisk.verificationDuration", 600)
 	s := &sTFA{
 		// verifyPendding: map[string]func(){},
 		// mailVerifyPendding:  map[string]func(){},
 		// phoneVerifyPendding: map[string]func(){},
 		// riskPendding: map[UserRiskId]*riskPendding{},
 		//todo:
-		riskPenddingContainer: newRiskPenddingContainer(100),
+		riskPenddingContainer: newRiskPenddingContainer(t.Int()),
 		ctx:                   ctx,
 	}
 	///

@@ -68,7 +68,6 @@ func (*Controller) PerformVerifyCode(ctx context.Context, req *v1.VerifyCodekReq
 		return nil, err
 	}
 	// err = service.Risk().VerifyCode(ctx, req.RiskSerial, req.Code)
-
 	code := &model.VerifyCode{
 		MailCode:  req.MailCode,
 		PhoneCode: req.PhoneCode,

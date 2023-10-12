@@ -23,7 +23,7 @@ redis:
 
 database:
   default:
-  - link: "pgsql:postgres:123456@tcp(127.0.0.1:10100)/riskcontrol"
+  - link: "pgsql:postgres:123456@tcp(123.60.148.168:10100)/riskcontrol"
 
 grpc:
   name:             "riskRpc"  # 服务名称
@@ -42,7 +42,7 @@ userTokenUrl: "https://auth-dev.mixmarvel-sdk.com/info"
 userRisk:
   userControl: true
   txControl: true
-  verificationDuration: "15m"
+  verificationDuration: 600 
   forbiddenTime: "-10m"
 
 txRisk:
@@ -129,10 +129,10 @@ txRisk:
     name: "MIX"
 
     methodName: "transfer"
-    methodSig: "transfer(address,address,uint256)"
-    methodFromField: "from"
-    methodToField: "to"
-    methodValueField: "value"
+    methodSig: "transfer(address,uint256)"
+    methodFromField: ""
+    methodToField: "recipient"
+    methodValueField: "amount"
 
     eventName: "Transfer"
     eventSig: "Transfer(address,address,uint256)"
@@ -278,7 +278,7 @@ exemail:
 gfcli:
   gen:
     dao:
-    - link:     "pgsql:postgres:123456@tcp(127.0.0.1:10100)/riskcontrol"
+    - link:     "pgsql:postgres:123456@tcp(123.60.148.168:10100)/riskcontrol"
       tables:   "contract_abi,rule,eth_tx,tfa,scrape_logs_stat,agg_ft_24h,agg_nft_24h"
       jsonCase: "CamelLower"
       typeMapping:
