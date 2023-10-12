@@ -22,7 +22,7 @@ var SessionDur time.Duration = 0
 
 func init() {
 	ctx := gctx.GetInitCtx()
-	SessionDur = time.Duration(gcfg.Instance().MustGet(ctx, "cache.sessionDur", 1000).Int())
+	SessionDur = time.Duration(gcfg.Instance().MustGet(ctx, "cache.sessionDuration", 1000).Int())
 	SessionDur *= time.Second
 
 }

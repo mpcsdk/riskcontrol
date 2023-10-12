@@ -7,7 +7,10 @@ jaegerUrl: "127.0.0.1:6831"
 
 logger:
   level : "all"
-  stdout: true
+  stdout: true 
+  rotateExpire: "1d"
+  path: "./"
+
 
 cache:
   sessionDuration: 10000
@@ -59,57 +62,69 @@ txRisk:
     eventToField : "dst"
     eventValueField: "wad"
 
-    skipToAddr: ""
-    threshold: "1000000000000000000"
+    skipToAddr: 
+      - "0xBb3f1fd1133F935Bb791e2eE9D7fF8eA522c451E"
+      - "0xB6D831657133e5C99DC28B9B96103a8dd7baCCA4"
+
+    threshold: "10000000000000000000"
   - contract: "0x1d35fa1a131038760b6325492e236600003120f5"
     name: "MAK"
 
     methodName: "transfer"
-    methodSig: "transfer(address,address,uint256)"
-    methodFromField: "from"
-    methodToField: "to"
-    methodValueField: "value"
+    methodSig: "transfer(address,uint256)"
+    methodFromField: ""
+    methodToField: "recipient"
+    methodValueField: "amount"
 
     eventName: "Transfer"
     eventSig: "Transfer(address,address,uint256)"
     eventFromField: "from"
     eventToField : "to"
     eventValueField: "value"
+    skipToAddr: 
+      - "0xBb3f1fd1133F935Bb791e2eE9D7fF8eA522c451E"
+      - "0xB6D831657133e5C99DC28B9B96103a8dd7baCCA4"
 
-    threshold: "1000000000000000000"
+    threshold: "10000000000000000000"
 
   - contract: "0x9e4ac58cfbdf5cfe0685ad034bb5c6e26363a72a"
     name: "MUD"
 
     methodName: "transfer"
-    methodSig: "transfer(address,address,uint256)"
-    methodFromField: "from"
-    methodToField: "to"
-    methodValueField: "value"
+    methodSig: "transfer(address,uint256)"
+    methodFromField: ""
+    methodToField: "recipient"
+    methodValueField: "amount"
 
     eventName: "Transfer"
     eventSig: "Transfer(address,address,uint256)"
     eventFromField: "from"
     eventToField : "to"
     eventValueField: "value"
+    skipToAddr: 
+      - "0xBb3f1fd1133F935Bb791e2eE9D7fF8eA522c451E"
+      - "0xB6D831657133e5C99DC28B9B96103a8dd7baCCA4"
 
-    threshold: "1000000000000000000"
+    threshold: "10000000000000000000"
   - contract: "0x0f3a62db02f743b549053cc8d538c65ab01e3618"
     name: "USDT"
 
     methodName: "transfer"
-    methodSig: "transfer(address,address,uint256)"
-    methodFromField: "from"
-    methodToField: "to"
-    methodValueField: "value"
+    methodSig: "transfer(address,uint256)"
+    methodFromField: ""
+    methodToField: "recipient"
+    methodValueField: "amount"
 
     eventName: "Transfer"
     eventSig: "Transfer(address,address,uint256)"
     eventFromField: "from"
     eventToField : "to"
     eventValueField: "value"
+    skipToAddr: 
+      - "0xBb3f1fd1133F935Bb791e2eE9D7fF8eA522c451E"
+      - "0xB6D831657133e5C99DC28B9B96103a8dd7baCCA4"
 
-    threshold: "1000000000000000000"
+    threshold: "10000000000000000000"
   - contract: "0xb895607bee24aa62ca090ce0445a1893e70ee5a0"
     name: "MIX"
 
@@ -124,8 +139,11 @@ txRisk:
     eventFromField: "from"
     eventToField : "to"
     eventValueField: "value"
+    skipToAddr: 
+      - "0xBb3f1fd1133F935Bb791e2eE9D7fF8eA522c451E"
+      - "0xB6D831657133e5C99DC28B9B96103a8dd7baCCA4"
 
-    threshold: "1000000000000000000"
+    threshold: "10000000000000000000"
 
   nft:
   - contract: "0xb1682c08beb47328d4f98ac08d3cd01679ff5c3b"
@@ -142,6 +160,9 @@ txRisk:
     eventFromField: "from"
     eventToField : "to"
     eventTokenIdField: "tokenId"
+    skipToAddr: 
+      - "0xBb3f1fd1133F935Bb791e2eE9D7fF8eA522c451E"
+      - "0xB6D831657133e5C99DC28B9B96103a8dd7baCCA4"
 
     threshold: 2
   - contract: "0xfac679f8f88ffbec74e90ecbd7eea45ab294c826"
@@ -158,6 +179,9 @@ txRisk:
     eventFromField: ""
     eventToField : "to"
     eventTokenIdField: "tokenId"
+    skipToAddr: 
+      - "0xBb3f1fd1133F935Bb791e2eE9D7fF8eA522c451E"
+      - "0xB6D831657133e5C99DC28B9B96103a8dd7baCCA4"
 
     threshold: 2
   - contract: "0xf706c471915de10ebabe1422862a49a7ab55445c"
@@ -174,6 +198,9 @@ txRisk:
     eventFromField: ""
     eventToField : "to"
     eventTokenIdField: "tokenId"
+    skipToAddr: 
+      - "0xBb3f1fd1133F935Bb791e2eE9D7fF8eA522c451E"
+      - "0xB6D831657133e5C99DC28B9B96103a8dd7baCCA4"
 
     threshold: 2
   - contract: "0x0407670718faae7d319f39e14fb992ef762e8d62"
@@ -190,6 +217,9 @@ txRisk:
     eventFromField: ""
     eventToField : "to"
     eventTokenIdField: "tokenId"
+    skipToAddr: 
+      - "0xBb3f1fd1133F935Bb791e2eE9D7fF8eA522c451E"
+      - "0xB6D831657133e5C99DC28B9B96103a8dd7baCCA4"
 
     threshold: 2
 
@@ -207,6 +237,9 @@ txRisk:
     eventFromField: ""
     eventToField : "to"
     eventTokenIdField: "tokenId"
+    skipToAddr: 
+      - "0xBb3f1fd1133F935Bb791e2eE9D7fF8eA522c451E"
+      - "0xB6D831657133e5C99DC28B9B96103a8dd7baCCA4"
 
     threshold: 2
 
