@@ -26,7 +26,7 @@ build-server-local:
 	&& go env -w GOPROXY=https://goproxy.cn,direct \
 	&& go env -w CGO_ENABLED=0 && go env  && go mod tidy \
 	&& git config --global --add safe.directory /go/src/riskControl\
-	&& go build -ldflags "-B 0x$(shell head -c20 /dev/urandom|od -An -tx1|tr -d ' \n') -X main.Version=${TAGS_OPT}" -v \
+	&& go build -ldflags "-B 0x$(shell head -c20 /dev/urandom|od -An -tx1|tr -d ' \n') -X main.Version=${TAGS_OPT}" -v  -o riskControl\
 	&& chown -R $(USER_ID):$(GROUP_ID) ./riskControl
 
 image: build
