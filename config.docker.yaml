@@ -1,0 +1,290 @@
+server:
+  address:     ":8002"
+  wordId: 1
+  name: "riskcontrol"
+
+jaegerUrl: "127.0.0.1:6831"
+
+logger:
+  level : "all"
+  stdout: true 
+  rotateExpire: "1d"
+  path: "./"
+
+
+cache:
+  sessionDuration: 10000
+
+
+redis:
+  default:
+    address: "127.0.0.1:6379"
+    db: 1
+
+database:
+  default:
+  - link: "pgsql:postgres:123456@tcp(123.60.148.168:10100)/riskcontrol"
+
+grpc:
+  name:             "riskRpc"  # 服务名称
+  address:          ":8001" # 自定义服务监听地址
+  logPath:          "./log" # 日志存储目录路径
+  logStdout:        true    # 日志是否输出到终端
+  errorLogEnabled:  true    # 是否开启错误日志记录
+  accessLogEnabled: true    # 是否开启访问日志记录
+  errorStack:       true    # 当产生错误时，是否记录错误堆栈
+#
+etcd:
+  address: "127.0.0.1:2379"
+
+userTokenUrl: "https://auth-dev.mixmarvel-sdk.com/info"
+
+userRisk:
+  userControl: true
+  txControl: true
+  verificationDuration: 600 
+  forbiddenTime: "-10m"
+
+txRisk:
+  ft:
+  - contract: "0x71d9cfd1b7adb1e8eb4c193ce6ffbe19b4aee0db"
+    name: "RPG"
+
+    methodName: "transfer"
+    methodSig: "transfer(address,uint256)"
+    methodFromField: ""
+    methodToField: "dst"
+    methodValueField: "wad"
+
+    eventName: "Transfer"
+    eventSig: "Transfer(address,address,uint256)"
+    eventFromField: "src"
+    eventToField : "dst"
+    eventValueField: "wad"
+
+    skipToAddr: 
+      - "0xBb3f1fd1133F935Bb791e2eE9D7fF8eA522c451E"
+      - "0xB6D831657133e5C99DC28B9B96103a8dd7baCCA4"
+
+    threshold: "10000000000000000000"
+  - contract: "0x1d35fa1a131038760b6325492e236600003120f5"
+    name: "MAK"
+
+    methodName: "transfer"
+    methodSig: "transfer(address,uint256)"
+    methodFromField: ""
+    methodToField: "recipient"
+    methodValueField: "amount"
+
+    eventName: "Transfer"
+    eventSig: "Transfer(address,address,uint256)"
+    eventFromField: "from"
+    eventToField : "to"
+    eventValueField: "value"
+    skipToAddr: 
+      - "0xBb3f1fd1133F935Bb791e2eE9D7fF8eA522c451E"
+      - "0xB6D831657133e5C99DC28B9B96103a8dd7baCCA4"
+
+    threshold: "10000000000000000000"
+
+  - contract: "0x9e4ac58cfbdf5cfe0685ad034bb5c6e26363a72a"
+    name: "MUD"
+
+    methodName: "transfer"
+    methodSig: "transfer(address,uint256)"
+    methodFromField: ""
+    methodToField: "recipient"
+    methodValueField: "amount"
+
+    eventName: "Transfer"
+    eventSig: "Transfer(address,address,uint256)"
+    eventFromField: "from"
+    eventToField : "to"
+    eventValueField: "value"
+    skipToAddr: 
+      - "0xBb3f1fd1133F935Bb791e2eE9D7fF8eA522c451E"
+      - "0xB6D831657133e5C99DC28B9B96103a8dd7baCCA4"
+
+    threshold: "10000000000000000000"
+  - contract: "0x0f3a62db02f743b549053cc8d538c65ab01e3618"
+    name: "USDT"
+
+    methodName: "transfer"
+    methodSig: "transfer(address,uint256)"
+    methodFromField: ""
+    methodToField: "recipient"
+    methodValueField: "amount"
+
+    eventName: "Transfer"
+    eventSig: "Transfer(address,address,uint256)"
+    eventFromField: "from"
+    eventToField : "to"
+    eventValueField: "value"
+    skipToAddr: 
+      - "0xBb3f1fd1133F935Bb791e2eE9D7fF8eA522c451E"
+      - "0xB6D831657133e5C99DC28B9B96103a8dd7baCCA4"
+
+    threshold: "10000000000000000000"
+  - contract: "0xb895607bee24aa62ca090ce0445a1893e70ee5a0"
+    name: "MIX"
+
+    methodName: "transfer"
+    methodSig: "transfer(address,uint256)"
+    methodFromField: ""
+    methodToField: "recipient"
+    methodValueField: "amount"
+
+    eventName: "Transfer"
+    eventSig: "Transfer(address,address,uint256)"
+    eventFromField: "from"
+    eventToField : "to"
+    eventValueField: "value"
+    skipToAddr: 
+      - "0xBb3f1fd1133F935Bb791e2eE9D7fF8eA522c451E"
+      - "0xB6D831657133e5C99DC28B9B96103a8dd7baCCA4"
+
+    threshold: "10000000000000000000"
+
+  nft:
+  - contract: "0xb1682c08beb47328d4f98ac08d3cd01679ff5c3b"
+    name: "Weapon"
+
+    methodName: "transferFrom"
+    methodSig: "transferFrom(address,uint256)"
+    methodFromField: "from"
+    methodToField: "to"
+    MethodTokenIdField: "tokenId"
+
+    eventName: "Transfer"
+    eventSig: "Transfer(address,address,uint256)"
+    eventFromField: "from"
+    eventToField : "to"
+    eventTokenIdField: "tokenId"
+    skipToAddr: 
+      - "0xBb3f1fd1133F935Bb791e2eE9D7fF8eA522c451E"
+      - "0xB6D831657133e5C99DC28B9B96103a8dd7baCCA4"
+
+    threshold: 2
+  - contract: "0xfac679f8f88ffbec74e90ecbd7eea45ab294c826"
+    name: "MAN"
+
+    methodName: "transferFrom"
+    methodSig: "transferFrom(address,uint256)"
+    methodFromField: "from"
+    methodToField: "to"
+    MethodTokenIdField: "tokenId"
+
+    eventName: "TransferFrom"
+    eventSig: "TransferFrom(address,uint256)"
+    eventFromField: ""
+    eventToField : "to"
+    eventTokenIdField: "tokenId"
+    skipToAddr: 
+      - "0xBb3f1fd1133F935Bb791e2eE9D7fF8eA522c451E"
+      - "0xB6D831657133e5C99DC28B9B96103a8dd7baCCA4"
+
+    threshold: 2
+  - contract: "0xf706c471915de10ebabe1422862a49a7ab55445c"
+    name: "Miner"
+
+    methodName: "transferFrom"
+    methodSig: "transferFrom(address,uint256)"
+    methodFromField: "from"
+    methodToField: "to"
+    MethodTokenIdField: "tokenId"
+
+    eventName: "TransferFrom"
+    eventSig: "TransferFrom(address,uint256)"
+    eventFromField: ""
+    eventToField : "to"
+    eventTokenIdField: "tokenId"
+    skipToAddr: 
+      - "0xBb3f1fd1133F935Bb791e2eE9D7fF8eA522c451E"
+      - "0xB6D831657133e5C99DC28B9B96103a8dd7baCCA4"
+
+    threshold: 2
+  - contract: "0x0407670718faae7d319f39e14fb992ef762e8d62"
+    name: "Equipment"
+
+    methodName: "transferFrom"
+    methodSig: "transferFrom(address,uint256)"
+    methodFromField: "from"
+    methodToField: "to"
+    MethodTokenIdField: "tokenId"
+
+    eventName: "TransferFrom"
+    eventSig: "TransferFrom(address,uint256)"
+    eventFromField: ""
+    eventToField : "to"
+    eventTokenIdField: "tokenId"
+    skipToAddr: 
+      - "0xBb3f1fd1133F935Bb791e2eE9D7fF8eA522c451E"
+      - "0xB6D831657133e5C99DC28B9B96103a8dd7baCCA4"
+
+    threshold: 2
+
+  - contract: "0x52bf2fdc7f85f6d4e0c1cfcb5aa0a7033aa7a815"
+    name: "Fashion"
+
+    methodName: "transferFrom"
+    methodSig: "transferFrom(address,uint256)"
+    methodFromField: "from"
+    methodToField: "to"
+    MethodTokenIdField: "tokenId"
+
+    eventName: "TransferFrom"
+    eventSig: "TransferFrom(address,uint256)"
+    eventFromField: ""
+    eventToField : "to"
+    eventTokenIdField: "tokenId"
+    skipToAddr: 
+      - "0xBb3f1fd1133F935Bb791e2eE9D7fF8eA522c451E"
+      - "0xB6D831657133e5C99DC28B9B96103a8dd7baCCA4"
+
+    threshold: 2
+
+
+
+sms:
+  domestic:
+    huawei:
+      APIAddress: "https://smsapi.cn-south-1.myhuaweicloud.com:443/sms/batchSendSms/v1"
+      ApplicationKey: "DZcZWoIauKdHY1wD0179m4Jk5N9V"
+      ApplicationSecret: "1GSPX8WyCwJbTfwEohqsBlOzbcam"
+      Sender: "8823091933902"
+      TemplateID: "000ab97205d34659a78b47c9e1a805fb"
+      Signature: "幂玛"
+  foreign:
+    tenc:
+      SecretId: "AKID51zveEaotSAnIez267vjsxrnfR1eCZwG"
+      SecretKey: "KXlv05GIC0lN2ccq1IYggZJv1CPOLKDt"
+      Endpoint: "sms.tencentcloudapi.com"
+      SignMethod: "HMAC-SHA256"
+      Region: "ap-guangzhou"
+      SmsSdkAppId: "1400856433"
+      SignName: ""
+      VerificationTemplateId: "1933346"
+      BindingCompletionTemplateId: "1941647"
+
+exemail:
+  From: "mixmarvel-sdk@mixmarvel-sdk.com"
+  SecretId: "AKID51zveEaotSAnIez267vjsxrnfR1eCZwG"
+  SecretKey: "KXlv05GIC0lN2ccq1IYggZJv1CPOLKDt"
+  VerificationTemplateID: 26732
+  BindingCompletionTemplateID: 26731
+  Subject: "MixMarver"
+
+
+gfcli:
+  gen:
+    dao:
+    - link:     "pgsql:postgres:123456@tcp(123.60.148.168:10100)/riskcontrol"
+      tables:   "contract_abi,rule,eth_tx,tfa,scrape_logs_stat,agg_ft_24h,agg_nft_24h"
+      jsonCase: "CamelLower"
+      typeMapping:
+        decimal:
+          type:   decimal.Decimal
+          import: github.com/shopspring/decimal
+        numeric:
+          type:   decimal.Decimal
+          import: github.com/shopspring/decimal
