@@ -3,7 +3,7 @@ USER_ID ?= $(shell id -u)
 GROUP_ID ?= $(shell id -g)
 BUILD_IMAGE_SERVER  = golang:1.20
 PROJECT_NAME        = "riskControl"
-
+Image_NAME = "riskcontrol"
 ifeq ($(TAGS_OPT),)
 TAGS_OPT            = latest
 else
@@ -30,4 +30,4 @@ build-server-local:
 	&& chown -R $(USER_ID):$(GROUP_ID) ./riskControl
 
 image: build
-	docker build -t ${PROJECT_NAME}:${TAGS_OPT} -f deploy/docker/Dockerfile .
+	docker build -t ${Image_NAME}:${TAGS_OPT} -f manifest/docker/Dockerfile .
