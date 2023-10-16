@@ -17,7 +17,7 @@ func (c *ControllerV1) UpMail(ctx context.Context, req *v1.UpMailReq) (res *v1.U
 	//trace
 	ctx, span := gtrace.NewSpan(ctx, "UpMail")
 	defer span.End()
-	if err := c.counter(ctx, req.Token); err != nil {
+	if err := c.counter(ctx, req.Token, "UpMail"); err != nil {
 		return nil, err
 	}
 	//

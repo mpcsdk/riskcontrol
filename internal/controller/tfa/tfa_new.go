@@ -21,11 +21,12 @@ type ControllerV1 struct{
 func (c *ControllerV1)exit(ctx context.Context) {
 
 }
-func (c *ControllerV1) counter(ctx context.Context, tokenId string) error {
-	if v, err := c.cache.Get(ctx, tokenId); err != nil ||  !v.IsEmpty(){
+func (c *ControllerV1) counter(ctx context.Context, tokenId string, method string) error {
+	key := tokenId + method
+	if v, err := c.cache.Get(ctx, key); err != nil ||  !v.IsEmpty(){
 		return gerror.NewCode(consts.ErrApiLimit)
 	}else{
-		c.cache.Set(ctx, tokenId, 1, apiInterval)
+		c.cache.Set(ctx, key, 1, apiInterval)
 		return nil
 	}
 }

@@ -92,5 +92,5 @@ func (s *sRisk) checkTx(ctx context.Context, from string, riskSignTx *analzyer.S
 	}
 	g.Log().Warning(ctx, "checkTx unkonwo contract:", riskSignTx)
 	// return consts.RiskCodeError, gerror.NewCode(gcode.CodeInvalidParameter)
-	return consts.RiskCodePass, nil
+	return consts.RiskCodeNoRiskControl, nil
 }

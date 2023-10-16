@@ -17,7 +17,7 @@ func (c *ControllerV1) UpPhone(ctx context.Context, req *v1.UpPhoneReq) (res *v1
 	//trace
 	ctx, span := gtrace.NewSpan(ctx, "UpPhone")
 	defer span.End()
-	if err := c.counter(ctx, req.Token); err != nil {
+	if err := c.counter(ctx, req.Token, "UpPhone"); err != nil {
 		return nil, err
 	}
 	//
