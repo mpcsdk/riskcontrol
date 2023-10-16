@@ -2,13 +2,13 @@ package tfa
 
 import (
 	"context"
+	"riskcontral/internal/config"
 	"riskcontral/internal/consts"
 	"riskcontral/internal/consts/conrisk"
 	"riskcontral/internal/service"
 
 	"github.com/gogf/gf/v2/errors/gerror"
 	"github.com/gogf/gf/v2/frame/g"
-	"github.com/gogf/gf/v2/os/gcfg"
 	"github.com/gogf/gf/v2/os/gctx"
 )
 
@@ -63,14 +63,15 @@ func new() *sTFA {
 	// client := risk.NewUserClient(conn)
 	///
 	//
-	t, _ := gcfg.Instance().Get(ctx, "userRisk.verificationDuration", 600)
+	// t := gcfg.Instance().Get(ctx, "userRisk.verificationDuration", 600)
+	t := config.Config.UserRisk.VerificationTime
 	s := &sTFA{
 		// verifyPendding: map[string]func(){},
 		// mailVerifyPendding:  map[string]func(){},
 		// phoneVerifyPendding: map[string]func(){},
 		// riskPendding: map[UserRiskId]*riskPendding{},
 		//todo:
-		riskPenddingContainer: newRiskPenddingContainer(t.Int()),
+		riskPenddingContainer: newRiskPenddingContainer(t),
 		ctx:                   ctx,
 	}
 	///

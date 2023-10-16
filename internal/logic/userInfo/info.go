@@ -2,6 +2,7 @@ package userInfo
 
 import (
 	"context"
+	"riskcontral/internal/config"
 	"riskcontral/internal/consts"
 	"riskcontral/internal/service"
 
@@ -9,7 +10,6 @@ import (
 	"github.com/gogf/gf/v2/errors/gerror"
 	"github.com/gogf/gf/v2/frame/g"
 	"github.com/gogf/gf/v2/os/gcache"
-	"github.com/gogf/gf/v2/os/gcfg"
 )
 
 type sUserInfo struct {
@@ -65,13 +65,14 @@ func (s *sUserInfo) GetUserInfo(ctx context.Context, userToken string) (userInfo
 
 func new() *sUserInfo {
 	///
-	url, err := gcfg.Instance().Get(context.Background(), "userTokenUrl")
-	if err != nil {
-		panic(err)
-	}
+	// url, err := gcfg.Instance().Get(context.Background(), "userTokenUrl")
+	// if err != nil {
+	// 	panic(err)
+	// }
+	url := config.Config.UserTokenUrl
 	///
-	userGeter := userInfoGeter.NewUserInfoGeter(url.String())
-	_, err = userGeter.GetUserInfo(context.Background(), "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhcHBQdWJLZXkiOiIwMjI1YmI1MmU5NTcyMDUwZmZjMGM4MGRjZDBhYTBmNjQyNDFjMDk5ZDAzZjFlYTFjODEzMmZkMzViY2Q3MDBiMWMiLCJpYXQiOjE2OTQ0Mjk5OTEsImV4cCI6MTcyNTk2NTk5MX0.8YaF5spnD1SjI-NNbBCIBj9H5pspXMMkPJrKk23LdnM")
+	userGeter := userInfoGeter.NewUserInfoGeter(url)
+	_, err := userGeter.GetUserInfo(context.Background(), "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhcHBQdWJLZXkiOiIwMjI1YmI1MmU5NTcyMDUwZmZjMGM4MGRjZDBhYTBmNjQyNDFjMDk5ZDAzZjFlYTFjODEzMmZkMzViY2Q3MDBiMWMiLCJpYXQiOjE2OTQ0Mjk5OTEsImV4cCI6MTcyNTk2NTk5MX0.8YaF5spnD1SjI-NNbBCIBj9H5pspXMMkPJrKk23LdnM")
 	if err != nil {
 		panic(err)
 	}

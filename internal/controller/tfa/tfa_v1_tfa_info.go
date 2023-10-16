@@ -15,6 +15,9 @@ func (c *ControllerV1) TFAInfo(ctx context.Context, req *v1.TFAInfoReq) (res *v1
 	//trace
 	ctx, span := gtrace.NewSpan(ctx, "TFAInfo")
 	defer span.End()
+	if err := c.counter(ctx, req.Token); err != nil {
+		return nil, err
+	}
 	//
 	///
 	userInfo, err := service.UserInfo().GetUserInfo(ctx, req.Token)

@@ -43,7 +43,8 @@ var (
 	///
 	///
 	CodeInternalError = &errCode{50, "Internal Error", nil} // An error occurred internally.
-
+	//
+	ErrApiLimit = &errCode{100, "Api Limit", nil}
 )
 
 const (

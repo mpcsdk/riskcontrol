@@ -3,14 +3,13 @@ package sms
 import (
 	"context"
 	"errors"
+	"riskcontral/internal/config"
 	"riskcontral/internal/service"
 	"strings"
 
 	"github.com/franklihub/mpcCommon/rand"
 	"github.com/franklihub/mpcCommon/sms"
 	"github.com/gogf/gf/v2/frame/g"
-	"github.com/gogf/gf/v2/os/gcfg"
-	"github.com/gogf/gf/v2/os/gctx"
 	"github.com/gogf/gf/v2/os/grpool"
 )
 
@@ -21,44 +20,64 @@ type sSmsCode struct {
 	pool     *grpool.Pool
 }
 
-func newforeign() *sms.Huawei {
-	cfg := gcfg.Instance()
-	ctx := gctx.GetInitCtx()
-	return &sms.Huawei{
-		APIAddress:        cfg.MustGet(ctx, "sms.foreign.huawei.APIAddress").String(),
-		ApplicationKey:    cfg.MustGet(ctx, "sms.foreign.huawei.ApplicationKey").String(),
-		ApplicationSecret: cfg.MustGet(ctx, "sms.foreign.huawei.ApplicationSecret").String(),
-		Sender:            cfg.MustGet(ctx, "sms.foreign.huawei.Sender").String(),
-		TemplateID:        cfg.MustGet(ctx, "sms.foreign.huawei.TemplateID").String(),
-		Signature:         cfg.MustGet(ctx, "sms.foreign.huawei.Signature").String(),
-	}
-}
+// func newforeign() *sms.Huawei {
+// 	// cfg := gcfg.Instance()
+// 	// ctx := gctx.GetInitCtx()
+// 	// return &sms.Huawei{
+// 	// 	APIAddress:        cfg.MustGet(ctx, "sms.foreign.huawei.APIAddress").String(),
+// 	// 	ApplicationKey:    cfg.MustGet(ctx, "sms.foreign.huawei.ApplicationKey").String(),
+// 	// 	ApplicationSecret: cfg.MustGet(ctx, "sms.foreign.huawei.ApplicationSecret").String(),
+// 	// 	Sender:            cfg.MustGet(ctx, "sms.foreign.huawei.Sender").String(),
+// 	// 	TemplateID:        cfg.MustGet(ctx, "sms.foreign.huawei.TemplateID").String(),
+// 	// 	Signature:         cfg.MustGet(ctx, "sms.foreign.huawei.Signature").String(),
+// 	// }
+
+// }
 
 func newdomestic() *sms.Huawei {
-	cfg := gcfg.Instance()
-	ctx := gctx.GetInitCtx()
+	// cfg := gcfg.Instance()
+	// ctx := gctx.GetInitCtx()
+	// return &sms.Huawei{
+	// 	APIAddress:        cfg.MustGet(ctx, "sms.domestic.huawei.APIAddress").String(),
+	// 	ApplicationKey:    cfg.MustGet(ctx, "sms.domestic.huawei.ApplicationKey").String(),
+	// 	ApplicationSecret: cfg.MustGet(ctx, "sms.domestic.huawei.ApplicationSecret").String(),
+	// 	Sender:            cfg.MustGet(ctx, "sms.domestic.huawei.Sender").String(),
+	// 	TemplateID:        cfg.MustGet(ctx, "sms.domestic.huawei.TemplateID").String(),
+	// 	Signature:         cfg.MustGet(ctx, "sms.domestic.huawei.Signature").String(),
+	// }
 	return &sms.Huawei{
-		APIAddress:        cfg.MustGet(ctx, "sms.domestic.huawei.APIAddress").String(),
-		ApplicationKey:    cfg.MustGet(ctx, "sms.domestic.huawei.ApplicationKey").String(),
-		ApplicationSecret: cfg.MustGet(ctx, "sms.domestic.huawei.ApplicationSecret").String(),
-		Sender:            cfg.MustGet(ctx, "sms.domestic.huawei.Sender").String(),
-		TemplateID:        cfg.MustGet(ctx, "sms.domestic.huawei.TemplateID").String(),
-		Signature:         cfg.MustGet(ctx, "sms.domestic.huawei.Signature").String(),
+		APIAddress:        config.Config.Sms.Domestic.Huawei.APIAddress,
+		ApplicationKey:    config.Config.Sms.Domestic.Huawei.ApplicationKey,
+		ApplicationSecret: config.Config.Sms.Domestic.Huawei.ApplicationSecret,
+		Sender:            config.Config.Sms.Domestic.Huawei.Sender,
+		TemplateID:        config.Config.Sms.Domestic.Huawei.TemplateID,
+		Signature:         config.Config.Sms.Domestic.Huawei.Signature,
 	}
 }
 func newTencForeign() *sms.TencSms {
-	cfg := gcfg.Instance()
-	ctx := gctx.GetInitCtx()
+	// cfg := gcfg.Instance()
+	// ctx := gctx.GetInitCtx()
+	// return sms.NewTencSms(
+	// 	cfg.MustGet(ctx, "sms.foreign.tenc.SecretId").String(),
+	// 	cfg.MustGet(ctx, "sms.foreign.tenc.SecretKey").String(),
+	// 	cfg.MustGet(ctx, "sms.foreign.tenc.Endpoint").String(),
+	// 	cfg.MustGet(ctx, "sms.foreign.tenc.SignMethod").String(),
+	// 	cfg.MustGet(ctx, "sms.foreign.tenc.Region").String(),
+	// 	cfg.MustGet(ctx, "sms.foreign.tenc.SmsSdkAppId").String(),
+	// 	cfg.MustGet(ctx, "sms.foreign.tenc.SignName").String(),
+	// 	cfg.MustGet(ctx, "sms.foreign.tenc.VerificationTemplateId").String(),
+	// 	cfg.MustGet(ctx, "sms.foreign.tenc.BindingCompletionTemplateId").String(),
+	// )
 	return sms.NewTencSms(
-		cfg.MustGet(ctx, "sms.foreign.tenc.SecretId").String(),
-		cfg.MustGet(ctx, "sms.foreign.tenc.SecretKey").String(),
-		cfg.MustGet(ctx, "sms.foreign.tenc.Endpoint").String(),
-		cfg.MustGet(ctx, "sms.foreign.tenc.SignMethod").String(),
-		cfg.MustGet(ctx, "sms.foreign.tenc.Region").String(),
-		cfg.MustGet(ctx, "sms.foreign.tenc.SmsSdkAppId").String(),
-		cfg.MustGet(ctx, "sms.foreign.tenc.SignName").String(),
-		cfg.MustGet(ctx, "sms.foreign.tenc.VerificationTemplateId").String(),
-		cfg.MustGet(ctx, "sms.foreign.tenc.BindingCompletionTemplateId").String(),
+		config.Config.Sms.Foreign.Tenc.SecretId,
+		config.Config.Sms.Foreign.Tenc.SecretKey,
+		config.Config.Sms.Foreign.Tenc.Endpoint,
+		config.Config.Sms.Foreign.Tenc.SignMethod,
+		config.Config.Sms.Foreign.Tenc.Region,
+		config.Config.Sms.Foreign.Tenc.SmsSdkAppId,
+		config.Config.Sms.Foreign.Tenc.SignName,
+		config.Config.Sms.Foreign.Tenc.VerificationTemplateId,
+		config.Config.Sms.Foreign.Tenc.BindingCompletionTemplateId,
 	)
 }
 

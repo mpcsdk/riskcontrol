@@ -2,6 +2,7 @@ package risk
 
 import (
 	"context"
+	"riskcontral/internal/config"
 	"riskcontral/internal/consts"
 	"riskcontral/internal/consts/conrisk"
 	"riskcontral/internal/service"
@@ -11,7 +12,6 @@ import (
 	"github.com/franklihub/mpcCommon/mpcmodel"
 	"github.com/franklihub/mpcCommon/rand"
 	"github.com/gogf/gf/v2/frame/g"
-	"github.com/gogf/gf/v2/os/gcfg"
 	"github.com/gogf/gf/v2/os/gtime"
 )
 
@@ -134,19 +134,20 @@ func new() *sRisk {
 		s.analzer.AddAbi(a.Addr, a.Abi)
 	}
 	////
-	val, err := gcfg.Instance().Get(context.TODO(), "userRisk.forbiddenTime")
-	if err != nil {
-		panic(err)
-	}
+	// val, err := gcfg.Instance().Get(context.TODO(), "userRisk.forbiddenTime")
+	// if err != nil {
+	// 	panic(err)
+	// }
+	val := config.Config.UserRisk.ForbiddenTime
 	// BeforH24, err = gtime.ParseDuration("-24h")
-	BeforH24, err = gtime.ParseDuration(val.String())
+	BeforH24, err = gtime.ParseDuration(val)
 	if err != nil {
 		panic(err)
 	}
-	v, _ := gcfg.Instance().Get(context.Background(), "userRisk.userControl", false)
-	s.userControl = v.Bool()
-	v, _ = gcfg.Instance().Get(context.Background(), "userRisk.txControl", false)
-	s.txControl = v.Bool()
+	// v, _ := gcfg.Instance().Get(context.Background(), "userRisk.userControl", false)
+	s.userControl = config.Config.UserRisk.UserControl
+	// v, _ = gcfg.Instance().Get(context.Background(), "userRisk.txControl", false)
+	s.txControl = config.Config.UserRisk.TxControl
 
 	return s
 }

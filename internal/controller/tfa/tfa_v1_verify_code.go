@@ -18,6 +18,9 @@ func (c *ControllerV1) VerifyCode(ctx context.Context, req *v1.VerifyCodeReq) (r
 	//trace
 	ctx, span := gtrace.NewSpan(ctx, "VerifyCode")
 	defer span.End()
+	if err := c.counter(ctx, req.Token); err != nil {
+		return nil, err
+	}
 	// ///
 	userInfo, err := service.UserInfo().GetUserInfo(ctx, req.Token)
 	if err != nil {

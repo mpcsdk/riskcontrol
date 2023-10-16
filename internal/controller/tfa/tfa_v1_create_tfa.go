@@ -17,6 +17,9 @@ func (c *ControllerV1) CreateTFA(ctx context.Context, req *v1.CreateTFAReq) (res
 	ctx, span := gtrace.NewSpan(ctx, "CreateTFA:")
 	defer span.End()
 	g.Log().Debug(ctx, "crateTFA:", req)
+	if err := c.counter(ctx, req.Token); err != nil {
+		return nil, err
+	}
 	///
 	info, err := service.UserInfo().GetUserInfo(ctx, req.Token)
 	if err != nil {
