@@ -64,7 +64,7 @@ func new() *sTFA {
 	///
 	//
 	// t := gcfg.Instance().Get(ctx, "userRisk.verificationDuration", 600)
-	t := config.Config.UserRisk.VerificationTime
+	t := config.Config.UserRisk.VerificationCodeDuration
 	s := &sTFA{
 		// verifyPendding: map[string]func(){},
 		// mailVerifyPendding:  map[string]func(){},

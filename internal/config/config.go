@@ -15,10 +15,10 @@ type Etcd struct {
 	Address string `json:"address" v:"required"`
 }
 type UserRisk struct {
-	UserControl      bool   `json:"userControl" v:"required"`
-	TxControl        bool   `json:"txControl" v:"required"`
-	VerificationTime int    `json:"verificationTime" v:"required|min:1"`
-	ForbiddenTime    string `json:"forbiddenTime" v:"required"`
+	UserControl              bool   `json:"userControl" v:"required"`
+	TxControl                bool   `json:"txControl" v:"required"`
+	VerificationCodeDuration int    `json:"verificationCodeDuration" v:"required|min:1"`
+	ForbiddenTime            string `json:"forbiddenTime" v:"required"`
 }
 type SmsHuawei struct {
 	APIAddress        string `json:"apiAddress" v:"required"`
