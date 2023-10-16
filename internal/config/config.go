@@ -8,8 +8,8 @@ import (
 )
 
 type Cache struct {
-	ApiInterval     int `json:"apiInterval" v:"required"`
-	SessionDuration int `json:"sessionDuration" v:"required"`
+	ApiInterval     int `json:"apiInterval" v:"required|min:1"`
+	SessionDuration int `json:"sessionDuration" v:"required|min:1"`
 }
 type Etcd struct {
 	Address string `json:"address" v:"required"`
@@ -17,7 +17,7 @@ type Etcd struct {
 type UserRisk struct {
 	UserControl      bool   `json:"userControl" v:"required"`
 	TxControl        bool   `json:"txControl" v:"required"`
-	VerificationTime int    `json:"verificationTime" v:"required"`
+	VerificationTime int    `json:"verificationTime" v:"required|min:1"`
 	ForbiddenTime    string `json:"forbiddenTime" v:"required"`
 }
 type SmsHuawei struct {
@@ -61,7 +61,7 @@ type ExEmail struct {
 
 type Server struct {
 	Address string `json:"address" v:"required"`
-	WorkId  int    `json:"workId" v:"required"`
+	WorkId  int    `json:"workId" v:"required|min:1"`
 	Name    string `json:"name" v:"required"`
 }
 
