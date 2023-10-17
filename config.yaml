@@ -37,6 +37,8 @@ grpc:
 #
 etcd:
   address: "127.0.0.1:2379"
+  riskRpc: "riskRpc"
+  scrapeLogsRpc: "scrapeLogsRpc"
 
 userTokenUrl: "https://auth-dev.mixmarvel-sdk.com/info"
 

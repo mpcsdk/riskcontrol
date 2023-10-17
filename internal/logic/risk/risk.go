@@ -8,11 +8,11 @@ import (
 	"riskcontral/internal/service"
 	"time"
 
-	"github.com/franklihub/mpcCommon/ethtx/analzyer"
-	"github.com/franklihub/mpcCommon/mpcmodel"
-	"github.com/franklihub/mpcCommon/rand"
 	"github.com/gogf/gf/v2/frame/g"
 	"github.com/gogf/gf/v2/os/gtime"
+	"github.com/mpcsdk/mpcCommon/ethtx/analzyer"
+	"github.com/mpcsdk/mpcCommon/mpcmodel"
+	"github.com/mpcsdk/mpcCommon/rand"
 )
 
 type sRisk struct {

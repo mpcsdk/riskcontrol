@@ -5,9 +5,9 @@ import (
 
 	"github.com/ethereum/go-ethereum/common/hexutil"
 	"github.com/ethereum/go-ethereum/crypto"
-	"github.com/franklihub/mpcCommon/mpcmodel"
 	"github.com/gogf/gf/v2/frame/g"
 	"github.com/gogf/gf/v2/os/gcfg"
+	"github.com/mpcsdk/mpcCommon/mpcmodel"
 )
 
 var NftRules = map[string]*mpcmodel.NftRule{}

@@ -10,7 +10,7 @@ import (
 	"riskcontral/internal/model/do"
 	"riskcontral/internal/model/entity"
 
-	"github.com/franklihub/mpcCommon/mpcmodel"
+	"github.com/mpcsdk/mpcCommon/mpcmodel"
 )
 
 type (

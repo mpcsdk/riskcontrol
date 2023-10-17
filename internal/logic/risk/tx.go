@@ -4,8 +4,8 @@ import (
 	"context"
 	"riskcontral/internal/consts"
 
-	"github.com/franklihub/mpcCommon/ethtx/analzyer"
 	"github.com/gogf/gf/v2/frame/g"
+	"github.com/mpcsdk/mpcCommon/ethtx/analzyer"
 )
 
 func (s *sRisk) checkTxs(ctx context.Context, signTxStr string) (int32, error) {

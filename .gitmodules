@@ -1,3 +1,3 @@
 [submodule "mpcCommon"]
 	path = mpcCommon
-	url = git@github.com:franklihub/mpcCommon.git
+	url = git@github.com:mpcsdk/mpcCommon.git

@@ -18,7 +18,7 @@ import (
 
 	_ "riskcontral/internal/config"
 
-	"github.com/franklihub/mpcCommon/rand"
+	"github.com/mpcsdk/mpcCommon/rand"
 )
 
 func main() {

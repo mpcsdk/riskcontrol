@@ -4,11 +4,11 @@ import (
 	"context"
 	"riskcontral/internal/service"
 
-	"github.com/franklihub/mpcCommon/exmail"
-	"github.com/franklihub/mpcCommon/rand"
 	"github.com/gogf/gf/v2/frame/g"
 	"github.com/gogf/gf/v2/os/gcfg"
 	"github.com/gogf/gf/v2/os/gctx"
+	"github.com/mpcsdk/mpcCommon/exmail"
+	"github.com/mpcsdk/mpcCommon/rand"
 )
 
 type sMailCode struct {

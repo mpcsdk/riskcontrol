@@ -8,7 +8,7 @@ package service
 import (
 	"context"
 
-	"github.com/franklihub/mpcCommon/userInfoGeter"
+	"github.com/mpcsdk/mpcCommon/userInfoGeter"
 )
 
 type (

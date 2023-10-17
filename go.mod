@@ -5,7 +5,7 @@ go 1.20
 require (
 	github.com/bilibili/gengine v1.5.7
 	github.com/ethereum/go-ethereum v1.13.2
-	github.com/franklihub/mpcCommon v0.0.0
+	github.com/mpcsdk/mpcCommon v0.0.0
 	github.com/gogf/gf/contrib/drivers/pgsql/v2 v2.5.4
 	github.com/gogf/gf/contrib/nosql/redis/v2 v2.5.4
 	github.com/gogf/gf/contrib/registry/etcd/v2 v2.5.4
@@ -98,4 +98,4 @@ require (
 	rsc.io/tmplfunc v0.0.3 // indirect
 )
 
-replace github.com/franklihub/mpcCommon v0.0.0 => ./mpcCommon
+replace github.com/mpcsdk/mpcCommon v0.0.0 => ./mpcCommon

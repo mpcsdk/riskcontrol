@@ -12,7 +12,8 @@ type Cache struct {
 	SessionDuration int `json:"sessionDuration" v:"required|min:1"`
 }
 type Etcd struct {
-	Address string `json:"address" v:"required"`
+	Address       string `json:"address" v:"required"`
+	ScrapeLogsRpc string `json:"scrapeLogsRpc" v:"required"`
 }
 type UserRisk struct {
 	UserControl              bool   `json:"userControl" v:"required"`

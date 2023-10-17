@@ -7,10 +7,10 @@ import (
 	"riskcontral/internal/service"
 	"strings"
 
-	"github.com/franklihub/mpcCommon/rand"
-	"github.com/franklihub/mpcCommon/sms"
 	"github.com/gogf/gf/v2/frame/g"
 	"github.com/gogf/gf/v2/os/grpool"
+	"github.com/mpcsdk/mpcCommon/rand"
+	"github.com/mpcsdk/mpcCommon/sms"
 )
 
 type sSmsCode struct {

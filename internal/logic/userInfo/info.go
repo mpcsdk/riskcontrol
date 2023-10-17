@@ -6,10 +6,10 @@ import (
 	"riskcontral/internal/consts"
 	"riskcontral/internal/service"
 
-	"github.com/franklihub/mpcCommon/userInfoGeter"
 	"github.com/gogf/gf/v2/errors/gerror"
 	"github.com/gogf/gf/v2/frame/g"
 	"github.com/gogf/gf/v2/os/gcache"
+	"github.com/mpcsdk/mpcCommon/userInfoGeter"
 )
 
 type sUserInfo struct {
