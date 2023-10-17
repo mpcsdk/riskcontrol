@@ -2,6 +2,7 @@ package scrapelogs
 
 import (
 	"context"
+	v1 "riskcontral/api/scrapelogs/v1"
 
 	"github.com/gogf/gf/contrib/rpc/grpcx/v2"
 	"github.com/gogf/gf/v2/errors/gcode"
@@ -10,11 +11,11 @@ import (
 )
 
 type Controller struct {
-	v1.UnimplementedTFAServer
+	v1.UnimplementedScrapeLogsAggServer
 }
 
 func Register(s *grpcx.GrpcServer) {
-	v1.RegisterTFAServer(s.Server, &Controller{})
+	v1.RegisterScrapeLogsAggServer(s.Server, &Controller{})
 }
 
 func (*Controller) PerformNftCnt(ctx context.Context, req *v1.NftCntReq) (res *v1.NftCntRes, err error) {

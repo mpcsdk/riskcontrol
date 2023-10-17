@@ -21,4 +21,5 @@ type AggNft24H struct {
 	FromBlock  interface{} //
 	ToBlock    interface{} //
 	MethodSig  interface{} //
+	NftName    interface{} //
 }

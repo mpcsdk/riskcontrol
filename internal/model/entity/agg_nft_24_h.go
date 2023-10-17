@@ -19,4 +19,5 @@ type AggNft24H struct {
 	FromBlock  int64       `json:"fromBlock"  ` //
 	ToBlock    int64       `json:"toBlock"    ` //
 	MethodSig  string      `json:"methodSig"  ` //
+	NftName    string      `json:"nftName"    ` //
 }

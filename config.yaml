@@ -24,7 +24,9 @@ redis:
 
 database:
   default:
-  - link: "pgsql:postgres:123456@tcp(127.0.0.1:10100)/riskcontrol"
+  - link: "pgsql:postgres:123456@tcp(127.0.0.1:5432)/riskcontrol"
+  scrapeLogs:
+  - link: "pgsql:postgres:123456@tcp(127.0.0.1:5432)/scrape_logs"
 
 grpc:
   name:             "riskRpc"  # 服务名称
@@ -281,8 +283,19 @@ exemail:
 gfcli:
   gen:
     dao:
-    - link:     "pgsql:postgres:123456@tcp(127.0.0.1:10100)/riskcontrol"
+    - link:     "pgsql:postgres:123456@tcp(127.0.0.1:5432)/riskcontrol"
       tables:   "contract_abi,rule,tfa"
+      jsonCase: "CamelLower"
+      typeMapping:
+        decimal:
+          type:   decimal.Decimal
+          import: github.com/shopspring/decimal
+        numeric:
+          type:   decimal.Decimal
+          import: github.com/shopspring/decimal
+    - link:     "pgsql:postgres:123456@tcp(127.0.0.1:5432)/scrape_logs"
+      group: scrapeLogs
+      tables:   "agg_ft_24h,agg_nft_24h"
       jsonCase: "CamelLower"
       typeMapping:
         decimal:

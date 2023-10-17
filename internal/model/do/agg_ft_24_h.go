@@ -21,4 +21,5 @@ type AggFt24H struct {
 	FromBlock  interface{} //
 	ToBlock    interface{} //
 	MethodSig  interface{} //
+	FtName     interface{} //
 }
