@@ -1535,8 +1535,8 @@ CREATE TABLE public.tfa (
     deleted_at timestamp(6) without time zone,
     phone character varying(255),
     mail character varying(255),
-    phone_updated_at timestamp(6) without time zone DEFAULT CURRENT_TIMESTAMP,
-    mail_updated_at timestamp(6) without time zone DEFAULT CURRENT_TIMESTAMP
+    phone_updated_at timestamp(6) without time zone,
+    mail_updated_at timestamp(6) without time zone
 );
 
 
