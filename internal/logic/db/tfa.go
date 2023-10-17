@@ -16,6 +16,30 @@ import (
 ///
 ///
 
+func (s *sDB) TfaMailExists(ctx context.Context, mail string) error {
+	rst, err := dao.Tfa.Ctx(ctx).Where(do.Tfa{
+		Mail: mail,
+	}).CountColumn(dao.Tfa.Columns().Mail)
+	if err != nil {
+		return nil
+	}
+	if rst > 0 {
+		return errEmpty
+	}
+	return nil
+}
+func (s *sDB) TfaPhoneExists(ctx context.Context, phone string) error {
+	rst, err := dao.Tfa.Ctx(ctx).Where(do.Tfa{
+		Phone: phone,
+	}).CountColumn(dao.Tfa.Columns().Mail)
+	if err != nil {
+		return nil
+	}
+	if rst > 0 {
+		return errEmpty
+	}
+	return nil
+}
 func (s *sDB) InsertTfaInfo(ctx context.Context, userId string, data *do.Tfa) error {
 
 	cnt, err := g.Model(dao.Tfa.Table()).Ctx(ctx).Where(do.Tfa{

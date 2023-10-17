@@ -280,7 +280,7 @@ gfcli:
   gen:
     dao:
     - link:     "pgsql:postgres:123456@tcp(127.0.0.1:10100)/riskcontrol"
-      tables:   "contract_abi,rule,eth_tx,tfa,scrape_logs_stat,agg_ft_24h,agg_nft_24h"
+      tables:   "contract_abi,rule,tfa"
       jsonCase: "CamelLower"
       typeMapping:
         decimal:

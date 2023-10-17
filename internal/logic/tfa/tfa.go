@@ -108,7 +108,7 @@ func (s *sTFA) TFACreate(ctx context.Context, userId string, phone string, mail 
 	/// need verification
 	if phone != "" {
 		event := newRiskEventPhone(phone, func(ctx context.Context) error {
-			return s.createTFA(ctx, userId, nil, &phone)
+			return s.createTFA(ctx, userId, mail, phone)
 		})
 		s.riskPenddingContainer.Add(userId, riskSerial, event)
 		// s.addRiskEvent(ctx, userId, riskSerial, event)
@@ -119,7 +119,7 @@ func (s *sTFA) TFACreate(ctx context.Context, userId string, phone string, mail 
 	/// need verification
 	if mail != "" {
 		event := newRiskEventMail(mail, func(ctx context.Context) error {
-			return s.createTFA(ctx, userId, &mail, nil)
+			return s.createTFA(ctx, userId, mail, phone)
 		})
 		// s.addRiskEvent(ctx, userId, riskSerial, event)
 		s.riskPenddingContainer.Add(userId, riskSerial, event)

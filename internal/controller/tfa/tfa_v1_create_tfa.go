@@ -33,8 +33,18 @@ func (c *ControllerV1) CreateTFA(ctx context.Context, req *v1.CreateTFAReq) (res
 	if tfainfo != nil {
 		return nil, gerror.NewCode(consts.CodeTFAExist)
 	}
-	///
-
+	///check phone or mail exists
+	err = service.DB().TfaMailExists(ctx, req.Mail)
+	if err != nil {
+		g.Log().Warning(ctx, "crateTFA:", req, err)
+		return nil, gerror.NewCode(consts.CodeTFAMailExists)
+	}
+	err = service.DB().TfaPhoneExists(ctx, req.Phone)
+	if err != nil {
+		g.Log().Warning(ctx, "crateTFA:", req, err)
+		return nil, gerror.NewCode(consts.CodeTFAPhoneExists)
+	}
+	////
 	r, kind, err := service.TFA().TFACreate(ctx, info.UserId, req.Phone, req.Mail)
 	if err != nil {
 		g.Log().Error(ctx, "CreateTFA:")

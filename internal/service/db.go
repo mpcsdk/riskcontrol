@@ -21,6 +21,8 @@ type (
 		AllRules(ctx context.Context) map[string]string
 		GetNftRules(ctx context.Context) (map[string]*mpcmodel.NftRule, error)
 		GetFtRules(ctx context.Context) (map[string]*mpcmodel.FtRule, error)
+		TfaMailExists(ctx context.Context, mail string) error
+		TfaPhoneExists(ctx context.Context, phone string) error
 		InsertTfaInfo(ctx context.Context, userId string, data *do.Tfa) error
 		// //
 		UpdateTfaInfo(ctx context.Context, userId string, data *do.Tfa) error

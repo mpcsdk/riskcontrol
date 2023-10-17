@@ -29,6 +29,8 @@ var (
 	CodeTFAExist          = &errCode{13, "TFA Exist", nil}            // The token does not exist.
 	CodeTFASendSmsFailed  = &errCode{14, "TFA Send Sms Failed", nil}  // The token does not exist.
 	CodeTFASendMailFailed = &errCode{15, "TFA Send Mail Failed", nil} // The token does not exist.
+	CodeTFAPhoneExists    = &errCode{16, "TFA Phone Exists", nil}
+	CodeTFAMailExists     = &errCode{17, "TFA Mail Exists", nil}
 	///
 	// CodeRiskNeedVerification   = &errCode{21, "Risk Need a VerificationCode", nil} // The risk need verification code
 	CodeRiskVerifyCodeInvalid  = &errCode{22, "Verify Code Invalid", nil} // The verify code is invalid.

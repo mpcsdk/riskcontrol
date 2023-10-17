@@ -8,7 +8,7 @@ import (
 	"github.com/gogf/gf/v2/os/gtime"
 )
 
-func (s *sTFA) createTFA(ctx context.Context, userId string, mail, phone *string) error {
+func (s *sTFA) createTFA(ctx context.Context, userId string, mail, phone string) error {
 
 	// _, err := dao.Tfa.Ctx(s.ctx).
 	// 	Data(do.Tfa{
@@ -22,13 +22,13 @@ func (s *sTFA) createTFA(ctx context.Context, userId string, mail, phone *string
 		UserId:    userId,
 		CreatedAt: gtime.Now(),
 	}
-	if mail != nil {
+	if mail != "" {
 		e.Mail = mail
-		// e.MailUpdatedAt = gtime.Now()
+		e.MailUpdatedAt = gtime.Now()
 	}
-	if phone != nil {
+	if phone != "" {
 		e.Phone = phone
-		// e.PhoneUpdatedAt = gtime.Now()
+		e.PhoneUpdatedAt = gtime.Now()
 	}
 	err := service.DB().InsertTfaInfo(ctx, userId, &e)
 
