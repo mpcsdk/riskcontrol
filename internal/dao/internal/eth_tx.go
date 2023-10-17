@@ -20,38 +20,54 @@ type EthTxDao struct {
 
 // EthTxColumns defines and stores column names for table eth_tx.
 type EthTxColumns struct {
-	Id         string //
-	CreatedAt  string //
-	UpdatedAt  string //
-	DeletedAt  string //
-	Address    string //
-	Target     string //
-	MethodId   string //
-	MethodName string //
-	Sig        string //
-	Data       string //
-	Args       string //
-	From       string //
-	To         string //
-	Value      string //
+	Id          string //
+	CreatedAt   string //
+	UpdatedAt   string //
+	DeletedAt   string //
+	Address     string //
+	Contract    string //
+	MethodName  string //
+	MethodSig   string //
+	EventName   string //
+	EventSig    string //
+	Topics      string //
+	From        string //
+	To          string //
+	Value       string //
+	Kind        string //
+	BlockNumber string //
+	BlockHash   string //
+	TxHash      string //
+	TxIndex     string //
+	LogIndex    string //
+	Data        string //
+	Name        string //
 }
 
 // ethTxColumns holds the columns for table eth_tx.
 var ethTxColumns = EthTxColumns{
-	Id:         "id",
-	CreatedAt:  "created_at",
-	UpdatedAt:  "updated_at",
-	DeletedAt:  "deleted_at",
-	Address:    "address",
-	Target:     "target",
-	MethodId:   "method_id",
-	MethodName: "method_name",
-	Sig:        "sig",
-	Data:       "data",
-	Args:       "args",
-	From:       "from",
-	To:         "to",
-	Value:      "value",
+	Id:          "id",
+	CreatedAt:   "created_at",
+	UpdatedAt:   "updated_at",
+	DeletedAt:   "deleted_at",
+	Address:     "address",
+	Contract:    "contract",
+	MethodName:  "method_name",
+	MethodSig:   "method_sig",
+	EventName:   "event_name",
+	EventSig:    "event_sig",
+	Topics:      "topics",
+	From:        "from",
+	To:          "to",
+	Value:       "value",
+	Kind:        "kind",
+	BlockNumber: "block_number",
+	BlockHash:   "block_hash",
+	TxHash:      "tx_hash",
+	TxIndex:     "tx_index",
+	LogIndex:    "log_index",
+	Data:        "data",
+	Name:        "name",
 }
 
 // NewEthTxDao creates and returns a new DAO object for table data access.

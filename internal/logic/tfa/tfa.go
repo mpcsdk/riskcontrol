@@ -2,6 +2,7 @@ package tfa
 
 import (
 	"context"
+	"riskcontral/internal/config"
 	"riskcontral/internal/consts"
 	"riskcontral/internal/consts/conrisk"
 	"riskcontral/internal/service"
@@ -11,18 +12,42 @@ import (
 	"github.com/gogf/gf/v2/os/gctx"
 )
 
+type UserRiskId string
+type RiskKind string
+
+func keyUserRiskId(userId string, riskSerial string) UserRiskId {
+	return UserRiskId(userId + "keyUserRiskId" + riskSerial)
+}
+
 type sTFA struct {
-	ctx context.Context
 	// riskClient riskv1.UserClient
-	verifyPendding map[string]func()
+	ctx context.Context
+	// verifyPendding map[string]func()
 	// mailVerifyPendding  map[string]func()
 	// phoneVerifyPendding map[string]func()
 	///
-	riskPendding map[string]*riskPendding
-	url          string
+	// riskPendding          map[UserRiskId]*riskPendding
+	riskPenddingContainer *riskPenddingContainer
+	// url                   string
 	////
 }
 
+// func (s *sTFA) setRiskCache(ctx context.Context, key UserRiskId, risk *riskPendding) {
+// 	dur, _ := gtime.ParseDuration("1m")
+// 	service.Cache().Set(ctx, string(key), risk, dur)
+// }
+
+// func (s *sTFA) getRiskCache(ctx context.Context, key UserRiskId) *riskPendding {
+// 	val, err := service.Cache().Get(ctx, string(key))
+// 	if err != nil {
+// 		return nil
+// 	}
+// 	var risk *riskPendding = nil
+// 	val.Struct(*risk)
+// 	return risk
+// }
+
+// /
 func new() *sTFA {
 
 	ctx := gctx.GetInitCtx()
@@ -38,26 +63,20 @@ func new() *sTFA {
 	// client := risk.NewUserClient(conn)
 	///
 	//
+	// t := gcfg.Instance().Get(ctx, "userRisk.verificationDuration", 600)
+	t := config.Config.UserRisk.VerificationCodeDuration
 	s := &sTFA{
-		verifyPendding: map[string]func(){},
+		// verifyPendding: map[string]func(){},
 		// mailVerifyPendding:  map[string]func(){},
 		// phoneVerifyPendding: map[string]func(){},
-		riskPendding: map[string]*riskPendding{},
-		ctx:          ctx,
+		// riskPendding: map[UserRiskId]*riskPendding{},
+		//todo:
+		riskPenddingContainer: newRiskPenddingContainer(t),
+		ctx:                   ctx,
 	}
 	///
 
 	return s
-}
-
-type riskPendding struct {
-	//风控序号
-	RiskSerial string
-	//用户id
-	UserId string
-
-	///
-	riskEvent map[string]*riskEvent
 }
 
 const (
@@ -65,104 +84,108 @@ const (
 	Key_RiskEventMail  = "Key_RiskEventMail"
 )
 
-type riskEvent struct {
-	Kind           string
-	Phone          string
-	afterPhoneFunc func()
-	Mail           string
-	afterMailFunc  func()
-}
+///
 
 func init() {
 	service.RegisterTFA(new())
 }
 
-func (s *sTFA) CreateTFA(ctx context.Context, userId string, phone string, mail string) (string, error) {
+func (s *sTFA) TFACreate(ctx context.Context, userId string, phone string, mail string) (string, []string, error) {
 	// create nft
 	riskData := &conrisk.RiskTfa{
 		UserId: userId,
 		Kind:   consts.KEY_TFAKindCreate,
 		Phone:  phone,
+		Mail:   mail,
 	}
-	riskSerial, code, err := service.Risk().PerformRiskTFA(ctx, userId, riskData)
-	if err != nil || code != 0 {
-		/// need verification
-		event := s.riskEventPhone(ctx, phone, func() {
-			s.recordPhone(ctx, userId, phone)
-		})
-		s.addRiskEvent(ctx, userId, riskSerial, event)
-
-		/// need verification
-		event = s.riskEventMail(ctx, mail, func() {
-			s.recordPhone(ctx, userId, mail)
-		})
-		s.addRiskEvent(ctx, userId, riskSerial, event)
-
-		return riskSerial, err
-	} else {
-		s.recordPhone(ctx, userId, phone)
+	riskSerial, code := service.Risk().PerformRiskTFA(ctx, userId, riskData)
+	if code == consts.RiskCodeError {
+		return "", nil, gerror.NewCode(consts.CodePerformRiskError)
 	}
-	g.Log().Info(ctx, "CreateTFA PerformRiskTFA:", riskSerial, code)
-	return riskSerial, err
+	g.Log().Debug(ctx, "CreateTFA:", userId, phone, mail, code)
+	// if err != nil || code != 0 {
+	kind := []string{}
+	/// need verification
+	if phone != "" {
+		event := newRiskEventPhone(phone, func(ctx context.Context) error {
+			return s.createTFA(ctx, userId, nil, &phone)
+		})
+		s.riskPenddingContainer.Add(userId, riskSerial, event)
+		// s.addRiskEvent(ctx, userId, riskSerial, event)
+		kind = append(kind, "phone")
+		g.Log().Debug(ctx, "TFACreate:", userId, riskSerial, event)
+	}
+
+	/// need verification
+	if mail != "" {
+		event := newRiskEventMail(mail, func(ctx context.Context) error {
+			return s.createTFA(ctx, userId, &mail, nil)
+		})
+		// s.addRiskEvent(ctx, userId, riskSerial, event)
+		s.riskPenddingContainer.Add(userId, riskSerial, event)
+		kind = append(kind, "mail")
+		g.Log().Debug(ctx, "TFACreate:", userId, riskSerial, event)
+	}
+	return riskSerial, kind, nil
+	// }
 }
 
-func (s *sTFA) UpPhone(ctx context.Context, userId string, phone string) (string, error) {
-	_, err := s.TFAInfo(ctx, userId)
-	if err != nil {
-		return s.CreateTFA(ctx, userId, phone, "")
-	} else {
-		//upphone
-		//
-		riskData := &conrisk.RiskTfa{
-			UserId: userId,
-			Kind:   consts.KEY_TFAKindUpPhone,
-			Phone:  phone,
-		}
-		riskSerial, _, err := service.Risk().PerformRiskTFA(ctx, userId, riskData)
+func (s *sTFA) TFAUpPhone(ctx context.Context, userId string, phone string, riskSerial string) (string, error) {
+	info, err := s.TFAInfo(ctx, userId)
+	if err != nil || info == nil {
+		g.Log().Error(ctx, "TFAUpPhone:", userId, phone, err)
+		return "", gerror.NewCode(consts.CodeTFANotExist)
+	}
+	//
+	/// need verification
+	event := newRiskEventPhone(phone, func(ctx context.Context) error {
+		return s.recordPhone(ctx, userId, &phone)
+	})
+	s.riskPenddingContainer.Add(userId, riskSerial, event)
+	// s.addRiskEvent(ctx, userId, riskSerial, event)
+	//
+	///tfa mailif
+	if info.Mail != "" {
+		event := newRiskEventMail(info.Mail, nil)
+		s.riskPenddingContainer.Add(userId, riskSerial, event)
+		// s.addRiskEvent(ctx, userId, riskSerial, event)
+	}
+	///
+	return riskSerial, gerror.NewCode(consts.CodePerformRiskNeedVerification)
+
+}
+
+func (s *sTFA) TFAUpMail(ctx context.Context, userId string, mail string, riskSerial string) (string, error) {
+	info, err := s.TFAInfo(ctx, userId)
+	if err != nil || info == nil {
+		g.Log().Error(ctx, "TFAUpMail:", userId, mail, err)
+		return "", gerror.NewCode(consts.CodeTFANotExist)
+	}
+	//
+	// modtidy mail
+	/// need verification
+	event := newRiskEventMail(mail, func(ctx context.Context) error {
+		err := s.recordMail(ctx, userId, &mail)
 		if err != nil {
-			return "", err
+			return err
 		}
-
-		/// need verification
-		event := s.riskEventPhone(ctx, phone, func() {
-			s.recordPhone(ctx, userId, phone)
-		})
-		s.addRiskEvent(ctx, userId, riskSerial, event)
-		//
-		return riskSerial, gerror.NewCode(consts.CodeRiskNeedVerification)
-
+		return service.MailCode().SendBindingMail(ctx, mail)
+	})
+	s.riskPenddingContainer.Add(userId, riskSerial, event)
+	// s.addRiskEvent(ctx, userId, riskSerial, event)
+	///tfa phone if
+	if info.Phone != "" {
+		event := newRiskEventPhone(info.Phone, nil)
+		// s.addRiskEvent(ctx, userId, riskSerial, event)
+		s.riskPenddingContainer.Add(userId, riskSerial, event)
 	}
+
+	//
+	return riskSerial, gerror.NewCode(consts.CodePerformRiskNeedVerification)
+	//
+
 }
-
-func (s *sTFA) UpMail(ctx context.Context, userId string, mail string) (string, error) {
-	_, err := s.TFAInfo(ctx, userId)
-	if err != nil {
-		return s.CreateTFA(ctx, userId, "", mail)
-	} else {
-		//
-		riskData := &conrisk.RiskTfa{
-			UserId: userId,
-			Kind:   consts.KEY_TFAKindUpMail,
-			Mail:   mail,
-		}
-
-		riskSerial, _, err := service.Risk().PerformRiskTFA(ctx, userId, riskData)
-		if err != nil {
-			return "", err
-		}
-
-		/// need verification
-		event := s.riskEventMail(ctx, mail, func() {
-			s.recordPhone(ctx, userId, mail)
-		})
-		s.addRiskEvent(ctx, userId, riskSerial, event)
-		//
-		return riskSerial, gerror.NewCode(consts.CodeRiskNeedVerification)
-		//
-
-	}
-}
-func (s *sTFA) PerformRiskTFA(ctx context.Context, userId string, riskSerial string) ([]string, error) {
+func (s *sTFA) TFATx(ctx context.Context, userId string, riskSerial string) ([]string, error) {
 	info, err := s.TFAInfo(ctx, userId)
 	if err != nil {
 		g.Log().Warning(ctx, "SendPhoneCode:", userId, riskSerial, err)
@@ -172,20 +195,24 @@ func (s *sTFA) PerformRiskTFA(ctx context.Context, userId string, riskSerial str
 	//
 	kind := []string{}
 	if info.Phone != "" {
-		event := s.riskEventPhone(ctx, info.Phone, func() {
-			//todo:
-		})
-		s.addRiskEvent(ctx, userId, riskSerial, event)
+		event := newRiskEventPhone(info.Phone, nil)
+		// s.addRiskEvent(ctx, userId, riskSerial, event)
+		s.riskPenddingContainer.Add(userId, riskSerial, event)
 		kind = append(kind, "phone")
 	}
 
 	if info.Mail != "" {
-		event := s.riskEventMail(ctx, info.Mail, func() {
-			//todo:
-		})
-		s.addRiskEvent(ctx, userId, riskSerial, event)
+		event := newRiskEventMail(info.Mail, nil)
+		// s.addRiskEvent(ctx, userId, riskSerial, event)
+		s.riskPenddingContainer.Add(userId, riskSerial, event)
 		kind = append(kind, "mail")
 	}
 
+	g.Log().Debug(ctx, "PerformRiskTFA:",
+		"userId:", userId,
+		"riskSerial:", riskSerial,
+		"kind:", kind,
+		"info:", info,
+	)
 	return kind, nil
 }

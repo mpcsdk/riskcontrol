@@ -12,6 +12,7 @@ import (
 type (
 	IMailCode interface {
 		SendMailCode(ctx context.Context, to string) (string, error)
+		SendBindingMail(ctx context.Context, to string) error
 	}
 )
 

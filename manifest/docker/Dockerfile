@@ -1,16 +1,23 @@
-FROM loads/alpine:3.8
+FROM ubuntu:22.04
+# FROM node:18
+RUN apt update
+RUN apt install -y curl 
+ENV WORKDIR /server
 
-###############################################################################
-#                                INSTALLATION
-###############################################################################
+ARG GIT_PULL_V 
+ENV GIT_PULL_V=${GIT_PULL_V:-unknown}
+ARG BUILD_DATE 
+ENV BUILD_DATE=${BUILD_DATE:-unknown}
 
-ENV WORKDIR                 /app
-ADD resource                $WORKDIR/
-ADD ./temp/linux_amd64/main $WORKDIR/main
-RUN chmod +x $WORKDIR/main
+EXPOSE 8000
+EXPOSE 8001
+VOLUME /tmp/server
 
+ADD ./build/ $WORKDIR/
+ADD ./manifest/docker/docker.sh $WORKDIR/
+RUN chmod +x $WORKDIR/docker.sh
 ###############################################################################
 #                                   START
 ###############################################################################
 WORKDIR $WORKDIR
-CMD ./main
+CMD ./docker.sh

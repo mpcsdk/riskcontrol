@@ -11,19 +11,27 @@ import (
 
 // EthTx is the golang structure of table eth_tx for DAO operations like Where/Data.
 type EthTx struct {
-	g.Meta     `orm:"table:eth_tx, do:true"`
-	Id         interface{} //
-	CreatedAt  *gtime.Time //
-	UpdatedAt  *gtime.Time //
-	DeletedAt  *gtime.Time //
-	Address    interface{} //
-	Target     interface{} //
-	MethodId   interface{} //
-	MethodName interface{} //
-	Sig        interface{} //
-	Data       interface{} //
-	Args       interface{} //
-	From       interface{} //
-	To         interface{} //
-	Value      interface{} //
+	g.Meta      `orm:"table:eth_tx, do:true"`
+	Id          interface{} //
+	CreatedAt   *gtime.Time //
+	UpdatedAt   *gtime.Time //
+	DeletedAt   *gtime.Time //
+	Address     interface{} //
+	Contract    interface{} //
+	MethodName  interface{} //
+	MethodSig   interface{} //
+	EventName   interface{} //
+	EventSig    interface{} //
+	Topics      interface{} //
+	From        interface{} //
+	To          interface{} //
+	Value       interface{} //
+	Kind        interface{} //
+	BlockNumber interface{} //
+	BlockHash   interface{} //
+	TxHash      interface{} //
+	TxIndex     interface{} //
+	LogIndex    interface{} //
+	Data        interface{} //
+	Name        interface{} //
 }

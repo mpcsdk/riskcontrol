@@ -3,60 +3,81 @@ package sms
 import (
 	"context"
 	"errors"
-	"riskcontral/common"
-	"riskcontral/common/sms"
+	"riskcontral/internal/config"
 	"riskcontral/internal/service"
 	"strings"
 
+	"github.com/franklihub/mpcCommon/rand"
+	"github.com/franklihub/mpcCommon/sms"
 	"github.com/gogf/gf/v2/frame/g"
-	"github.com/gogf/gf/v2/os/gcfg"
-	"github.com/gogf/gf/v2/os/gctx"
 	"github.com/gogf/gf/v2/os/grpool"
 )
 
 type sSmsCode struct {
 	// domestic *sms.Huawei
-	domestic *sms.TencSms
-	foreign  *sms.Huawei
+	foreign  *sms.TencSms
+	domestic *sms.Huawei
 	pool     *grpool.Pool
 }
 
-func newforeign() *sms.Huawei {
-	cfg := gcfg.Instance()
-	ctx := gctx.GetInitCtx()
-	return &sms.Huawei{
-		APIAddress:        cfg.MustGet(ctx, "sms.foreign.APIAddress").String(),
-		ApplicationKey:    cfg.MustGet(ctx, "sms.foreign.ApplicationKey").String(),
-		ApplicationSecret: cfg.MustGet(ctx, "sms.foreign.ApplicationSecret").String(),
-		Sender:            cfg.MustGet(ctx, "sms.foreign.Sender").String(),
-		TemplateID:        cfg.MustGet(ctx, "sms.foreign.TemplateID").String(),
-		Signature:         cfg.MustGet(ctx, "sms.foreign.Signature").String(),
-	}
-}
+// func newforeign() *sms.Huawei {
+// 	// cfg := gcfg.Instance()
+// 	// ctx := gctx.GetInitCtx()
+// 	// return &sms.Huawei{
+// 	// 	APIAddress:        cfg.MustGet(ctx, "sms.foreign.huawei.APIAddress").String(),
+// 	// 	ApplicationKey:    cfg.MustGet(ctx, "sms.foreign.huawei.ApplicationKey").String(),
+// 	// 	ApplicationSecret: cfg.MustGet(ctx, "sms.foreign.huawei.ApplicationSecret").String(),
+// 	// 	Sender:            cfg.MustGet(ctx, "sms.foreign.huawei.Sender").String(),
+// 	// 	TemplateID:        cfg.MustGet(ctx, "sms.foreign.huawei.TemplateID").String(),
+// 	// 	Signature:         cfg.MustGet(ctx, "sms.foreign.huawei.Signature").String(),
+// 	// }
+
+// }
+
 func newdomestic() *sms.Huawei {
-	cfg := gcfg.Instance()
-	ctx := gctx.GetInitCtx()
+	// cfg := gcfg.Instance()
+	// ctx := gctx.GetInitCtx()
+	// return &sms.Huawei{
+	// 	APIAddress:        cfg.MustGet(ctx, "sms.domestic.huawei.APIAddress").String(),
+	// 	ApplicationKey:    cfg.MustGet(ctx, "sms.domestic.huawei.ApplicationKey").String(),
+	// 	ApplicationSecret: cfg.MustGet(ctx, "sms.domestic.huawei.ApplicationSecret").String(),
+	// 	Sender:            cfg.MustGet(ctx, "sms.domestic.huawei.Sender").String(),
+	// 	TemplateID:        cfg.MustGet(ctx, "sms.domestic.huawei.TemplateID").String(),
+	// 	Signature:         cfg.MustGet(ctx, "sms.domestic.huawei.Signature").String(),
+	// }
 	return &sms.Huawei{
-		APIAddress:        cfg.MustGet(ctx, "sms.domestic.APIAddress").String(),
-		ApplicationKey:    cfg.MustGet(ctx, "sms.domestic.ApplicationKey").String(),
-		ApplicationSecret: cfg.MustGet(ctx, "sms.domestic.ApplicationSecret").String(),
-		Sender:            cfg.MustGet(ctx, "sms.domestic.Sender").String(),
-		TemplateID:        cfg.MustGet(ctx, "sms.domestic.TemplateID").String(),
-		Signature:         cfg.MustGet(ctx, "sms.domestic.Signature").String(),
+		APIAddress:        config.Config.Sms.Domestic.Huawei.APIAddress,
+		ApplicationKey:    config.Config.Sms.Domestic.Huawei.ApplicationKey,
+		ApplicationSecret: config.Config.Sms.Domestic.Huawei.ApplicationSecret,
+		Sender:            config.Config.Sms.Domestic.Huawei.Sender,
+		TemplateID:        config.Config.Sms.Domestic.Huawei.TemplateID,
+		Signature:         config.Config.Sms.Domestic.Huawei.Signature,
 	}
 }
-func newTencDomestic() *sms.TencSms {
-	cfg := gcfg.Instance()
-	ctx := gctx.GetInitCtx()
+func newTencForeign() *sms.TencSms {
+	// cfg := gcfg.Instance()
+	// ctx := gctx.GetInitCtx()
+	// return sms.NewTencSms(
+	// 	cfg.MustGet(ctx, "sms.foreign.tenc.SecretId").String(),
+	// 	cfg.MustGet(ctx, "sms.foreign.tenc.SecretKey").String(),
+	// 	cfg.MustGet(ctx, "sms.foreign.tenc.Endpoint").String(),
+	// 	cfg.MustGet(ctx, "sms.foreign.tenc.SignMethod").String(),
+	// 	cfg.MustGet(ctx, "sms.foreign.tenc.Region").String(),
+	// 	cfg.MustGet(ctx, "sms.foreign.tenc.SmsSdkAppId").String(),
+	// 	cfg.MustGet(ctx, "sms.foreign.tenc.SignName").String(),
+	// 	cfg.MustGet(ctx, "sms.foreign.tenc.VerificationTemplateId").String(),
+	// 	cfg.MustGet(ctx, "sms.foreign.tenc.BindingCompletionTemplateId").String(),
+	// )
 	return sms.NewTencSms(
-		cfg.MustGet(ctx, "sms.tenc.domestic.SecretId").String(),
-		cfg.MustGet(ctx, "sms.tenc.domestic.SecretKey").String(),
-		cfg.MustGet(ctx, "sms.tenc.domestic.Endpoint").String(),
-		cfg.MustGet(ctx, "sms.tenc.domestic.SignMethod").String(),
-		cfg.MustGet(ctx, "sms.tenc.domestic.Region").String(),
-		cfg.MustGet(ctx, "sms.tenc.domestic.SmsSdkAppId").String(),
-		cfg.MustGet(ctx, "sms.tenc.domestic.SignName").String(),
-		cfg.MustGet(ctx, "sms.tenc.domestic.TemplateId").String(),
+		config.Config.Sms.Foreign.Tenc.SecretId,
+		config.Config.Sms.Foreign.Tenc.SecretKey,
+		config.Config.Sms.Foreign.Tenc.Endpoint,
+		config.Config.Sms.Foreign.Tenc.SignMethod,
+		config.Config.Sms.Foreign.Tenc.Region,
+		config.Config.Sms.Foreign.Tenc.SmsSdkAppId,
+		config.Config.Sms.Foreign.Tenc.SignName,
+		config.Config.Sms.Foreign.Tenc.VerificationTemplateId,
+		config.Config.Sms.Foreign.Tenc.BindingCompletionTemplateId,
 	)
 }
 
@@ -71,15 +92,16 @@ func (s *sSmsCode) sendCode(ctx context.Context, receiver, code string) error {
 }
 
 func (s *sSmsCode) SendCode(ctx context.Context, receiver string) (string, error) {
-	code := common.RandomDigits(6)
+	// return "123", nil
+	code := rand.RandomDigits(6)
 	ok := false
 	state := ""
 	var err error
 	if strings.HasPrefix(receiver, "+86") {
-		ok, state, err = s.foreign.SendSms(receiver, code)
+		ok, state, err = s.domestic.SendSms(receiver, code)
 	} else {
 		// resp, state, err = s.domestic.SendSms(receiver, code)
-		ok, state, err = s.domestic.SendSms(receiver, code)
+		ok, state, err = s.foreign.SendSms(receiver, code)
 	}
 	///
 	if err != nil {
@@ -90,6 +112,7 @@ func (s *sSmsCode) SendCode(ctx context.Context, receiver string) (string, error
 		g.Log().Warning(ctx, "sendcode:", ok, state)
 		return code, errors.New(state)
 	}
+	g.Log().Debug(ctx, "SendCode:", receiver, code)
 
 	return code, nil
 }
@@ -97,8 +120,8 @@ func (s *sSmsCode) SendCode(ctx context.Context, receiver string) (string, error
 func new() *sSmsCode {
 	return &sSmsCode{
 		pool:     grpool.New(10),
-		foreign:  newforeign(),
-		domestic: newTencDomestic(),
+		foreign:  newTencForeign(),
+		domestic: newdomestic(),
 	}
 }
 

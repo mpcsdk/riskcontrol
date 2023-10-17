@@ -3,6 +3,7 @@ package cmd
 import (
 	"context"
 
+	"riskcontral/internal/config"
 	"riskcontral/internal/controller/risk"
 	"riskcontral/internal/controller/tfa"
 
@@ -12,7 +13,6 @@ import (
 	"github.com/gogf/gf/v2/errors/gerror"
 	"github.com/gogf/gf/v2/frame/g"
 	"github.com/gogf/gf/v2/net/ghttp"
-	"github.com/gogf/gf/v2/os/gcfg"
 	"github.com/gogf/gf/v2/os/gcmd"
 )
 
@@ -53,12 +53,13 @@ var (
 		Func: func(ctx context.Context, parser *gcmd.Parser) (err error) {
 			///
 			// etcd rpc
-			addr, err := gcfg.Instance().Get(ctx, "etcd.address")
-			if err != nil {
-				panic(err)
-			}
+			// addr, err := gcfg.Instance().Get(ctx, "etcd.address")
+			// if err != nil {
+			// 	panic(err)
+			// }
+			addr := config.Config.Etcd.Address
 			//grpc
-			grpcx.Resolver.Register(etcd.New(addr.String()))
+			grpcx.Resolver.Register(etcd.New(addr))
 			// c := grpcx.Server.NewConfig()
 			rpcs := grpcx.Server.New()
 			risk.Register(rpcs)

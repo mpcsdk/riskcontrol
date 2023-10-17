@@ -12,6 +12,9 @@ func (c *ControllerV1) SendMailCode(ctx context.Context, req *v1.SendMailCodeReq
 	//trace
 	ctx, span := gtrace.NewSpan(ctx, "SendMailCode")
 	defer span.End()
+	if err := c.counter(ctx, req.Token, "SendMailCode"); err != nil {
+		return nil, err
+	}
 	//
 	info, err := service.UserInfo().GetUserInfo(ctx, req.Token)
 	if err != nil {

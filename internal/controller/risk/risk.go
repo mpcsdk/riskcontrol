@@ -3,11 +3,9 @@ package risk
 import (
 	"context"
 	v1 "riskcontral/api/risk/v1"
-	"riskcontral/common/ethtx"
 	"riskcontral/internal/consts"
-	"riskcontral/internal/consts/conrisk"
+	"riskcontral/internal/model"
 	"riskcontral/internal/service"
-	"strings"
 
 	"github.com/gogf/gf/contrib/rpc/grpcx/v2"
 	"github.com/gogf/gf/v2/errors/gcode"
@@ -70,7 +68,11 @@ func (*Controller) PerformVerifyCode(ctx context.Context, req *v1.VerifyCodekReq
 		return nil, err
 	}
 	// err = service.Risk().VerifyCode(ctx, req.RiskSerial, req.Code)
-	err = service.TFA().VerifyCode(ctx, info.UserId, req.RiskSerial, req.Code)
+	code := &model.VerifyCode{
+		MailCode:  req.MailCode,
+		PhoneCode: req.PhoneCode,
+	}
+	err = service.TFA().VerifyCode(ctx, info.UserId, req.RiskSerial, code)
 	if err != nil {
 		g.Log().Error(ctx, "PerformVerifyCode:", req, err)
 	}
@@ -89,47 +91,38 @@ func (*Controller) PerformRiskTxs(ctx context.Context, req *v1.TxRiskReq) (res *
 	//trace
 	ctx, span := gtrace.NewSpan(ctx, "performRiskTxs")
 	defer span.End()
-	//
 	///
 	g.Log().Debug(ctx, "PerformRiskTxs:", req)
-	req.Address = strings.ToLower(req.Address)
-	///
-	txs := []*conrisk.RiskTx{}
-	for _, tx := range req.Txs {
-		contract := strings.ToLower(tx.Contract)
-		contractabi, err := service.RulesDb().GetAbi(ctx, contract)
-		if err != nil {
-			return nil, gerror.NewCode(gcode.CodeInternalError)
-		}
-		tx, err := ethtx.AnalzyTxData(contractabi, tx.TxData)
-		if err != nil {
-			return nil, gerror.NewCode(gcode.CodeInternalError)
-		}
-		////
-		txs = append(txs, &conrisk.RiskTx{
-			Address:  req.Address,
-			Contract: contract,
-			//
-			MethodName: tx.MethodName,
-			MethodId:   tx.MethodId,
-			Args:       tx.Args,
-			// From: tx.Args[]
-		})
-		g.Log().Debug(ctx, "PerformRiskTx:", tx)
+
+	/////
+	serial, code := service.Risk().PerformRiskTxs(ctx, req.UserId, req.SignTxData)
+	if code == consts.RiskCodeError {
+		return nil, gerror.NewCode(consts.CodePerformRiskError)
 	}
-	serial, code, err := service.Risk().PerformRiskTxs(ctx, req.UserId, req.Address, txs)
-	g.Log().Info(ctx, "PerformRiskTx:", req, serial)
-	if err != nil {
-		g.Log().Error(ctx, "PerformRiskTx", serial, err)
-	}
+	///: pass or forbidden
+	g.Log().Debug(ctx, "PerformRiskTxs:", req, serial, code)
 	//
-	//notice: wait verify
-	kinds, err := service.TFA().PerformRiskTFA(ctx, req.UserId, serial)
+
+	if code == consts.RiskCodePass {
+		return &v1.TxRiskRes{
+			Ok: code,
+		}, nil
+	}
+	if code == consts.RiskCodeForbidden {
+		return &v1.TxRiskRes{
+			Ok: code,
+		}, nil
+	}
+	///
+	//
+	//notice:  tfatx  need verification
+	kinds, err := service.TFA().TFATx(ctx, req.UserId, serial)
 	if err != nil {
 		g.Log().Warning(ctx, "PerformRiskTxs:", "PerformRiskTFA:", req.UserId, serial)
-		return nil, gerror.NewCode(consts.CodeRiskPerformFailed)
+		return nil, gerror.NewCode(consts.CodePerformRiskError)
 	}
 	///
+	g.Log().Info(ctx, "PerformRiskTFA:", req.UserId, serial, kinds)
 	return &v1.TxRiskRes{
 		Ok:         code,
 		RiskSerial: serial,
@@ -140,4 +133,85 @@ func (*Controller) PerformRiskTxs(ctx context.Context, req *v1.TxRiskReq) (res *
 
 func (*Controller) PerformRiskTFA(ctx context.Context, req *v1.TFARiskReq) (res *v1.TFARiskRes, err error) {
 	return nil, gerror.NewCode(gcode.CodeNotImplemented)
+}
+
+func (*Controller) PerformAllAbi(ctx context.Context, req *v1.AllAbiReq) (res *v1.AllAbiRes, err error) {
+	rst, err := service.DB().GetAbiAll(ctx)
+	if err != nil {
+		return nil, gerror.NewCode(consts.CodeInternalError)
+	}
+	res = &v1.AllAbiRes{
+		Abis: map[string]string{},
+	}
+	for _, v := range rst {
+		res.Abis[v.Addr] = v.Abi
+	}
+
+	return res, nil
+}
+
+func (*Controller) PerformAllNftRules(ctx context.Context, req *v1.NftRulesReq) (res *v1.NftRulesRes, err error) {
+	rst, err := service.DB().GetNftRules(ctx)
+	if err != nil {
+		return nil, gerror.NewCode(consts.CodeInternalError)
+	}
+	res = &v1.NftRulesRes{
+		NftRules: map[string]*v1.NftRules{},
+	}
+	///
+	for k, v := range rst {
+		res.NftRules[k] = &v1.NftRules{
+			Contract:           v.Contract,
+			Name:               v.Name,
+			MethodName:         v.MethodName,
+			MethodSig:          v.MethodSig,
+			MethodFromField:    v.MethodFromField,
+			MethodToField:      v.MethodToField,
+			MethodTokenIdField: v.MethodTokenIdField,
+
+			EventName:         v.EventName,
+			EventSig:          v.EventSig,
+			EventTopic:        v.EventTopic,
+			EventFromField:    v.EventFromField,
+			EventToField:      v.EventToField,
+			EventTokenIdField: v.EventTokenIdField,
+
+			SkipToAddr: v.SkipToAddr,
+			Threshold:  int32(v.Threshold),
+		}
+	}
+	return res, nil
+}
+
+func (*Controller) PerformAllFtRules(ctx context.Context, req *v1.FtRulesReq) (res *v1.FtRulesRes, err error) {
+	rst, err := service.DB().GetFtRules(ctx)
+	if err != nil {
+		return nil, gerror.NewCode(consts.CodeInternalError)
+	}
+	res = &v1.FtRulesRes{
+		FtRules: map[string]*v1.Ftrules{},
+	}
+	///
+	for k, v := range rst {
+		res.FtRules[k] = &v1.Ftrules{
+			Contract:         v.Contract,
+			Name:             v.Name,
+			MethodName:       v.MethodName,
+			MethodSig:        v.MethodSig,
+			MethodFromField:  v.MethodFromField,
+			MethodToField:    v.MethodToField,
+			MethodValueField: v.MethodValueField,
+
+			EventName:       v.EventName,
+			EventSig:        v.EventSig,
+			EventTopic:      v.EventTopic,
+			EventFromField:  v.EventFromField,
+			EventToField:    v.EventToField,
+			EventValueField: v.EventValueField,
+
+			SkipToAddr:           v.SkipToAddr,
+			ThresholdBigintBytes: v.Threshold.Bytes(),
+		}
+	}
+	return res, nil
 }

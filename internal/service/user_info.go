@@ -7,12 +7,13 @@ package service
 
 import (
 	"context"
-	"riskcontral/common"
+
+	"github.com/franklihub/mpcCommon/userInfoGeter"
 )
 
 type (
 	IUserInfo interface {
-		GetUserInfo(ctx context.Context, userToken string) (userInfo *common.UserInfo, err error)
+		GetUserInfo(ctx context.Context, userToken string) (userInfo *userInfoGeter.UserInfo, err error)
 	}
 )
 
