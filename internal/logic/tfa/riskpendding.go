@@ -49,6 +49,14 @@ func (s *riskPenddingContainer) GetEvent(userId, riskSerial string, kind RiskKin
 	}
 	return risk.fetchEvent(kind)
 }
+func (s *riskPenddingContainer) AddBeforFunc(userId, riskSerial string, befor func(context.Context) error) {
+	risk := s.Get(userId, riskSerial)
+	if risk == nil {
+		return
+	}
+	///
+	risk.riskBeforFunc = append(risk.riskBeforFunc, befor)
+}
 
 func (s *riskPenddingContainer) Add(userId, riskSerial string, event *riskEvent) {
 	risk := s.Get(userId, riskSerial)
@@ -123,6 +131,7 @@ func (s *riskPenddingContainer) DoAfter(ctx context.Context, userId, riskSerial 
 		return errRiskNotDone
 	}
 
+	risk.DoBefor(ctx, risk)
 	risk.DoAfter(ctx, risk)
 	return nil
 }
@@ -136,9 +145,10 @@ type riskPendding struct {
 	UserId string
 
 	///
-	riskEvent map[RiskKind]*riskEvent
-	verifier  verifier
-	dealline  *gtime.Time
+	riskBeforFunc []func(context.Context) error
+	riskEvent     map[RiskKind]*riskEvent
+	verifier      verifier
+	dealline      *gtime.Time
 }
 
 func (s *riskPendding) verifierCode(code *model.VerifyCode) (RiskKind, error) {
@@ -152,6 +162,12 @@ func (s *riskPendding) upCode(kind RiskKind, code string) (string, error) {
 	return string(kind), nil
 }
 
+func (s *riskPendding) DoBefor(ctx context.Context, risk *riskPendding) (string, error) {
+	for _, f := range risk.riskBeforFunc {
+		f(ctx)
+	}
+	return "", nil
+}
 func (s *riskPendding) DoAfter(ctx context.Context, risk *riskPendding) (string, error) {
 	for _, event := range risk.riskEvent {
 		if !event.isDone() {

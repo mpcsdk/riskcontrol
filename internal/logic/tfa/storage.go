@@ -10,50 +10,58 @@ import (
 
 func (s *sTFA) createTFA(ctx context.Context, userId string, mail, phone string) error {
 
-	// _, err := dao.Tfa.Ctx(s.ctx).
-	// 	Data(do.Tfa{
-	// 		Phone:          phone,
-	// 		PhoneUpdatedAt: gtime.Now(),
-	// 	}).
-	// 	Where(dao.Tfa.Columns().UserId, userId).
-	// 	Update()
-
 	e := do.Tfa{
 		UserId:    userId,
 		CreatedAt: gtime.Now(),
 	}
-	if mail != "" {
-		e.Mail = mail
-		//notice: not updatetime because first binding not filtered by 24hriskrule
-		// e.MailUpdatedAt = gtime.Now()
-	}
-	if phone != "" {
-		e.Phone = phone
-		// e.PhoneUpdatedAt = gtime.Now()
-	}
+	// if mail != "" {
+	// 	e.Mail = mail
+	// 	// e.MailUpdatedAt = gtime.Now()
+	// }
+	// if phone != "" {
+	// 	e.Phone = phone
+	// 	// e.PhoneUpdatedAt = gtime.Now()
+	// }
 	err := service.DB().InsertTfaInfo(ctx, userId, &e)
 
 	return err
 }
 
-func (s *sTFA) recordPhone(ctx context.Context, userId string, phone *string) error {
-	err := service.DB().UpdateTfaInfo(ctx, userId, &do.Tfa{
-		UserId:         userId,
-		Phone:          phone,
-		PhoneUpdatedAt: gtime.Now(),
-	})
+func (s *sTFA) recordPhone(ctx context.Context, userId, phone string, phoneExists bool) error {
+	if !phoneExists {
+		err := service.DB().UpdateTfaInfo(ctx, userId, &do.Tfa{
+			UserId: userId,
+			Phone:  phone,
+		})
+		return err
+	} else {
+		err := service.DB().UpdateTfaInfo(ctx, userId, &do.Tfa{
+			UserId:         userId,
+			Phone:          phone,
+			PhoneUpdatedAt: gtime.Now(),
+		})
+		return err
+	}
 
-	return err
 }
-func (s *sTFA) recordMail(ctx context.Context, userId string, mail *string) error {
+func (s *sTFA) recordMail(ctx context.Context, userId, mail string, mailExists bool) error {
 
-	err := service.DB().UpdateTfaInfo(ctx, userId, &do.Tfa{
-		UserId:        userId,
-		Mail:          mail,
-		MailUpdatedAt: gtime.Now(),
-	})
+	if !mailExists {
+		err := service.DB().UpdateTfaInfo(ctx, userId, &do.Tfa{
+			UserId: userId,
+			Mail:   mail,
+		})
 
-	return err
+		return err
+	} else {
+		err := service.DB().UpdateTfaInfo(ctx, userId, &do.Tfa{
+			UserId:        userId,
+			Mail:          mail,
+			MailUpdatedAt: gtime.Now(),
+		})
+
+		return err
+	}
 }
 
 // //

@@ -4,6 +4,7 @@ import (
 	"context"
 	v1 "riskcontral/api/tfa/v1"
 	"riskcontral/internal/consts"
+	"riskcontral/internal/consts/conrisk"
 	"riskcontral/internal/service"
 
 	"github.com/gogf/gf/v2/errors/gerror"
@@ -44,14 +45,26 @@ func (c *ControllerV1) CreateTFA(ctx context.Context, req *v1.CreateTFAReq) (res
 		g.Log().Warning(ctx, "crateTFA:", req, err)
 		return nil, gerror.NewCode(consts.CodeTFAPhoneExists)
 	}
+	///
+	// create nft
+	riskData := &conrisk.RiskTfa{
+		UserId: info.UserId,
+		Kind:   consts.KEY_TFAKindCreate,
+		Phone:  req.Phone,
+		Mail:   req.Mail,
+	}
+	riskSerial, code := service.Risk().PerformRiskTFA(ctx, info.UserId, riskData)
+	if code == consts.RiskCodeError {
+		return nil, gerror.NewCode(consts.CodePerformRiskError)
+	}
 	////
-	r, kind, err := service.TFA().TFACreate(ctx, info.UserId, req.Phone, req.Mail)
+	kind, err := service.TFA().TFACreate(ctx, info.UserId, req.Phone, req.Mail, riskSerial)
 	if err != nil {
 		g.Log().Error(ctx, "CreateTFA:")
 		return nil, err
 	}
 	res = &v1.CreateTFARes{
-		RiskSerial: r,
+		RiskSerial: riskSerial,
 		RiskKind:   kind,
 	}
 

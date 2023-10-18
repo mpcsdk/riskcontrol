@@ -33,8 +33,12 @@ func (c *ControllerV1) UpPhone(ctx context.Context, req *v1.UpPhoneReq) (res *v1
 		g.Log().Warning(ctx, "UpPhone:", req, err)
 		return nil, gerror.NewCode(consts.CodeTFAPhoneExists)
 	}
-
-	///logic
+	///
+	tfaInfo, err := service.TFA().TFAInfo(ctx, userInfo.UserId)
+	if err != nil {
+		g.Log().Warning(ctx, "UpMail:", req, err)
+		return nil, gerror.NewCode(consts.CodeTFANotExist)
+	}
 	///upphoe riskcontrol
 	//
 	riskData := &conrisk.RiskTfa{
@@ -50,7 +54,7 @@ func (c *ControllerV1) UpPhone(ctx context.Context, req *v1.UpPhoneReq) (res *v1
 		return nil, gerror.NewCode(consts.CodePerformRiskError)
 	}
 	///
-	serial, err := service.TFA().TFAUpPhone(ctx, userInfo.UserId, req.Phone, riskSerial)
+	serial, err := service.TFA().TFAUpPhone(ctx, tfaInfo, req.Phone, riskSerial)
 	if serial == "" {
 		g.Log().Warning(ctx, "UpPhone:", req, err)
 		return nil, err
