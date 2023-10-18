@@ -52,6 +52,26 @@ userRisk:
 
 txRisk:
   ft:
+  - contract: "0xdac17f958d2ee523a2206206994597c13d831ec7"
+    name: "RPG"
+
+    methodName: "transfer"
+    methodSig: "transfer(address,uint256)"
+    methodFromField: ""
+    methodToField: "dst"
+    methodValueField: "wad"
+
+    eventName: "Transfer"
+    eventSig: "Transfer(address,address,uint256)"
+    eventFromField: "src"
+    eventToField : "dst"
+    eventValueField: "wad"
+
+    skipToAddr: 
+      - "0xBb3f1fd1133F935Bb791e2eE9D7fF8eA522c451E"
+      - "0xB6D831657133e5C99DC28B9B96103a8dd7baCCA4"
+
+    threshold: "10000000000000000000"
   - contract: "0x71d9cfd1b7adb1e8eb4c193ce6ffbe19b4aee0db"
     name: "RPG"
 
@@ -237,9 +257,9 @@ txRisk:
     methodToField: "to"
     MethodTokenIdField: "tokenId"
 
-    eventName: "TransferFrom"
-    eventSig: "TransferFrom(address,uint256)"
-    eventFromField: ""
+    eventName: "Transfer"
+    eventSig: "Transfer(address,address,uint256)"
+    eventFromField: "from"
     eventToField : "to"
     eventTokenIdField: "tokenId"
     skipToAddr: 
