@@ -24,11 +24,12 @@ func (s *sTFA) createTFA(ctx context.Context, userId string, mail, phone string)
 	}
 	if mail != "" {
 		e.Mail = mail
-		e.MailUpdatedAt = gtime.Now()
+		//notice: not updatetime because first binding not filtered by 24hriskrule
+		// e.MailUpdatedAt = gtime.Now()
 	}
 	if phone != "" {
 		e.Phone = phone
-		e.PhoneUpdatedAt = gtime.Now()
+		// e.PhoneUpdatedAt = gtime.Now()
 	}
 	err := service.DB().InsertTfaInfo(ctx, userId, &e)
 
