@@ -28,7 +28,7 @@ func (c *ControllerV1) UpPhone(ctx context.Context, req *v1.UpPhoneReq) (res *v1
 		return nil, gerror.NewCode(consts.CodeTFANotExist)
 	}
 	///check phone exists
-	err = service.DB().TfaPhoneExists(ctx, req.Phone)
+	err = service.DB().TfaPhoneNotExists(ctx, req.Phone)
 	if err != nil {
 		g.Log().Warning(ctx, "UpPhone:", req, err)
 		return nil, gerror.NewCode(consts.CodeTFAPhoneExists)

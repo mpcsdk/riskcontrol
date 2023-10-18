@@ -3,6 +3,7 @@ package risk
 import (
 	"context"
 	"riskcontral/internal/consts"
+	"strings"
 
 	"github.com/gogf/gf/v2/frame/g"
 	"github.com/mpcsdk/mpcCommon/ethtx/analzyer"
@@ -28,7 +29,7 @@ func (s *sRisk) checkTxs(ctx context.Context, signTxStr string) (int32, error) {
 }
 
 func (s *sRisk) checkTx(ctx context.Context, from string, riskSignTx *analzyer.SignTxData) (int32, error) {
-
+	riskSignTx.Target = strings.ToLower(riskSignTx.Target)
 	if ftrule, ok := s.ftruleMap[riskSignTx.Target]; ok {
 		//ft
 		ethtx, err := s.analzer.AnalzyTxDataFT(
@@ -39,12 +40,12 @@ func (s *sRisk) checkTx(ctx context.Context, from string, riskSignTx *analzyer.S
 			g.Log().Warning(ctx, "AnalzyTxDataFT:", riskSignTx, err)
 			return consts.RiskCodeNeedVerification, nil
 		}
+		g.Log().Debug(ctx, "AnalzyTxDataFT Controlmethod:", ethtx, ftrule)
 		if ethtx.MethodName != ftrule.MethodName {
-			g.Log().Debug(ctx, "AnalzyTxDataFT unControlmethod:", ethtx, ftrule)
 			return consts.RiskCodeNoRiskControl, nil
 		}
+		g.Log().Notice(ctx, "riskTx.Value > threshold:", ethtx, ftrule.Threshold.String())
 		if ethtx.Value.Cmp(ftrule.Threshold) > 0 {
-			g.Log().Notice(ctx, "riskTx.Value > threshold:", ethtx, ftrule.Threshold.String())
 			return consts.RiskCodeNeedVerification, nil
 		}
 		///

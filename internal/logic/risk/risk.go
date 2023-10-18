@@ -38,6 +38,7 @@ func (s *sRisk) PerformRiskTxs(ctx context.Context, userId string, signTx string
 		g.Log().Warning(ctx, "PerformRiskTxs:", "checkTxs:", err)
 		return riskserial, code
 	}
+	g.Log().Debug(ctx, "PerformRiskTxs:", "checkTxs:", code)
 	switch code {
 	case consts.RiskCodePass, consts.RiskCodeNeedVerification:
 		////if pass, chech tfa forbiddent

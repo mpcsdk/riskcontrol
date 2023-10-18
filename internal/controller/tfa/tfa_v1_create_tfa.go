@@ -34,12 +34,12 @@ func (c *ControllerV1) CreateTFA(ctx context.Context, req *v1.CreateTFAReq) (res
 		return nil, gerror.NewCode(consts.CodeTFAExist)
 	}
 	///check phone or mail exists
-	err = service.DB().TfaMailExists(ctx, req.Mail)
+	err = service.DB().TfaMailNotExists(ctx, req.Mail)
 	if err != nil {
 		g.Log().Warning(ctx, "crateTFA:", req, err)
 		return nil, gerror.NewCode(consts.CodeTFAMailExists)
 	}
-	err = service.DB().TfaPhoneExists(ctx, req.Phone)
+	err = service.DB().TfaPhoneNotExists(ctx, req.Phone)
 	if err != nil {
 		g.Log().Warning(ctx, "crateTFA:", req, err)
 		return nil, gerror.NewCode(consts.CodeTFAPhoneExists)

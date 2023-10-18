@@ -28,7 +28,7 @@ func (c *ControllerV1) UpMail(ctx context.Context, req *v1.UpMailReq) (res *v1.U
 		return nil, gerror.NewCode(consts.CodeTFANotExist)
 	}
 	///check phone exists
-	err = service.DB().TfaMailExists(ctx, req.Mail)
+	err = service.DB().TfaMailNotExists(ctx, req.Mail)
 	if err != nil {
 		g.Log().Warning(ctx, "UpMail:", req, err)
 		return nil, gerror.NewCode(consts.CodeTFAMailExists)

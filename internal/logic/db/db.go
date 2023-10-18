@@ -29,6 +29,7 @@ func new() *sDB {
 }
 
 var errEmpty error = errors.New("empty db")
+var errDataExists error = errors.New("empty data exists")
 
 // 初始化
 func init() {

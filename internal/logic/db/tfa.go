@@ -16,27 +16,27 @@ import (
 ///
 ///
 
-func (s *sDB) TfaMailExists(ctx context.Context, mail string) error {
+func (s *sDB) TfaMailNotExists(ctx context.Context, mail string) error {
 	rst, err := dao.Tfa.Ctx(ctx).Where(do.Tfa{
 		Mail: mail,
-	}).CountColumn(dao.Tfa.Columns().Mail)
+	}).Count()
 	if err != nil {
-		return nil
+		return err
 	}
 	if rst > 0 {
-		return errEmpty
+		return errDataExists
 	}
 	return nil
 }
-func (s *sDB) TfaPhoneExists(ctx context.Context, phone string) error {
+func (s *sDB) TfaPhoneNotExists(ctx context.Context, phone string) error {
 	rst, err := dao.Tfa.Ctx(ctx).Where(do.Tfa{
 		Phone: phone,
-	}).CountColumn(dao.Tfa.Columns().Mail)
+	}).CountColumn(dao.Tfa.Columns().Phone)
 	if err != nil {
-		return nil
+		return err
 	}
 	if rst > 0 {
-		return errEmpty
+		return errDataExists
 	}
 	return nil
 }
