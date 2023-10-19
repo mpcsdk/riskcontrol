@@ -25,7 +25,7 @@ type sRisk struct {
 }
 
 func (s *sRisk) PerformRiskTxs(ctx context.Context, userId string, signTx string) (string, int32) {
-	g.Log().Debug(ctx, "PerformRiskTxs:", "userId:", userId, "signTx:", signTx, s.txControl)
+	g.Log().Debug(ctx, "PerformRiskTxs:", "userId:", userId, "signTx:", signTx, "txControl:", s.txControl)
 	///
 	if !s.txControl {
 		return "", consts.RiskCodePass
@@ -34,15 +34,16 @@ func (s *sRisk) PerformRiskTxs(ctx context.Context, userId string, signTx string
 	riskserial := rand.GenNewSid()
 	///
 	code, err := s.checkTxs(ctx, signTx)
+	g.Log().Notice(ctx, "PerformRiskTxs: checTxs:", "code:", code)
 	if err != nil {
 		g.Log().Warning(ctx, "PerformRiskTxs:", "checkTxs:", err)
 		return riskserial, code
 	}
-	g.Log().Debug(ctx, "PerformRiskTxs:", "checkTxs:", code)
 	switch code {
 	case consts.RiskCodePass, consts.RiskCodeNeedVerification:
 		////if pass, chech tfa forbiddent
 		info, err := service.TFA().TFAInfo(ctx, userId)
+		g.Log().Debug(ctx, "PerformRiskTxs:", "TFAInfo:", info, err)
 		if err != nil {
 			g.Log().Warning(ctx, "PerformRiskTxs err tfinfo:", userId, signTx, err)
 			return "", consts.RiskCodeError

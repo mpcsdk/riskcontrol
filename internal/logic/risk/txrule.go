@@ -36,6 +36,9 @@ func rule_nftcnt(ctx context.Context, address string, contract string, method st
 	if err != nil {
 		return 0, err
 	}
+	if data == nil {
+		return 0, nil
+	}
 	return int(data.Value), nil
 }
 

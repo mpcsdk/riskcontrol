@@ -97,7 +97,10 @@ func (*Controller) PerformRiskTxs(ctx context.Context, req *v1.TxRiskReq) (res *
 	/////
 	serial, code := service.Risk().PerformRiskTxs(ctx, req.UserId, req.SignTxData)
 	if code == consts.RiskCodeError {
-		return nil, gerror.NewCode(consts.CodePerformRiskError)
+		return &v1.TxRiskRes{
+			Ok: code,
+		}, nil
+		// gerror.NewCode(consts.CodePerformRiskError)
 	}
 	///: pass or forbidden
 	g.Log().Debug(ctx, "PerformRiskTxs:", req, serial, code)

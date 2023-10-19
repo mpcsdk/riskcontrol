@@ -2,14 +2,12 @@ package db
 
 import (
 	"context"
-	"riskcontral/internal/consts"
 	"riskcontral/internal/dao"
 	"riskcontral/internal/model/do"
 	"riskcontral/internal/model/entity"
 	"time"
 
 	"github.com/gogf/gf/v2/database/gdb"
-	"github.com/gogf/gf/v2/errors/gerror"
 	"github.com/gogf/gf/v2/frame/g"
 )
 
@@ -89,7 +87,7 @@ func (s *sDB) FetchTfaInfo(ctx context.Context, userId string) (*entity.Tfa, err
 		UserId: userId,
 	}).One()
 	if err != nil {
-		return nil, gerror.NewCode(consts.CodeInternalError)
+		return nil, err
 	}
 	// if rst == nil {
 	// 	g.Log().Warning(ctx, "FetchTfaInfo not exist:", userId)
