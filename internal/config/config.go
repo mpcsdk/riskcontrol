@@ -19,6 +19,7 @@ type UserRisk struct {
 	UserControl              bool   `json:"userControl" v:"required"`
 	TxControl                bool   `json:"txControl" v:"required"`
 	VerificationCodeDuration int    `json:"verificationCodeDuration" v:"required|min:1"`
+	VerificationCodeInterval int    `json:"verificationCodeInterval" v:"required|min:1"`
 	ForbiddenTime            string `json:"forbiddenTime" v:"required"`
 }
 type SmsHuawei struct {

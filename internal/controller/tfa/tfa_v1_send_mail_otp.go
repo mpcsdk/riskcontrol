@@ -3,8 +3,10 @@ package tfa
 import (
 	"context"
 	v1 "riskcontral/api/tfa/v1"
+	"riskcontral/internal/consts"
 	"riskcontral/internal/service"
 
+	"github.com/gogf/gf/v2/errors/gerror"
 	"github.com/gogf/gf/v2/net/gtrace"
 )
 
@@ -12,8 +14,12 @@ func (c *ControllerV1) SendMailCode(ctx context.Context, req *v1.SendMailCodeReq
 	//trace
 	ctx, span := gtrace.NewSpan(ctx, "SendMailCode")
 	defer span.End()
+	//limit
 	if err := c.counter(ctx, req.Token, "SendMailCode"); err != nil {
 		return nil, err
+	}
+	if err := c.limitSendVerification(ctx, req.Token, "SendMailCode"); err != nil {
+		return nil, gerror.NewCode(consts.ErrLimitSendMailCode)
 	}
 	//
 	info, err := service.UserInfo().GetUserInfo(ctx, req.Token)

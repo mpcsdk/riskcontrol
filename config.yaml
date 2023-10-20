@@ -48,6 +48,7 @@ userRisk:
   userControl: true
   txControl: true
   verificationCodeDuration : 600
+  verificationCodeInterval: 60
   forbiddenTime: "-10m"
 
 txRisk:
