@@ -8,7 +8,9 @@ import (
 	"time"
 
 	"github.com/gogf/gf/v2/database/gdb"
+	"github.com/gogf/gf/v2/errors/gerror"
 	"github.com/gogf/gf/v2/frame/g"
+	"github.com/mpcsdk/mpcCommon/mpccode"
 )
 
 ///
@@ -74,23 +76,30 @@ func (s *sDB) UpdateTfaInfo(ctx context.Context, userId string, data *do.Tfa) er
 
 func (s *sDB) FetchTfaInfo(ctx context.Context, userId string) (*entity.Tfa, error) {
 	if userId == "" {
-		return nil, nil
+		return nil, errArg
 	}
 
+	aggdo := &do.Tfa{
+		UserId: userId,
+	}
 	var data *entity.Tfa
 	rst, err := g.Model(dao.Tfa.Table()).Ctx(ctx).Cache(gdb.CacheOption{
 		Duration: time.Hour,
 		Name:     dao.Tfa.Table() + userId,
 		Force:    false,
 		// }).Where("user_id", 1).One()
-	}).Where(do.Tfa{
-		UserId: userId,
-	}).One()
+	}).Where(aggdo).One()
 	if err != nil {
+		err = gerror.Wrap(err, mpccode.ErrDetails(
+			mpccode.ErrDetail("aggdo", aggdo),
+		))
 		return nil, err
 	}
 	if rst.IsEmpty() {
-		return nil, errEmpty
+		err = gerror.Wrap(errEmpty, mpccode.ErrDetails(
+			mpccode.ErrDetail("aggdo", aggdo),
+		))
+		return nil, err
 	}
 	err = rst.Struct(&data)
 	return data, err
