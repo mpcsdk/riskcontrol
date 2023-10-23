@@ -23,16 +23,18 @@ func (c *ControllerV1) TFAInfo(ctx context.Context, req *v1.TFAInfoReq) (res *v1
 	///
 	userInfo, err := service.UserInfo().GetUserInfo(ctx, req.Token)
 	if err != nil {
-		g.Log().Warning(ctx, "TFAInfo:", req, err)
+		g.Log().Warning(ctx, "TFAInfo userinfo:", req)
+		g.Log().Errorf(ctx, "%+v", err)
 		return nil, gerror.NewCode(consts.CodeTFANotExist)
 	}
 	if userInfo.UserId == "" {
-		g.Log().Warning(ctx, "TFAInfo:", req, userInfo, err)
+		g.Log().Warning(ctx, "TFAInfo no userId:", "req:", req, "userInfo:", userInfo)
 		return nil, gerror.NewCode(consts.CodeTFANotExist)
 	}
 	info, err := service.DB().FetchTfaInfo(ctx, userInfo.UserId)
 	if err != nil || info == nil {
-		g.Log().Warning(ctx, "TFAInfo:", req, userInfo, err)
+		g.Log().Warning(ctx, "TFAInfo no info:", "req:", req, "userInfo:", userInfo)
+		g.Log().Errorf(ctx, "%+v", err)
 		return nil, gerror.NewCode(consts.CodeTFANotExist)
 	}
 	///
