@@ -32,10 +32,9 @@ func (*Controller) PerformSmsCode(ctx context.Context, req *v1.SmsCodeReq) (res 
 	if err != nil {
 		return nil, err
 	}
-	// err = service.Risk().RiskPhoneCode(ctx, req.RiskSerial)
 	_, err = service.TFA().SendPhoneCode(ctx, info.UserId, req.RiskSerial)
 	if err != nil {
-		g.Log().Error(ctx, "PerformSmsCode:", req, err)
+		g.Log().Errorf(ctx, "%+v", err)
 	}
 	return nil, err
 }
@@ -52,7 +51,7 @@ func (*Controller) PerformMailCode(ctx context.Context, req *v1.MailCodekReq) (r
 	// err = service.Risk().RiskMailCode(ctx, req.RiskSerial)
 	_, err = service.TFA().SendMailCode(ctx, info.UserId, req.RiskSerial)
 	if err != nil {
-		g.Log().Error(ctx, "PerformMailCode:", req, err)
+		g.Log().Errorf(ctx, "%+v", err)
 	}
 	return nil, err
 }
@@ -74,7 +73,7 @@ func (*Controller) PerformVerifyCode(ctx context.Context, req *v1.VerifyCodekReq
 	}
 	err = service.TFA().VerifyCode(ctx, info.UserId, req.RiskSerial, code)
 	if err != nil {
-		g.Log().Error(ctx, "PerformVerifyCode:", req, err)
+		g.Log().Errorf(ctx, "%+v", err)
 	}
 	return nil, err
 }
@@ -92,10 +91,7 @@ func (*Controller) PerformRiskTxs(ctx context.Context, req *v1.TxRiskReq) (res *
 	ctx, span := gtrace.NewSpan(ctx, "performRiskTxs")
 	defer span.End()
 	///
-	g.Log().Debug(ctx, "PerformRiskTxs:", req)
-
-	/////
-	serial, code := service.Risk().PerformRiskTxs(ctx, req.UserId, req.SignTxData)
+	serial, code := service.Risk().RiskTxs(ctx, req.UserId, req.SignTxData)
 	if code == consts.RiskCodeError {
 		return &v1.TxRiskRes{
 			Ok: code,
@@ -103,7 +99,6 @@ func (*Controller) PerformRiskTxs(ctx context.Context, req *v1.TxRiskReq) (res *
 		// gerror.NewCode(consts.CodePerformRiskError)
 	}
 	///: pass or forbidden
-	g.Log().Debug(ctx, "PerformRiskTxs:", req, serial, code)
 	//
 
 	if code == consts.RiskCodePass {
@@ -121,11 +116,11 @@ func (*Controller) PerformRiskTxs(ctx context.Context, req *v1.TxRiskReq) (res *
 	//notice:  tfatx  need verification
 	kinds, err := service.TFA().TFATx(ctx, req.UserId, serial)
 	if err != nil {
-		g.Log().Warning(ctx, "PerformRiskTxs:", "PerformRiskTFA:", req.UserId, serial)
+		g.Log().Errorf(ctx, "%+v", err)
 		return nil, gerror.NewCode(consts.CodePerformRiskError)
 	}
 	///
-	g.Log().Info(ctx, "PerformRiskTFA:", req.UserId, serial, kinds)
+	g.Log().Notice(ctx, "PerformRiskTFA:", req.UserId, serial, kinds)
 	return &v1.TxRiskRes{
 		Ok:         code,
 		RiskSerial: serial,
@@ -156,6 +151,7 @@ func (*Controller) PerformAllAbi(ctx context.Context, req *v1.AllAbiReq) (res *v
 func (*Controller) PerformAllNftRules(ctx context.Context, req *v1.NftRulesReq) (res *v1.NftRulesRes, err error) {
 	rst, err := service.DB().GetNftRules(ctx)
 	if err != nil {
+		g.Log().Errorf(ctx, "%+v", err)
 		return nil, gerror.NewCode(consts.CodeInternalError)
 	}
 	res = &v1.NftRulesRes{
@@ -189,6 +185,7 @@ func (*Controller) PerformAllNftRules(ctx context.Context, req *v1.NftRulesReq) 
 func (*Controller) PerformAllFtRules(ctx context.Context, req *v1.FtRulesReq) (res *v1.FtRulesRes, err error) {
 	rst, err := service.DB().GetFtRules(ctx)
 	if err != nil {
+		g.Log().Errorf(ctx, "%+v", err)
 		return nil, gerror.NewCode(consts.CodeInternalError)
 	}
 	res = &v1.FtRulesRes{

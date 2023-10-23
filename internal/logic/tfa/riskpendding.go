@@ -5,14 +5,17 @@ import (
 	"errors"
 	"riskcontral/internal/consts"
 	"riskcontral/internal/model"
+	"sync"
 	"time"
 
 	"github.com/gogf/gf/v2/errors/gerror"
+	"github.com/gogf/gf/v2/frame/g"
 	"github.com/gogf/gf/v2/os/gtime"
 	"github.com/gogf/gf/v2/os/gtimer"
 )
 
 type riskPenddingContainer struct {
+	lock         sync.RWMutex
 	riskPendding map[UserRiskId]*riskPendding
 	ctx          context.Context
 }
@@ -24,6 +27,8 @@ func newRiskPenddingContainer(times int) *riskPenddingContainer {
 	}
 	//
 	gtimer.Add(s.ctx, time.Second*time.Duration(times), func(ctx context.Context) {
+		s.lock.Lock()
+		defer s.lock.Unlock()
 		for key, risk := range s.riskPendding {
 			if risk.dealline.Before(gtime.Now()) {
 				delete(s.riskPendding, key)
@@ -36,6 +41,8 @@ func newRiskPenddingContainer(times int) *riskPenddingContainer {
 
 func (s *riskPenddingContainer) Get(userId, riskSerial string) *riskPendding {
 	key := keyUserRiskId(userId, riskSerial)
+	s.lock.RLock()
+	defer s.lock.RUnlock()
 	if risk, ok := s.riskPendding[key]; ok {
 		return risk
 	}
@@ -74,7 +81,9 @@ func (s *riskPenddingContainer) Add(userId, riskSerial string, event *riskEvent)
 		}
 
 		key := keyUserRiskId(userId, riskSerial)
+		s.lock.Lock()
 		s.riskPendding[key] = risk
+		s.lock.Unlock()
 	} else {
 		risk.riskEvent[event.Kind] = event
 	}
@@ -131,8 +140,14 @@ func (s *riskPenddingContainer) DoAfter(ctx context.Context, userId, riskSerial 
 		return errRiskNotDone
 	}
 
-	risk.DoBefor(ctx, risk)
-	risk.DoAfter(ctx, risk)
+	_, err := risk.DoBefor(ctx, risk)
+	if err != nil {
+		g.Log().Warning(ctx, "DoBefor err", g.Map{"err": err, "riskSerial": riskSerial, "userId": userId}, "err:", err)
+	}
+	_, err = risk.DoAfter(ctx, risk)
+	if err != nil {
+		g.Log().Warning(ctx, "DoAfter err", g.Map{"err": err, "riskSerial": riskSerial, "userId": userId}, "err:", err)
+	}
 	return nil
 }
 
@@ -369,35 +384,6 @@ func newRiskEventMail(mail string, after func(context.Context) error) *riskEvent
 		DoneEvent: false,
 	}
 }
-
-// //
-// /
-// /
-// func (s *sTFA) addRiskEvent(ctx context.Context, userId, riskSerial string, event *riskEvent) {
-// 	key := keyUserRiskId(userId, riskSerial)
-// 	if v, ok := s.riskPendding[key]; ok {
-// 		v.riskEvent[event.Kind] = event
-// 	} else {
-// 		risk := &riskPendding{
-// 			UserId:     userId,
-// 			RiskSerial: riskSerial,
-// 			riskEvent: map[RiskKind]*riskEvent{
-// 				event.Kind: event,
-// 			},
-// 		}
-// 		s.riskPendding[key] = risk
-// 	}
-// }
-
-// func (s *sTFA) fetchRiskEvent(ctx context.Context, userId string, riskSerial string, kind RiskKind) *riskEvent {
-// 	key := keyUserRiskId(userId, riskSerial)
-// 	if r, ok := s.riskPendding[key]; ok {
-// 		if e, ok := r.riskEvent[kind]; ok {
-// 			return e
-// 		}
-// 	}
-// 	return nil
-// }
 
 func (s *sTFA) verifyRiskPendding(ctx context.Context, userId string, riskSerial string, code *model.VerifyCode, risk *riskPendding) (RiskKind, error) {
 	for _, event := range risk.riskEvent {

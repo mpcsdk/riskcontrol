@@ -34,7 +34,7 @@ func (c *ControllerV1) UpMail(ctx context.Context, req *v1.UpMailReq) (res *v1.U
 		return nil, gerror.NewCode(consts.CodeTFAMailExists)
 	}
 	///
-	tfaInfo, err := service.TFA().TFAInfo(ctx, userInfo.UserId)
+	tfaInfo, err := service.TFA().TFAInfoErr(ctx, userInfo.UserId)
 	if err != nil {
 		g.Log().Warning(ctx, "UpMail:", req, err)
 		return nil, gerror.NewCode(consts.CodeTFANotExist)
@@ -45,7 +45,7 @@ func (c *ControllerV1) UpMail(ctx context.Context, req *v1.UpMailReq) (res *v1.U
 		Kind:   consts.KEY_TFAKindUpMail,
 		Mail:   req.Mail,
 	}
-	riskSerial, code := service.Risk().PerformRiskTFA(ctx, userInfo.UserId, riskData)
+	riskSerial, code := service.Risk().RiskTFA(ctx, userInfo.UserId, riskData)
 
 	if code == consts.RiskCodeForbidden {
 		return nil, gerror.NewCode(consts.CodePerformRiskForbidden)
@@ -54,6 +54,10 @@ func (c *ControllerV1) UpMail(ctx context.Context, req *v1.UpMailReq) (res *v1.U
 		return nil, gerror.NewCode(consts.CodePerformRiskError)
 	}
 	serial, err := service.TFA().TFAUpMail(ctx, tfaInfo, req.Mail, riskSerial)
+	if err != nil {
+		g.Log().Errorf(ctx, "%+v", err)
+		return nil, err
+	}
 	res = &v1.UpMailRes{
 		RiskSerial: serial,
 	}

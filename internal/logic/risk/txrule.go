@@ -7,28 +7,34 @@ import (
 	"riskcontral/internal/model/do"
 	"riskcontral/internal/model/entity"
 
+	"github.com/gogf/gf/v2/errors/gerror"
 	"github.com/gogf/gf/v2/frame/g"
+	"github.com/mpcsdk/mpcCommon/mpccode"
 )
 
 // 矿机、装备、时装、武器
 func rule_nftcnt(ctx context.Context, address string, contract string, method string) (int, error) {
 
+	aggdo := &do.AggNft24H{
+		From:       address,
+		Contract:   contract,
+		MethodName: method,
+	}
 	rst, err := dao.AggNft24H.Ctx(ctx).Where(do.AggNft24H{
 		From:       address,
 		Contract:   contract,
 		MethodName: method,
 	}).
-		Where(do.AggNft24H{
-			From:       address,
-			Contract:   contract,
-			MethodName: method,
-		}).
+		Where(aggdo).
 		Fields(
 			dao.AggNft24H.Columns().Value,
 		).
 		One()
 	g.Log().Debug(ctx, "AggNft24H:", address, contract, method, rst)
 	if err != nil {
+		err = gerror.Wrap(err, mpccode.ErrDetails(
+			mpccode.ErrDetail("aggdo", aggdo),
+		))
 		return 0, err
 	}
 	var data *entity.AggNft24H

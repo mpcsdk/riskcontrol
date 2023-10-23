@@ -17,32 +17,28 @@ func (c *ControllerV1) CreateTFA(ctx context.Context, req *v1.CreateTFAReq) (res
 	//	//trace
 	ctx, span := gtrace.NewSpan(ctx, "CreateTFA:")
 	defer span.End()
-	g.Log().Debug(ctx, "crateTFA:", req)
 	if err := c.counter(ctx, req.Token, "CreateTFA"); err != nil {
 		return nil, err
 	}
 	///
 	info, err := service.UserInfo().GetUserInfo(ctx, req.Token)
 	if err != nil {
-		return nil, err
+		g.Log().Errorf(ctx, "%+v", err)
+		return nil, gerror.NewCode(consts.CodeTokenInvalid)
 	}
 	///
-	tfainfo, err := service.TFA().TFAInfo(ctx, info.UserId)
+	_, err = service.TFA().TFAInfoErr(ctx, info.UserId)
 	if err != nil {
-		return nil, err
-	}
-	if tfainfo != nil {
+		g.Log().Errorf(ctx, "%+v", err)
 		return nil, gerror.NewCode(consts.CodeTFAExist)
 	}
 	///check phone or mail exists
 	err = service.DB().TfaMailNotExists(ctx, req.Mail)
 	if err != nil {
-		g.Log().Warning(ctx, "crateTFA:", req, err)
 		return nil, gerror.NewCode(consts.CodeTFAMailExists)
 	}
 	err = service.DB().TfaPhoneNotExists(ctx, req.Phone)
 	if err != nil {
-		g.Log().Warning(ctx, "crateTFA:", req, err)
 		return nil, gerror.NewCode(consts.CodeTFAPhoneExists)
 	}
 	///
@@ -53,14 +49,13 @@ func (c *ControllerV1) CreateTFA(ctx context.Context, req *v1.CreateTFAReq) (res
 		Phone:  req.Phone,
 		Mail:   req.Mail,
 	}
-	riskSerial, code := service.Risk().PerformRiskTFA(ctx, info.UserId, riskData)
+	riskSerial, code := service.Risk().RiskTFA(ctx, info.UserId, riskData)
 	if code == consts.RiskCodeError {
 		return nil, gerror.NewCode(consts.CodePerformRiskError)
 	}
 	////
 	kind, err := service.TFA().TFACreate(ctx, info.UserId, req.Phone, req.Mail, riskSerial)
 	if err != nil {
-		g.Log().Error(ctx, "CreateTFA:")
 		return nil, err
 	}
 	res = &v1.CreateTFARes{

@@ -34,7 +34,7 @@ func (c *ControllerV1) UpPhone(ctx context.Context, req *v1.UpPhoneReq) (res *v1
 		return nil, gerror.NewCode(consts.CodeTFAPhoneExists)
 	}
 	///
-	tfaInfo, err := service.TFA().TFAInfo(ctx, userInfo.UserId)
+	tfaInfo, err := service.TFA().TFAInfoErr(ctx, userInfo.UserId)
 	if err != nil {
 		g.Log().Warning(ctx, "UpMail:", req, err)
 		return nil, gerror.NewCode(consts.CodeTFANotExist)
@@ -46,7 +46,7 @@ func (c *ControllerV1) UpPhone(ctx context.Context, req *v1.UpPhoneReq) (res *v1
 		Kind:   consts.KEY_TFAKindUpPhone,
 		Phone:  req.Phone,
 	}
-	riskSerial, code := service.Risk().PerformRiskTFA(ctx, userInfo.UserId, riskData)
+	riskSerial, code := service.Risk().RiskTFA(ctx, userInfo.UserId, riskData)
 	if code == consts.RiskCodeForbidden {
 		return nil, gerror.NewCode(consts.CodePerformRiskForbidden)
 	}

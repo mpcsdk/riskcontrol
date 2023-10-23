@@ -24,8 +24,7 @@ type sRisk struct {
 	txControl   bool
 }
 
-func (s *sRisk) PerformRiskTxs(ctx context.Context, userId string, signTx string) (string, int32) {
-	g.Log().Debug(ctx, "PerformRiskTxs:", "userId:", userId, "signTx:", signTx, "txControl:", s.txControl)
+func (s *sRisk) RiskTxs(ctx context.Context, userId string, signTx string) (string, int32) {
 	///
 	if !s.txControl {
 		return "", consts.RiskCodePass
@@ -34,36 +33,33 @@ func (s *sRisk) PerformRiskTxs(ctx context.Context, userId string, signTx string
 	riskserial := rand.GenNewSid()
 	///
 	code, err := s.checkTxs(ctx, signTx)
-	g.Log().Notice(ctx, "PerformRiskTxs: checTxs:", "code:", code)
 	if err != nil {
-		g.Log().Warning(ctx, "PerformRiskTxs:", "checkTxs:", err)
+		g.Log().Warning(ctx, "PerformRiskTxs:", "userId:", userId)
+		g.Log().Errorf(ctx, "%+v", err)
 		return riskserial, code
 	}
+	/////
 	switch code {
 	case consts.RiskCodePass, consts.RiskCodeNeedVerification:
 		////if pass, chech tfa forbiddent
-		info, err := service.TFA().TFAInfo(ctx, userId)
-		g.Log().Debug(ctx, "PerformRiskTxs:", "TFAInfo:", info, err)
+		info, err := service.TFA().TFAInfoErr(ctx, userId)
 		if err != nil {
-			g.Log().Warning(ctx, "PerformRiskTxs err tfinfo:", userId, signTx, err)
-			return "", consts.RiskCodeError
-		}
-		if info == nil {
-			g.Log().Warning(ctx, "PerformRiskTxs err tfinfo:", userId, signTx, err)
+			g.Log().Warning(ctx, "PerformRiskTxs:", "userId:", userId)
+			g.Log().Errorf(ctx, "%+v", err)
 			return "", consts.RiskCodeError
 		}
 		///
-		if info != nil && info.MailUpdatedAt != nil {
+		if info.MailUpdatedAt != nil {
 			befor24h := gtime.Now().Add(BeforH24)
-			g.Log().Debug(ctx, "PerformRiskTxs:", "befor24h:", befor24h.String(), "info.MailUpdatedAt:", info.MailUpdatedAt.String())
+			g.Log().Notice(ctx, "PerformRiskTxs:", "befor24h:", befor24h.String(), "info.MailUpdatedAt:", info.MailUpdatedAt.String())
 			if !s.isBefor(info.MailUpdatedAt, befor24h) {
 				return "", consts.RiskCodeForbidden
 			}
 		}
 		///
-		if info != nil && info.PhoneUpdatedAt != nil {
+		if info.PhoneUpdatedAt != nil {
 			befor24h := gtime.Now().Add(BeforH24)
-			g.Log().Debug(ctx, "PerformRiskTxs:", "befor24h:", befor24h.String(), "info.PhoneUpdatedAt:", info.PhoneUpdatedAt.String())
+			g.Log().Notice(ctx, "PerformRiskTxs:", "befor24h:", befor24h.String(), "info.PhoneUpdatedAt:", info.PhoneUpdatedAt.String())
 			if !s.isBefor(info.PhoneUpdatedAt, befor24h) {
 				return "", consts.RiskCodeForbidden
 				///, nil
@@ -83,8 +79,7 @@ func (s *sRisk) PerformRiskTxs(ctx context.Context, userId string, signTx string
 	}
 }
 
-func (s *sRisk) PerformRiskTFA(ctx context.Context, userId string, riskData *conrisk.RiskTfa) (string, int32) {
-	g.Log().Debug(ctx, "PerformRiskTFA:", "userId:", userId, "riskData:", riskData, s.userControl)
+func (s *sRisk) RiskTFA(ctx context.Context, userId string, riskData *conrisk.RiskTfa) (string, int32) {
 	if !s.userControl {
 		return "", consts.RiskCodePass
 	}
@@ -106,7 +101,8 @@ func (s *sRisk) PerformRiskTFA(ctx context.Context, userId string, riskData *con
 		return riskserial, consts.RiskCodeError
 	}
 	if err != nil {
-		g.Log().Error(ctx, "PerformRiskTFA:", err)
+		g.Log().Warning(ctx, "PerformRiskTFA:", "userId:", userId, "riskDAta:", riskData)
+		g.Log().Errorf(ctx, "%+v", err)
 		return riskserial, consts.RiskCodeError
 		///, err
 	}
@@ -136,26 +132,20 @@ func new() *sRisk {
 		s.analzer.AddAbi(a.Addr, a.Abi)
 	}
 	////
-	// val, err := gcfg.Instance().Get(context.TODO(), "userRisk.forbiddenTime")
-	// if err != nil {
-	// 	panic(err)
-	// }
+
 	val := config.Config.UserRisk.ForbiddenTime
 	// BeforH24, err = gtime.ParseDuration("-24h")
 	BeforH24, err = gtime.ParseDuration(val)
 	if err != nil {
 		panic(err)
 	}
-	// v, _ := gcfg.Instance().Get(context.Background(), "userRisk.userControl", false)
 	s.userControl = config.Config.UserRisk.UserControl
-	// v, _ = gcfg.Instance().Get(context.Background(), "userRisk.txControl", false)
 	s.txControl = config.Config.UserRisk.TxControl
 
 	return s
 }
 
 func init() {
-
 	///
 	///
 	service.RegisterRisk(new())

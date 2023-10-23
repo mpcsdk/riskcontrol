@@ -5,51 +5,69 @@ import (
 	"riskcontral/internal/dao"
 	"riskcontral/internal/model/do"
 	"riskcontral/internal/model/entity"
+
+	"github.com/gogf/gf/v2/errors/gerror"
+	"github.com/mpcsdk/mpcCommon/mpccode"
 )
 
 // /
 func (s *sDB) UpAggFT(ctx context.Context, ft *entity.AggFt24H) error {
-	dao.AggFt24H.Ctx(ctx).Delete(do.AggFt24H{
+	aggdo := &do.AggFt24H{
 		From:       ft.From,
 		Contract:   ft.Contract,
 		MethodName: ft.MethodName,
-	})
+	}
+	dao.AggFt24H.Ctx(ctx).Delete(aggdo)
 	///
 	_, err := dao.AggFt24H.Ctx(ctx).Insert(ft)
-	// _, err := dao.EthTx.Ctx(ctx).Insert(txs)
-	// if err != nil {
-	// 	g.Log().Warning(ctx, "RecordTxs :", err, txs)
-	// }
-	return err
+	if err != nil {
+		err = gerror.Wrap(err, mpccode.ErrDetails(
+			mpccode.ErrDetail("do", aggdo),
+		))
+		return err
+	}
+
+	return nil
 }
 func (s *sDB) UpAggNFT(ctx context.Context, nft *entity.AggNft24H) error {
-	dao.AggNft24H.Ctx(ctx).Delete(do.AggNft24H{
+	aggdo := &do.AggNft24H{
 		From:       nft.From,
 		Contract:   nft.Contract,
 		MethodName: nft.MethodName,
-	})
+	}
+	dao.AggNft24H.Ctx(ctx).Delete(aggdo)
 	///
 	_, err := dao.AggNft24H.Ctx(ctx).Insert(nft)
-	// _, err := dao.EthTx.Ctx(ctx).Insert(txs)
-	// if err != nil {
-	// 	g.Log().Warning(ctx, "RecordTxs :", err, txs)
-	// }
-	return err
+	if err != nil {
+		err = gerror.Wrap(err, mpccode.ErrDetails(
+			mpccode.ErrDetail("do", aggdo),
+		))
+		return err
+	}
+
+	return nil
 }
 
 func (s *sDB) GetAggFT(ctx context.Context, from, contract, methodName string) (*entity.AggFt24H, error) {
+	aggdo := &do.AggFt24H{
+		From:       from,
+		Contract:   contract,
+		MethodName: methodName,
+	}
 	rst, err := dao.AggFt24H.Ctx(ctx).
-		Where(do.AggFt24H{
-			From:       from,
-			Contract:   contract,
-			MethodName: methodName,
-		}).
+		Where(aggdo).
 		One()
 	if err != nil {
+		err = gerror.Wrap(err, mpccode.ErrDetails(
+			mpccode.ErrDetail("do", aggdo),
+		))
 		return nil, err
 	}
 	if rst.IsEmpty() {
-		return nil, errEmpty
+		err = gerror.Wrap(errEmpty, mpccode.ErrDetails(
+			mpccode.ErrDetail("do", aggdo),
+		))
+		return nil, err
 	}
 	////
 	var data *entity.AggFt24H = nil

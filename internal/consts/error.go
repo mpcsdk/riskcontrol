@@ -1,14 +1,13 @@
 package consts
 
+import "github.com/gogf/gf/v2/encoding/gjson"
+
 type errCode struct {
 	code    int
 	message string
 	detail  interface{}
 }
 
-func (e *errCode) Error() string {
-	return e.message
-}
 func (e *errCode) Message() string {
 	return e.message
 }
@@ -17,6 +16,40 @@ func (e *errCode) Code() int {
 }
 func (e *errCode) Detail() interface{} {
 	return e.detail
+}
+func (e *errCode) SetDetail(detail interface{}) *errCode {
+	e.detail = detail
+	return e
+}
+
+func newErr(code int, message string) *errCode {
+	return &errCode{code, message, map[string]interface{}{}}
+}
+
+type errDetail struct {
+	K string
+	V interface{}
+}
+
+func ErrDetail(k string, v interface{}) *errDetail {
+	return &errDetail{k, v}
+}
+
+func errData(data map[string]interface{}, kvs ...*errDetail) {
+	if len(kvs) >= 1 {
+		d := kvs[0]
+		data[d.K] = d.V
+		errData(data, kvs[1:]...)
+	}
+}
+func ErrDetails(kvs ...*errDetail) string {
+	data := map[string]interface{}{}
+	errData(data, kvs...)
+	str, err := gjson.EncodeString(data)
+	if err != nil {
+		return err.Error()
+	}
+	return str
 }
 
 var (
@@ -46,9 +79,12 @@ var (
 	///
 	CodeInternalError = &errCode{50, "Internal Error", nil} // An error occurred internally.
 	//
+	// ErrApiLimit           = &errCode{100, "Limit Api", nil}
 	ErrApiLimit           = &errCode{100, "Limit Api", nil}
 	ErrLimitSendPhoneCode = &errCode{101, "Limit Api Send Phone Code", nil}
 	ErrLimitSendMailCode  = &errCode{102, "Limit Api Send Mail Code", nil}
+	////
+	ErrCode = &errCode{65535, "ErrCode", nil}
 )
 
 const (

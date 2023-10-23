@@ -28,6 +28,7 @@ func new() *sDB {
 	return s
 }
 
+var errArg error = errors.New("arg err")
 var errEmpty error = errors.New("empty db")
 var errDataExists error = errors.New("empty data exists")
 

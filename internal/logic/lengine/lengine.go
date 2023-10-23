@@ -76,7 +76,10 @@ func new() *sLEngine {
 	e := &sLEngine{
 		RuleEnginePool: make(map[string]*engine.GenginePool),
 	}
-	rs := service.DB().AllRules(gctx.GetInitCtx())
+	rs, err := service.DB().AllRules(gctx.GetInitCtx())
+	if err != nil {
+		panic(err)
+	}
 	for name, rule := range rs {
 		e.newPool(name, rule)
 	}

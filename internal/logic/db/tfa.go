@@ -89,10 +89,9 @@ func (s *sDB) FetchTfaInfo(ctx context.Context, userId string) (*entity.Tfa, err
 	if err != nil {
 		return nil, err
 	}
-	// if rst == nil {
-	// 	g.Log().Warning(ctx, "FetchTfaInfo not exist:", userId)
-	// 	return nil, gerror.NewCode(consts.CodeTFANotExist)
-	// }
+	if rst.IsEmpty() {
+		return nil, errEmpty
+	}
 	err = rst.Struct(&data)
 	return data, err
 }

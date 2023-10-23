@@ -12,9 +12,9 @@ import (
 
 type (
 	IRPC interface {
-		PerformNftCnt(ctx context.Context, addr string, contract string, method string) (int, error)
-		PerformFtCnt(ctx context.Context, addr string, contract string, method string) (*big.Int, error)
-		PerformAlive(ctx context.Context) error
+		RpcNftCnt(ctx context.Context, addr string, contract string, method string) (int, error)
+		RpcFtCnt(ctx context.Context, addr string, contract string, method string) (*big.Int, error)
+		RpcAlive(ctx context.Context) error
 	}
 )
 

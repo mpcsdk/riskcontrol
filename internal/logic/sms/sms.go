@@ -2,13 +2,13 @@ package sms
 
 import (
 	"context"
-	"errors"
 	"riskcontral/internal/config"
 	"riskcontral/internal/service"
 	"strings"
 
-	"github.com/gogf/gf/v2/frame/g"
+	"github.com/gogf/gf/v2/errors/gerror"
 	"github.com/gogf/gf/v2/os/grpool"
+	"github.com/mpcsdk/mpcCommon/mpccode"
 	"github.com/mpcsdk/mpcCommon/rand"
 	"github.com/mpcsdk/mpcCommon/sms"
 )
@@ -86,9 +86,15 @@ func newTencForeign() *sms.TencSms {
 func (s *sSmsCode) sendCode(ctx context.Context, receiver, code string) error {
 	//todo: dstphone
 	resp, status, err := s.foreign.SendSms(receiver, code)
-	g.Log().Info(ctx, "sendcode:", resp, status, err)
+	if err != nil {
+		err = gerror.Wrap(err, mpccode.ErrDetails(
+			mpccode.ErrDetail("resp", resp),
+			mpccode.ErrDetail("status", status),
+		))
+		return err
+	}
 	///
-	return err
+	return nil
 }
 
 func (s *sSmsCode) SendCode(ctx context.Context, receiver string) (string, error) {
@@ -105,14 +111,17 @@ func (s *sSmsCode) SendCode(ctx context.Context, receiver string) (string, error
 	}
 	///
 	if err != nil {
-		g.Log().Warning(ctx, "sendcode:", err)
+		err = gerror.Wrap(err, mpccode.ErrDetails(
+			mpccode.ErrDetail("stat", state),
+		))
 		return code, err
 	}
 	if ok != true {
-		g.Log().Warning(ctx, "sendcode:", ok, state)
-		return code, errors.New(state)
+		err = gerror.Wrap(err, mpccode.ErrDetails(
+			mpccode.ErrDetail("stat", state),
+		))
+		return code, err
 	}
-	g.Log().Debug(ctx, "SendCode:", receiver, code)
 
 	return code, nil
 }

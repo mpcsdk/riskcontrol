@@ -11,7 +11,6 @@ import (
 )
 
 func (s *sTFA) TFAUpMail(ctx context.Context, tfaInfo *entity.Tfa, mail string, riskSerial string) (string, error) {
-	g.Log().Debug(ctx, "TFAUpMail:", tfaInfo, mail)
 	//
 	////
 	mailExists := false
@@ -23,6 +22,7 @@ func (s *sTFA) TFAUpMail(ctx context.Context, tfaInfo *entity.Tfa, mail string, 
 	event := newRiskEventMail(mail, func(ctx context.Context) error {
 		err := s.recordMail(ctx, tfaInfo.UserId, mail, mailExists)
 		if err != nil {
+			g.Log().Warning(ctx, "TFAUpMail recordMail err:", "userid:", tfaInfo.UserId, "mail:", mail, "mailExists:", mailExists, "err:", err)
 			return err
 		}
 		return service.MailCode().SendBindingMail(ctx, mail)

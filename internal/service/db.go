@@ -23,7 +23,7 @@ type (
 		GetAggFT(ctx context.Context, from, contract, methodName string) (*entity.AggFt24H, error)
 		GetAggNFT(ctx context.Context, from, contract, methodName string) (int, error)
 		GetRules(ctx context.Context, ruleId string) (string, error)
-		AllRules(ctx context.Context) map[string]string
+		AllRules(ctx context.Context) (map[string]string, error)
 		GetNftRules(ctx context.Context) (map[string]*mpcmodel.NftRule, error)
 		GetFtRules(ctx context.Context) (map[string]*mpcmodel.FtRule, error)
 		TfaMailNotExists(ctx context.Context, mail string) error

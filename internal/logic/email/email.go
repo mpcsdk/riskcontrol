@@ -4,10 +4,12 @@ import (
 	"context"
 	"riskcontral/internal/service"
 
+	"github.com/gogf/gf/v2/errors/gerror"
 	"github.com/gogf/gf/v2/frame/g"
 	"github.com/gogf/gf/v2/os/gcfg"
 	"github.com/gogf/gf/v2/os/gctx"
 	"github.com/mpcsdk/mpcCommon/exmail"
+	"github.com/mpcsdk/mpcCommon/mpccode"
 	"github.com/mpcsdk/mpcCommon/rand"
 )
 
@@ -28,13 +30,26 @@ func (s *sMailCode) SendMailCode(ctx context.Context, to string) (string, error)
 	// return "456", nil
 	code := rand.RandomDigits(6)
 	resp, err := s.t.SendMail(to, code)
-	g.Log().Debug(ctx, "SendMailCode:", to, code, resp)
+	if err != nil {
+		err = gerror.Wrap(err, mpccode.ErrDetails(
+			mpccode.ErrDetail("sendmailto", to),
+			mpccode.ErrDetail("sendmail resp", resp),
+		))
+		return "", err
+	}
+	g.Log().Notice(ctx, "SendMailCode:", to, code)
 	return code, err
 }
 func (s *sMailCode) SendBindingMail(ctx context.Context, to string) error {
-
 	resp, err := s.t.SendBindingMail(to)
-	g.Log().Debug(ctx, "SendMailCode:", to, resp)
+	if err != nil {
+		err = gerror.Wrap(err, mpccode.ErrDetails(
+			mpccode.ErrDetail("SendBindingMail", to),
+			mpccode.ErrDetail("SendBindingMail resp", resp),
+		))
+		return err
+	}
+	g.Log().Notice(ctx, "SendBindingMail:", to, resp)
 	return err
 }
 

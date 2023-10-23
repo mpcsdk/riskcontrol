@@ -3,12 +3,11 @@ package userInfo
 import (
 	"context"
 	"riskcontral/internal/config"
-	"riskcontral/internal/consts"
 	"riskcontral/internal/service"
 
 	"github.com/gogf/gf/v2/errors/gerror"
-	"github.com/gogf/gf/v2/frame/g"
 	"github.com/gogf/gf/v2/os/gcache"
+	"github.com/mpcsdk/mpcCommon/mpccode"
 	"github.com/mpcsdk/mpcCommon/userInfoGeter"
 )
 
@@ -21,8 +20,7 @@ type sUserInfo struct {
 
 func (s *sUserInfo) GetUserInfo(ctx context.Context, userToken string) (userInfo *userInfoGeter.UserInfo, err error) {
 	if userToken == "" {
-		g.Log().Error(ctx, "GetUserInfo:", userToken)
-		return nil, gerror.NewCode(consts.CodeTokenInvalid)
+		return nil, mpccode.ErrArg
 	}
 	///
 	// 用户信息示例
@@ -37,30 +35,20 @@ func (s *sUserInfo) GetUserInfo(ctx context.Context, userToken string) (userInfo
 		info := &userInfoGeter.UserInfo{}
 		err = v.Struct(info)
 		if err != nil {
-			g.Log().Error(ctx, "GetUserInfo:", err, userToken, info)
-			return nil, gerror.NewCode(consts.CodeInternalError)
+			return nil, err
 		}
 		return info, nil
 	}
 	///
 	info, err := s.userGeter.GetUserInfo(ctx, userToken)
 	if err != nil {
-		g.Log().Warning(ctx, "GetUserInfo:", err, userToken, info)
-		return info, gerror.NewCode(consts.CodeTokenInvalid)
+		err = gerror.Wrap(err, mpccode.ErrDetails(
+			mpccode.ErrDetail("userToken", userToken),
+		))
+		return info, err
 	}
-	g.Log().Debug(ctx, "GetUserInfo:", userToken, info)
 	s.c.Set(ctx, userToken, info, 0)
 	return info, err
-	// return &model.UserInfo{
-	// 	Id: 10,
-	// 	// AppPubKey:  "038c90b87d77f2cc3d26132e1ea26e14646d663e3f43f17180345df3d54b8b5c70",
-	// 	AppPubKey:  utility.GenNewSid(),
-	// 	Email:      "sunwenhao0421@163.com",
-	// 	LoginType:  "tkey-auth0-twitter-cyan",
-	// 	Address:    "0xe73E35d8Ecc3972481138D01799ED3934cc57853",
-	// 	KeyHash:    "U2FsdGVkX1/O6j9czaWzdjjDo/XPjk1hI8pIoaxSuS52zIxVuStK/nS07ucgiM5si8NjN97rAux3aH7Ld2i5oO8UuL6tpNZmLMG9ZpwVTxvGkCa3H14vTxWNz+yBoWG8",
-	// 	CreateTime: 1691118876,
-	// }, nil
 }
 
 func new() *sUserInfo {

@@ -3,7 +3,6 @@ package db
 import (
 	"context"
 	"fmt"
-	"riskcontral/internal/consts"
 	"riskcontral/internal/dao"
 	"riskcontral/internal/model/entity"
 	"riskcontral/internal/service"
@@ -12,6 +11,7 @@ import (
 	_ "github.com/gogf/gf/contrib/nosql/redis/v2"
 	"github.com/jackc/pgconn"
 	"github.com/jackc/pgx/v4/pgxpool"
+	"github.com/mpcsdk/mpcCommon/mpccode"
 
 	// _ "github.com/gogf/gf/contrib/drivers/mysql/v2"
 	_ "github.com/gogf/gf/contrib/drivers/pgsql/v2"
@@ -24,28 +24,32 @@ var RuleChName = "rule_ch"
 var AbiChName = "abi_ch"
 
 func (s *sDB) GetRules(ctx context.Context, ruleId string) (string, error) {
-	//todo: cache
-	// v, _ := g.Redis().Get(s.ctx, name)
 	rule := &entity.Rule{}
+
 	err := dao.Rule.Ctx(ctx).Where(dao.Rule.Columns().RuleId, ruleId).Scan(rule)
 	if err != nil {
-		g.Log().Error(ctx, "RulesGet:", ruleId, err)
-		return "", gerror.NewCode(consts.CodeInternalError)
+		err = gerror.Wrap(err, mpccode.ErrDetails(
+			mpccode.ErrDetail("ruleid", ruleId),
+		))
+		return "", err
 	}
 	return rule.Rules, err
 }
 
-func (s *sDB) AllRules(ctx context.Context) map[string]string {
+func (s *sDB) AllRules(ctx context.Context) (map[string]string, error) {
 	rule := []entity.Rule{}
 	err := dao.Rule.Ctx(ctx).Scan(&rule)
 	if err != nil {
-		g.Log().Error(ctx, err)
+		err = gerror.Wrap(err, mpccode.ErrDetails(
+			mpccode.ErrDetail("getallrule", ""),
+		))
+		return nil, err
 	}
 	rst := map[string]string{}
 	for _, i := range rule {
 		rst[i.RuleId] = i.Rules
 	}
-	return rst
+	return rst, nil
 }
 
 func (s *sDB) subscription(conn *pgxpool.Conn, name string, notificationChannel chan *pgconn.Notification) {
@@ -78,7 +82,7 @@ func (s *sDB) subscription(conn *pgxpool.Conn, name string, notificationChannel 
 				case AbiChName:
 				}
 
-				fmt.Println("Received notification:", notification)
+				g.Log().Notice(context.TODO(), "Received notification:", notification)
 			}
 		}
 	}()
