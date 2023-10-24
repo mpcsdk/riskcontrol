@@ -43,7 +43,7 @@ var tfaColumns = TfaColumns{
 // NewTfaDao creates and returns a new DAO object for table data access.
 func NewTfaDao() *TfaDao {
 	return &TfaDao{
-		group:   "default",
+		group:   "tfa",
 		table:   "tfa",
 		columns: tfaColumns,
 	}

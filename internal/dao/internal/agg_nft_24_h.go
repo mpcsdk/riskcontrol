@@ -49,7 +49,7 @@ var aggNft24HColumns = AggNft24HColumns{
 // NewAggNft24HDao creates and returns a new DAO object for table data access.
 func NewAggNft24HDao() *AggNft24HDao {
 	return &AggNft24HDao{
-		group:   "scrapeLogs",
+		group:   "scrape_logs",
 		table:   "agg_nft_24h",
 		columns: aggNft24HColumns,
 	}
