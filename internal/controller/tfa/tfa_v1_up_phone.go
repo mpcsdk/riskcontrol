@@ -55,12 +55,13 @@ func (c *ControllerV1) UpPhone(ctx context.Context, req *v1.UpPhoneReq) (res *v1
 	}
 	///
 	serial, err := service.TFA().TFAUpPhone(ctx, tfaInfo, req.Phone, riskSerial)
-	if serial == "" {
-		g.Log().Warning(ctx, "UpPhone:", req, err)
-		return nil, err
-	}
 	res = &v1.UpPhoneRes{
 		RiskSerial: serial,
 	}
+	if serial == "" {
+		g.Log().Warning(ctx, "UpPhone:", req, err)
+		return res, err
+	}
+
 	return res, err
 }

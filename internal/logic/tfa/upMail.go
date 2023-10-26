@@ -20,7 +20,7 @@ func (s *sTFA) TFAUpMail(ctx context.Context, tfaInfo *entity.Tfa, mail string, 
 	}
 
 	risk := s.riskPenddingContainer.NewRiskPendding(tfaInfo.UserId, riskSerial, RiskKind_UpMail)
-	verifier := newVerifierMail(RiskKind_UpMail, tfaInfo.Mail)
+	verifier := newVerifierMail(RiskKind_UpMail, mail)
 	///
 	risk.AddVerifier(verifier)
 	risk.AddAfterFunc(func(ctx context.Context) error {

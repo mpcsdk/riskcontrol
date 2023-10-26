@@ -91,18 +91,20 @@ func (s *emptyVerifier) Verify(verifierCode *model.VerifyCode) (RiskKind, error)
 // /
 // /
 type verifierPhone struct {
-	ctx      context.Context
-	riskKind RiskKind
-	code     string
-	phone    string
-	verified bool
+	ctx        context.Context
+	riskKind   RiskKind
+	verifyKind VerifyKind
+	code       string
+	phone      string
+	verified   bool
 }
 
 func newVerifierPhone(riskKind RiskKind, phone string) IVerifier {
 	return &verifierPhone{
-		ctx:      gctx.GetInitCtx(),
-		riskKind: riskKind,
-		phone:    phone,
+		ctx:        gctx.GetInitCtx(),
+		riskKind:   riskKind,
+		phone:      phone,
+		verifyKind: VerifierKind_Phone,
 	}
 }
 func (s *verifierPhone) SendCompletion() error {
@@ -168,9 +170,10 @@ type verifierMail struct {
 
 func newVerifierMail(riskKind RiskKind, mail string) IVerifier {
 	return &verifierMail{
-		ctx:      gctx.GetInitCtx(),
-		riskKind: riskKind,
-		mail:     mail,
+		ctx:        gctx.GetInitCtx(),
+		riskKind:   riskKind,
+		verifyKind: VerifierKind_Mail,
+		mail:       mail,
 	}
 }
 func (s *verifierMail) SendCompletion() error {
@@ -201,7 +204,7 @@ func (s *verifierMail) SendVerificationCode() (string, error) {
 	return "", nil
 }
 func (s *verifierMail) Verify(verifierCode *model.VerifyCode) (RiskKind, error) {
-	if s.code == verifierCode.PhoneCode && verifierCode.PhoneCode != "" {
+	if s.code == verifierCode.MailCode && verifierCode.MailCode != "" {
 		s.verified = true
 
 		return "", nil
