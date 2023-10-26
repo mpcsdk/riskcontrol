@@ -48,6 +48,7 @@ func (s *tenc) SendBindingPhoneCode(ctx context.Context, to string) (string, err
 }
 func (s *tenc) SendBindingCompletionPhone(ctx context.Context, to string) error {
 	_, resp, err := s.tenc.SendSms(to, s.cfg.Tenc.BindingCompletionTemplateId, "")
+
 	if err != nil {
 		err = gerror.Wrap(err, mpccode.ErrDetails(
 			mpccode.ErrDetail("SendBindingCompletionPhone", to),

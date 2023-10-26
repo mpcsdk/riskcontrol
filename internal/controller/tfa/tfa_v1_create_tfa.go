@@ -28,8 +28,8 @@ func (c *ControllerV1) CreateTFA(ctx context.Context, req *v1.CreateTFAReq) (res
 		return nil, gerror.NewCode(consts.CodeTokenInvalid)
 	}
 	///
-	_, err = service.TFA().TFAInfoErr(ctx, info.UserId)
-	if err != nil {
+	tfainfo, _ := service.TFA().TFAInfoErr(ctx, info.UserId)
+	if tfainfo != nil {
 		g.Log().Errorf(ctx, "%+v", err)
 		return nil, gerror.NewCode(consts.CodeTFAExist)
 	}
@@ -44,8 +44,8 @@ func (c *ControllerV1) CreateTFA(ctx context.Context, req *v1.CreateTFAReq) (res
 		g.Log().Errorf(ctx, "%+v", err)
 		return nil, gerror.NewCode(consts.CodeTFAPhoneExists)
 	}
-	///
 	// create nft
+	///
 	riskData := &conrisk.RiskTfa{
 		UserId: info.UserId,
 		Kind:   consts.KEY_TFAKindCreate,
@@ -58,14 +58,34 @@ func (c *ControllerV1) CreateTFA(ctx context.Context, req *v1.CreateTFAReq) (res
 		return nil, gerror.NewCode(consts.CodePerformRiskError)
 	}
 	////
-	kind, err := service.TFA().TFACreate(ctx, info.UserId, req.Phone, req.Mail, riskSerial)
+	_, err = service.TFA().TFACreate(ctx, info.UserId, req.Phone, req.Mail, riskSerial)
 	if err != nil {
 		g.Log().Errorf(ctx, "%+v", err)
 		return nil, err
 	}
-	res = &v1.CreateTFARes{
-		RiskSerial: riskSerial,
-		RiskKind:   kind,
+	////
+	///
+	res = &v1.CreateTFARes{}
+	if req.Phone != "" {
+		rst, err := c.UpPhone(ctx, &v1.UpPhoneReq{
+			Phone: req.Phone,
+			Token: req.Token,
+		})
+		if err != nil {
+			return nil, err
+		}
+		res.RiskSerial = rst.RiskSerial
+		res.RiskKind = []string{"phone"}
+	} else if req.Mail != "" {
+		rst, err := c.UpMail(ctx, &v1.UpMailReq{
+			Mail:  req.Mail,
+			Token: req.Token,
+		})
+		if err != nil {
+			return nil, err
+		}
+		res.RiskSerial = rst.RiskSerial
+		res.RiskKind = []string{"mail"}
 	}
 
 	return res, err

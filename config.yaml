@@ -262,11 +262,11 @@ sms:
       Sender: "8823091933902"
       TemplateID: "000ab97205d34659a78b47c9e1a805fb"
       Signature: "幂玛"
-      VerificationTemplateId: "1933346"
-      BindingVerificationTemplateId: "1941645"
-      BindingCompletionTemplateId: "1941647"
-      UpVerificationTemplateId: "1941649"
-      UpCompletionTemplateId: "1941654"
+      VerificationTemplateId: "000ab97205d34659a78b47c9e1a805fb"
+      BindingVerificationTemplateId: "000ab97205d34659a78b47c9e1a805fb"
+      BindingCompletionTemplateId: "000ab97205d34659a78b47c9e1a805fb"
+      UpVerificationTemplateId: "000ab97205d34659a78b47c9e1a805fb"
+      UpCompletionTemplateId: "000ab97205d34659a78b47c9e1a805fb"
   foreign:
     tenc:
       SecretId: "AKID51zveEaotSAnIez267vjsxrnfR1eCZwG"

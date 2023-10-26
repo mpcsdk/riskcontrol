@@ -9,7 +9,6 @@ import (
 
 	"github.com/gogf/gf/v2/database/gdb"
 	"github.com/gogf/gf/v2/errors/gerror"
-	"github.com/gogf/gf/v2/frame/g"
 	"github.com/mpcsdk/mpcCommon/mpccode"
 )
 
@@ -41,10 +40,10 @@ func (s *sDB) TfaPhoneNotExists(ctx context.Context, phone string) error {
 	return nil
 }
 func (s *sDB) InsertTfaInfo(ctx context.Context, userId string, data *do.Tfa) error {
-
-	cnt, err := g.Model(dao.Tfa.Table()).Ctx(ctx).Where(do.Tfa{
+	cnt, err := dao.Tfa.Ctx(ctx).Where(do.Tfa{
 		UserId: data.UserId,
 	}).CountColumn(dao.Tfa.Columns().UserId)
+
 	if err != nil {
 		return err
 	}
@@ -52,7 +51,7 @@ func (s *sDB) InsertTfaInfo(ctx context.Context, userId string, data *do.Tfa) er
 		return nil
 	}
 
-	_, err = g.Model(dao.Tfa.Table()).Ctx(ctx).Cache(gdb.CacheOption{
+	_, err = dao.Tfa.Ctx(ctx).Cache(gdb.CacheOption{
 		Duration: -1,
 		Name:     dao.Tfa.Table() + userId,
 		Force:    false,
@@ -64,7 +63,7 @@ func (s *sDB) InsertTfaInfo(ctx context.Context, userId string, data *do.Tfa) er
 
 // //
 func (s *sDB) UpdateTfaInfo(ctx context.Context, userId string, data *do.Tfa) error {
-	_, err := g.Model(dao.Tfa.Table()).Ctx(ctx).Cache(gdb.CacheOption{
+	_, err := dao.Tfa.Ctx(ctx).Cache(gdb.CacheOption{
 		Duration: -1,
 		Name:     dao.Tfa.Table() + userId,
 		Force:    false,
@@ -83,7 +82,7 @@ func (s *sDB) FetchTfaInfo(ctx context.Context, userId string) (*entity.Tfa, err
 		UserId: userId,
 	}
 	var data *entity.Tfa
-	rst, err := g.Model(dao.Tfa.Table()).Ctx(ctx).Cache(gdb.CacheOption{
+	rst, err := dao.Tfa.Ctx(ctx).Cache(gdb.CacheOption{
 		Duration: time.Hour,
 		Name:     dao.Tfa.Table() + userId,
 		Force:    false,

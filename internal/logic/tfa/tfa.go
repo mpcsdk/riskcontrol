@@ -4,11 +4,14 @@ import (
 	"context"
 	"riskcontral/internal/config"
 	"riskcontral/internal/consts"
+	"riskcontral/internal/model/do"
 	"riskcontral/internal/service"
 
 	"github.com/gogf/gf/v2/errors/gerror"
 	"github.com/gogf/gf/v2/frame/g"
 	"github.com/gogf/gf/v2/os/gctx"
+	"github.com/gogf/gf/v2/os/gtime"
+	"github.com/mpcsdk/mpcCommon/mpccode"
 )
 
 type UserRiskId string
@@ -49,39 +52,53 @@ func init() {
 }
 
 func (s *sTFA) TFACreate(ctx context.Context, userId string, phone string, mail string, riskSerial string) ([]string, error) {
+	///
+	err := service.DB().InsertTfaInfo(ctx, userId, &do.Tfa{
+		UserId:    userId,
+		CreatedAt: gtime.Now(),
+	})
+	if err != nil {
+		err = gerror.Wrap(err, mpccode.ErrDetails(
+			mpccode.ErrDetail("userId", userId),
+			mpccode.ErrDetail("phone", phone),
+			mpccode.ErrDetail("mail", mail),
+		))
+		return nil, err
+	}
+	return nil, nil
 
 	// if err != nil || code != 0 {
-	kind := []string{}
-	var risk *riskVerifyPendding = nil
-	/// need verification
-	if phone != "" {
-		verifier := newVerifierPhone(RiskKind_BindPhone, phone)
-		risk = s.riskPenddingContainer.NewRiskPendding(userId, riskSerial, RiskKind_BindPhone)
-		risk.AddVerifier(verifier)
-		risk.AddAfterFunc(nil)
-		risk.AddAfterFunc(func(ctx context.Context) error {
-			return s.recordPhone(ctx, userId, phone, false)
-		})
+	// kind := []string{}
+	// var risk *riskVerifyPendding = nil
+	// /// need verification
+	// if phone != "" {
+	// 	verifier := newVerifierPhone(RiskKind_BindPhone, phone)
+	// 	risk = s.riskPenddingContainer.NewRiskPendding(userId, riskSerial, RiskKind_BindPhone)
+	// 	risk.AddVerifier(verifier)
+	// 	risk.AddAfterFunc(nil)
+	// 	risk.AddAfterFunc(func(ctx context.Context) error {
+	// 		return s.recordPhone(ctx, userId, phone, false)
+	// 	})
 
-		kind = append(kind, "phone")
-	} else if mail != "" {
-		risk = s.riskPenddingContainer.NewRiskPendding(userId, riskSerial, RiskKind_BindMail)
-		verifier := newVerifierMail(RiskKind_BindPhone, mail)
-		risk.AddVerifier(verifier)
-		risk.AddAfterFunc(nil)
-		risk.AddAfterFunc(func(ctx context.Context) error {
-			return s.recordMail(ctx, userId, mail, false)
-		})
+	// 	kind = append(kind, "phone")
+	// } else if mail != "" {
+	// 	risk = s.riskPenddingContainer.NewRiskPendding(userId, riskSerial, RiskKind_BindMail)
+	// 	verifier := newVerifierMail(RiskKind_BindPhone, mail)
+	// 	risk.AddVerifier(verifier)
+	// 	risk.AddAfterFunc(nil)
+	// 	risk.AddAfterFunc(func(ctx context.Context) error {
+	// 		return s.recordMail(ctx, userId, mail, false)
+	// 	})
 
-		kind = append(kind, "mail")
-	}
+	// 	kind = append(kind, "mail")
+	// }
+	// ///
+
+	// risk.AddBeforFunc(func(ctx context.Context) error {
+	// 	return s.createTFA(ctx, userId, mail, phone)
+	// })
 	///
-
-	risk.AddBeforFunc(func(ctx context.Context) error {
-		return s.createTFA(ctx, userId, mail, phone)
-	})
-	///
-	return kind, nil
+	// return kind, nil
 }
 
 func (s *sTFA) TFATx(ctx context.Context, userId string, riskSerial string) ([]string, error) {

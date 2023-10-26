@@ -122,11 +122,12 @@ func (s *verifierPhone) SendCompletion() error {
 func (s *verifierPhone) SendVerificationCode() (string, error) {
 	switch s.riskKind {
 	case RiskKind_Tx:
-		service.SmsCode().SendVerificationCode(s.ctx, s.phone)
+		return service.SmsCode().SendVerificationCode(s.ctx, s.phone)
 	case RiskKind_BindPhone:
-		return service.SmsCode().SendBindingPhoneCode(s.ctx, s.phone)
+		return service.SmsCode().SendVerificationCode(s.ctx, s.phone)
+		// return service.SmsCode().SendBindingPhoneCode(s.ctx, s.phone)
 	case RiskKind_BindMail:
-		service.SmsCode().SendVerificationCode(s.ctx, s.phone)
+		return service.SmsCode().SendVerificationCode(s.ctx, s.phone)
 	case RiskKind_UpPhone:
 		return service.SmsCode().SendUpPhoneCode(s.ctx, s.phone)
 	case RiskKind_UpMail:

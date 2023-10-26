@@ -20,8 +20,14 @@ type huawei struct {
 func (s *huawei) SendVerificationCode(ctx context.Context, to string) (string, error) {
 	// return "456", nil
 	code := rand.RandomDigits(6)
-	_, resp, err := s.huawei.SendSms(to, s.cfg.Huawei.VerificationTemplateId, code)
-
+	ok, resp, err := s.huawei.SendSms(to, s.cfg.Huawei.VerificationTemplateId, code)
+	if !ok {
+		err = gerror.Wrap(mpccode.ErrArg, mpccode.ErrDetails(
+			mpccode.ErrDetail("SendVerificationCode", to),
+			mpccode.ErrDetail("SendVerificationCode resp", resp),
+		))
+		return "", err
+	}
 	if err != nil {
 		err = gerror.Wrap(err, mpccode.ErrDetails(
 			mpccode.ErrDetail("SendVerificationCode", to),
