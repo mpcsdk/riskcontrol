@@ -5,132 +5,83 @@ import (
 	"riskcontral/internal/config"
 	"riskcontral/internal/service"
 	"strings"
-
-	"github.com/gogf/gf/v2/errors/gerror"
-	"github.com/gogf/gf/v2/os/grpool"
-	"github.com/mpcsdk/mpcCommon/mpccode"
-	"github.com/mpcsdk/mpcCommon/rand"
-	"github.com/mpcsdk/mpcCommon/sms"
 )
 
 type sSmsCode struct {
-	// domestic *sms.Huawei
-	foreign  *sms.TencSms
-	domestic *sms.Huawei
-	pool     *grpool.Pool
-}
+	foreign  *tenc
+	domestic *huawei
 
-// func newforeign() *sms.Huawei {
-// 	// cfg := gcfg.Instance()
-// 	// ctx := gctx.GetInitCtx()
-// 	// return &sms.Huawei{
-// 	// 	APIAddress:        cfg.MustGet(ctx, "sms.foreign.huawei.APIAddress").String(),
-// 	// 	ApplicationKey:    cfg.MustGet(ctx, "sms.foreign.huawei.ApplicationKey").String(),
-// 	// 	ApplicationSecret: cfg.MustGet(ctx, "sms.foreign.huawei.ApplicationSecret").String(),
-// 	// 	Sender:            cfg.MustGet(ctx, "sms.foreign.huawei.Sender").String(),
-// 	// 	TemplateID:        cfg.MustGet(ctx, "sms.foreign.huawei.TemplateID").String(),
-// 	// 	Signature:         cfg.MustGet(ctx, "sms.foreign.huawei.Signature").String(),
-// 	// }
+	foreignCfg  *config.SmsForeign
+	domesticCfg *config.SmsDomestic
+}
 
 // }
 
-func newdomestic() *sms.Huawei {
-	// cfg := gcfg.Instance()
-	// ctx := gctx.GetInitCtx()
-	// return &sms.Huawei{
-	// 	APIAddress:        cfg.MustGet(ctx, "sms.domestic.huawei.APIAddress").String(),
-	// 	ApplicationKey:    cfg.MustGet(ctx, "sms.domestic.huawei.ApplicationKey").String(),
-	// 	ApplicationSecret: cfg.MustGet(ctx, "sms.domestic.huawei.ApplicationSecret").String(),
-	// 	Sender:            cfg.MustGet(ctx, "sms.domestic.huawei.Sender").String(),
-	// 	TemplateID:        cfg.MustGet(ctx, "sms.domestic.huawei.TemplateID").String(),
-	// 	Signature:         cfg.MustGet(ctx, "sms.domestic.huawei.Signature").String(),
-	// }
-	return &sms.Huawei{
-		APIAddress:        config.Config.Sms.Domestic.Huawei.APIAddress,
-		ApplicationKey:    config.Config.Sms.Domestic.Huawei.ApplicationKey,
-		ApplicationSecret: config.Config.Sms.Domestic.Huawei.ApplicationSecret,
-		Sender:            config.Config.Sms.Domestic.Huawei.Sender,
-		TemplateID:        config.Config.Sms.Domestic.Huawei.TemplateID,
-		Signature:         config.Config.Sms.Domestic.Huawei.Signature,
-	}
-}
-func newTencForeign() *sms.TencSms {
-	// cfg := gcfg.Instance()
-	// ctx := gctx.GetInitCtx()
-	// return sms.NewTencSms(
-	// 	cfg.MustGet(ctx, "sms.foreign.tenc.SecretId").String(),
-	// 	cfg.MustGet(ctx, "sms.foreign.tenc.SecretKey").String(),
-	// 	cfg.MustGet(ctx, "sms.foreign.tenc.Endpoint").String(),
-	// 	cfg.MustGet(ctx, "sms.foreign.tenc.SignMethod").String(),
-	// 	cfg.MustGet(ctx, "sms.foreign.tenc.Region").String(),
-	// 	cfg.MustGet(ctx, "sms.foreign.tenc.SmsSdkAppId").String(),
-	// 	cfg.MustGet(ctx, "sms.foreign.tenc.SignName").String(),
-	// 	cfg.MustGet(ctx, "sms.foreign.tenc.VerificationTemplateId").String(),
-	// 	cfg.MustGet(ctx, "sms.foreign.tenc.BindingCompletionTemplateId").String(),
-	// )
-	return sms.NewTencSms(
-		config.Config.Sms.Foreign.Tenc.SecretId,
-		config.Config.Sms.Foreign.Tenc.SecretKey,
-		config.Config.Sms.Foreign.Tenc.Endpoint,
-		config.Config.Sms.Foreign.Tenc.SignMethod,
-		config.Config.Sms.Foreign.Tenc.Region,
-		config.Config.Sms.Foreign.Tenc.SmsSdkAppId,
-		config.Config.Sms.Foreign.Tenc.SignName,
-		config.Config.Sms.Foreign.Tenc.VerificationTemplateId,
-		config.Config.Sms.Foreign.Tenc.BindingCompletionTemplateId,
-	)
-}
-
-// //
-// //
-func (s *sSmsCode) sendCode(ctx context.Context, receiver, code string) error {
-	//todo: dstphone
-	resp, status, err := s.foreign.SendSms(receiver, code)
-	if err != nil {
-		err = gerror.Wrap(err, mpccode.ErrDetails(
-			mpccode.ErrDetail("resp", resp),
-			mpccode.ErrDetail("status", status),
-		))
-		return err
-	}
-	///
-	return nil
-}
-
-func (s *sSmsCode) SendCode(ctx context.Context, receiver string) (string, error) {
-	// return "123", nil
-	code := rand.RandomDigits(6)
-	ok := false
-	state := ""
+// /
+func (s *sSmsCode) SendVerificationCode(ctx context.Context, to string) (string, error) {
 	var err error
-	if strings.HasPrefix(receiver, "+86") {
-		ok, state, err = s.domestic.SendSms(receiver, code)
+	code := ""
+	if strings.HasPrefix(to, "+86") {
+		code, err = s.domestic.SendVerificationCode(ctx, to)
 	} else {
 		// resp, state, err = s.domestic.SendSms(receiver, code)
-		ok, state, err = s.foreign.SendSms(receiver, code)
+		code, err = s.foreign.SendVerificationCode(ctx, to)
 	}
-	///
-	if err != nil {
-		err = gerror.Wrap(err, mpccode.ErrDetails(
-			mpccode.ErrDetail("stat", state),
-		))
-		return code, err
-	}
-	if ok != true {
-		err = gerror.Wrap(err, mpccode.ErrDetails(
-			mpccode.ErrDetail("stat", state),
-		))
-		return code, err
-	}
-
-	return code, nil
+	return code, err
 }
 
+func (s *sSmsCode) SendBindingPhoneCode(ctx context.Context, to string) (string, error) {
+	var err error
+	code := ""
+	if strings.HasPrefix(to, "+86") {
+		code, err = s.domestic.SendBindingPhoneCode(ctx, to)
+	} else {
+		// resp, state, err = s.domestic.SendSms(receiver, code)
+		code, err = s.foreign.SendBindingPhoneCode(ctx, to)
+	}
+	return code, err
+}
+func (s *sSmsCode) SendBindingCompletionPhone(ctx context.Context, to string) error {
+	var err error
+	if strings.HasPrefix(to, "+86") {
+		err = s.domestic.SendBindingCompletionPhone(ctx, to)
+	} else {
+		err = s.foreign.SendBindingCompletionPhone(ctx, to)
+	}
+
+	return err
+}
+
+// //
+func (s *sSmsCode) SendUpPhoneCode(ctx context.Context, to string) (string, error) {
+	var err error
+	code := ""
+	if strings.HasPrefix(to, "+86") {
+		code, err = s.domestic.SendUpPhoneCode(ctx, to)
+	} else {
+		// resp, state, err = s.domestic.SendSms(receiver, code)
+		code, err = s.foreign.SendUpPhoneCode(ctx, to)
+	}
+	return code, err
+}
+
+func (s *sSmsCode) SendUpCompletionPhone(ctx context.Context, receiver string) error {
+	var err error
+	if strings.HasPrefix(receiver, "+86") {
+		err = s.domestic.SendUpCompletionPhone(ctx, receiver)
+	} else {
+		// resp, state, err = s.domestic.SendSms(receiver, code)
+		err = s.foreign.SendUpCompletionPhone(ctx, receiver)
+	}
+
+	return err
+}
 func new() *sSmsCode {
 	return &sSmsCode{
-		pool:     grpool.New(10),
-		foreign:  newTencForeign(),
-		domestic: newdomestic(),
+		foreign:     newTencForeign(),
+		domestic:    newdomestic(),
+		foreignCfg:  config.Config.Sms.Foreign,
+		domesticCfg: config.Config.Sms.Domestic,
 	}
 }
 

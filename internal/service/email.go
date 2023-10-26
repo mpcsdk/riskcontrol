@@ -11,8 +11,12 @@ import (
 
 type (
 	IMailCode interface {
-		SendMailCode(ctx context.Context, to string) (string, error)
-		SendBindingMail(ctx context.Context, to string) error
+		SendVerificationCode(ctx context.Context, to string) (string, error)
+		SendBindingMailCode(ctx context.Context, to string) (string, error)
+		SendBindingCompletionMail(ctx context.Context, to string) error
+		// //
+		SendUpMailCode(ctx context.Context, to string) (string, error)
+		SendUpCompletionMail(ctx context.Context, to string) error
 	}
 )
 

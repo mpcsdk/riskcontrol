@@ -17,16 +17,20 @@ func (s *sTFA) TFAUpPhone(ctx context.Context, tfaInfo *entity.Tfa, phone string
 	} else {
 		phoneExists = true
 	}
+	// //
+	risk := s.riskPenddingContainer.NewRiskPendding(tfaInfo.UserId, riskSerial, RiskKind_UpPhone)
+	verifier := newVerifierPhone(RiskKind_BindPhone, phone)
 	//
-	event := newRiskEventPhone(phone, func(ctx context.Context) error {
+	risk.AddVerifier(verifier)
+	risk.AddAfterFunc(func(ctx context.Context) error {
 		return s.recordPhone(ctx, tfaInfo.UserId, phone, phoneExists)
 	})
-	s.riskPenddingContainer.Add(tfaInfo.UserId, riskSerial, event)
-	//
-	///tfa mailif
+
+	// //
+	// ///tfa mailif
 	if tfaInfo.Mail != "" {
-		event := newRiskEventMail(tfaInfo.Mail, nil)
-		s.riskPenddingContainer.Add(tfaInfo.UserId, riskSerial, event)
+		verifier := newVerifierMail(RiskKind_BindPhone, tfaInfo.Mail)
+		risk.AddVerifier(verifier)
 	}
 	///
 	return riskSerial, gerror.NewCode(consts.CodePerformRiskNeedVerification)

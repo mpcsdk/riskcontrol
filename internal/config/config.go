@@ -27,19 +27,27 @@ type SmsHuawei struct {
 	ApplicationKey    string `json:"applicationKey" v:"required"`
 	ApplicationSecret string `json:"applicationSecret" v:"required"`
 	Sender            string `json:"sender" v:"required"`
-	TemplateID        string `json:"templateID" v:"required"`
 	Signature         string `json:"signature" v:"required"`
+
+	VerificationTemplateId        string `json:"verificationTemplateId" v:"required"`
+	BindingVerificationTemplateId string `json:"bindingVerificationTemplateId" v:"required"`
+	BindingCompletionTemplateId   string `json:"bindingCompletionTemplateId" v:"required"`
+	UpVerificationTemplateId      string `json:"upVerificationTemplateId" v:"required"`
+	UpCompletionTemplateId        string `json:"upCompletionTemplateId" v:"required"`
 }
 type SmsTenc struct {
-	SecretId                    string `json:"secretId" v:"required"`
-	SecretKey                   string `json:"secretKey" v:"required"`
-	Endpoint                    string `json:"endpoint" v:"required"`
-	SignMethod                  string `json:"signMethod" v:"required"`
-	Region                      string `json:"region" v:"required"`
-	SmsSdkAppId                 string `json:"smsSdkAppId" v:"required"`
-	SignName                    string `json:"signName"`
-	VerificationTemplateId      string `json:"verificationTemplateId" v:"required"`
-	BindingCompletionTemplateId string `json:"bindingCompletionTemplateId" v:"required"`
+	SecretId                      string `json:"secretId" v:"required"`
+	SecretKey                     string `json:"secretKey" v:"required"`
+	Endpoint                      string `json:"endpoint" v:"required"`
+	SignMethod                    string `json:"signMethod" v:"required"`
+	Region                        string `json:"region" v:"required"`
+	SmsSdkAppId                   string `json:"smsSdkAppId" v:"required"`
+	SignName                      string `json:"signName"`
+	VerificationTemplateId        string `json:"verificationTemplateId" v:"required"`
+	BindingVerificationTemplateId string `json:"bindingVerificationTemplateId" v:"required"`
+	BindingCompletionTemplateId   string `json:"bindingCompletionTemplateId" v:"required"`
+	UpVerificationTemplateId      string `json:"upVerificationTemplateId" v:"required"`
+	UpCompletionTemplateId        string `json:"upCompletionTemplateId" v:"required"`
 }
 type SmsDomestic struct {
 	Huawei *SmsHuawei `json:"huawei" v:"required"`
@@ -53,12 +61,15 @@ type Sms struct {
 }
 
 type ExEmail struct {
-	From                        string `json:"from" v:"required"`
-	SecretId                    string `json:"secretId" v:"required"`
-	SecretKey                   string `json:"secretKey" v:"required"`
-	VerificationTemplateId      int    `json:"verificationTemplateId" v:"required"`
-	BindingCompletionTemplateId int    `json:"bindingCompletionTemplateId" v:"required"`
-	Subject                     string `json:"subject" v:"required"`
+	From                          string `json:"from" v:"required"`
+	SecretId                      string `json:"secretId" v:"required"`
+	SecretKey                     string `json:"secretKey" v:"required"`
+	Subject                       string `json:"subject" v:"required"`
+	VerificationTemplateId        int    `json:"verificationTemplateId" v:"required"`
+	BindingVerificationTemplateId int    `json:"bindingVerificationTemplateId" v:"required"`
+	BindingCompletionTemplateId   int    `json:"bindingCompletionTemplateId" v:"required"`
+	UpVerificationTemplateId      int    `json:"upVerificationTemplateId" v:"required"`
+	UpCompletionTemplateId        int    `json:"upCompletionTemplateId" v:"required"`
 }
 
 type Server struct {

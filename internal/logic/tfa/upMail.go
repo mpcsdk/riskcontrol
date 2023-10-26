@@ -4,7 +4,6 @@ import (
 	"context"
 	"riskcontral/internal/consts"
 	"riskcontral/internal/model/entity"
-	"riskcontral/internal/service"
 
 	"github.com/gogf/gf/v2/errors/gerror"
 	"github.com/gogf/gf/v2/frame/g"
@@ -19,20 +18,23 @@ func (s *sTFA) TFAUpMail(ctx context.Context, tfaInfo *entity.Tfa, mail string, 
 	} else {
 		mailExists = true
 	}
-	event := newRiskEventMail(mail, func(ctx context.Context) error {
+
+	risk := s.riskPenddingContainer.NewRiskPendding(tfaInfo.UserId, riskSerial, RiskKind_UpMail)
+	verifier := newVerifierMail(RiskKind_UpMail, tfaInfo.Mail)
+	///
+	risk.AddVerifier(verifier)
+	risk.AddAfterFunc(func(ctx context.Context) error {
 		err := s.recordMail(ctx, tfaInfo.UserId, mail, mailExists)
 		if err != nil {
 			g.Log().Warning(ctx, "TFAUpMail recordMail err:", "userid:", tfaInfo.UserId, "mail:", mail, "mailExists:", mailExists, "err:", err)
 			return err
 		}
-		return service.MailCode().SendBindingMail(ctx, mail)
+		return nil
 	})
-	s.riskPenddingContainer.Add(tfaInfo.UserId, riskSerial, event)
 	///tfa phone if
 	if tfaInfo.Phone != "" {
-		event := newRiskEventPhone(tfaInfo.Phone, nil)
-		// s.addRiskEvent(ctx, userId, riskSerial, event)
-		s.riskPenddingContainer.Add(tfaInfo.UserId, riskSerial, event)
+		verifier := newVerifierPhone(RiskKind_UpMail, tfaInfo.Phone)
+		risk.AddVerifier(verifier)
 	}
 	//
 	return riskSerial, gerror.NewCode(consts.CodePerformRiskNeedVerification)

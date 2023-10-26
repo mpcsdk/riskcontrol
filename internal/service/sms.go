@@ -11,7 +11,13 @@ import (
 
 type (
 	ISmsCode interface {
-		SendCode(ctx context.Context, receiver string) (string, error)
+		// /
+		SendVerificationCode(ctx context.Context, to string) (string, error)
+		SendBindingPhoneCode(ctx context.Context, to string) (string, error)
+		SendBindingCompletionPhone(ctx context.Context, to string) error
+		// //
+		SendUpPhoneCode(ctx context.Context, to string) (string, error)
+		SendUpCompletionPhone(ctx context.Context, receiver string) error
 	}
 )
 

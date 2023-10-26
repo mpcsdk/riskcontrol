@@ -13,6 +13,7 @@ import (
 
 type UserRiskId string
 type RiskKind string
+type VerifyKind string
 
 func keyUserRiskId(userId string, riskSerial string) UserRiskId {
 	return UserRiskId(userId + "keyUserRiskId" + riskSerial)
@@ -32,7 +33,6 @@ func new() *sTFA {
 	//
 	t := config.Config.UserRisk.VerificationCodeDuration
 	s := &sTFA{
-
 		//todo:
 		riskPenddingContainer: newRiskPenddingContainer(t),
 		ctx:                   ctx,
@@ -41,11 +41,6 @@ func new() *sTFA {
 
 	return s
 }
-
-const (
-	Key_RiskEventPhone = "Key_RiskEventPhone"
-	Key_RiskEventMail  = "Key_RiskEventMail"
-)
 
 ///
 
@@ -57,27 +52,32 @@ func (s *sTFA) TFACreate(ctx context.Context, userId string, phone string, mail 
 
 	// if err != nil || code != 0 {
 	kind := []string{}
+	var risk *riskVerifyPendding = nil
 	/// need verification
 	if phone != "" {
-		event := newRiskEventPhone(phone, func(ctx context.Context) error {
+		verifier := newVerifierPhone(RiskKind_BindPhone, phone)
+		risk = s.riskPenddingContainer.NewRiskPendding(userId, riskSerial, RiskKind_BindPhone)
+		risk.AddVerifier(verifier)
+		risk.AddAfterFunc(nil)
+		risk.AddAfterFunc(func(ctx context.Context) error {
 			return s.recordPhone(ctx, userId, phone, false)
 		})
-		s.riskPenddingContainer.Add(userId, riskSerial, event)
-		// s.addRiskEvent(ctx, userId, riskSerial, event)
-		kind = append(kind, "phone")
-	}
 
-	/// need verification
-	if mail != "" {
-		event := newRiskEventMail(mail, func(ctx context.Context) error {
+		kind = append(kind, "phone")
+	} else if mail != "" {
+		risk = s.riskPenddingContainer.NewRiskPendding(userId, riskSerial, RiskKind_BindMail)
+		verifier := newVerifierMail(RiskKind_BindPhone, mail)
+		risk.AddVerifier(verifier)
+		risk.AddAfterFunc(nil)
+		risk.AddAfterFunc(func(ctx context.Context) error {
 			return s.recordMail(ctx, userId, mail, false)
 		})
-		// s.addRiskEvent(ctx, userId, riskSerial, event)
-		s.riskPenddingContainer.Add(userId, riskSerial, event)
+
 		kind = append(kind, "mail")
 	}
 	///
-	s.riskPenddingContainer.AddBeforFunc(userId, riskSerial, func(ctx context.Context) error {
+
+	risk.AddBeforFunc(func(ctx context.Context) error {
 		return s.createTFA(ctx, userId, mail, phone)
 	})
 	///
@@ -94,17 +94,16 @@ func (s *sTFA) TFATx(ctx context.Context, userId string, riskSerial string) ([]s
 
 	//
 	kind := []string{}
+	risk := s.riskPenddingContainer.NewRiskPendding(userId, riskSerial, RiskKind_Tx)
 	if info.Phone != "" {
-		event := newRiskEventPhone(info.Phone, nil)
-		// s.addRiskEvent(ctx, userId, riskSerial, event)
-		s.riskPenddingContainer.Add(userId, riskSerial, event)
+		verifier := newVerifierPhone(RiskKind_Tx, info.Phone)
+		risk.AddVerifier(verifier)
 		kind = append(kind, "phone")
 	}
 
 	if info.Mail != "" {
-		event := newRiskEventMail(info.Mail, nil)
-		// s.addRiskEvent(ctx, userId, riskSerial, event)
-		s.riskPenddingContainer.Add(userId, riskSerial, event)
+		verifer := newVerifierMail(RiskKind_Tx, info.Mail)
+		risk.AddVerifier(verifer)
 		kind = append(kind, "mail")
 	}
 

@@ -5,21 +5,22 @@ go 1.20
 require (
 	github.com/bilibili/gengine v1.5.7
 	github.com/ethereum/go-ethereum v1.13.2
-	github.com/mpcsdk/mpcCommon v0.0.0
 	github.com/gogf/gf/contrib/drivers/pgsql/v2 v2.5.4
 	github.com/gogf/gf/contrib/nosql/redis/v2 v2.5.4
 	github.com/gogf/gf/contrib/registry/etcd/v2 v2.5.4
 	github.com/gogf/gf/contrib/rpc/grpcx/v2 v2.5.4
 	github.com/gogf/gf/contrib/trace/jaeger/v2 v2.5.4
-	github.com/gogf/gf/v2 v2.5.4
 	github.com/golang/protobuf v1.5.3
 	github.com/jackc/pgconn v1.9.1-0.20210724152538-d89c8390a530
 	github.com/jackc/pgx/v4 v4.12.1-0.20210724153913-640aa07df17c
+	github.com/mpcsdk/mpcCommon v0.0.0
 	github.com/shopspring/decimal v1.3.1
 	github.com/sirupsen/logrus v1.9.3
 	google.golang.org/grpc v1.57.0
 	google.golang.org/protobuf v1.31.0
 )
+
+require github.com/gogf/gf/v2 v2.5.4
 
 require (
 	github.com/BurntSushi/toml v1.3.2 // indirect
