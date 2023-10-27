@@ -4,12 +4,14 @@ import (
 	"context"
 	v1 "riskcontral/api/tfa/v1"
 	"riskcontral/internal/consts"
-	"riskcontral/internal/consts/conrisk"
+	"riskcontral/internal/model/do"
 	"riskcontral/internal/service"
 
 	"github.com/gogf/gf/v2/errors/gerror"
 	"github.com/gogf/gf/v2/frame/g"
 	"github.com/gogf/gf/v2/net/gtrace"
+	"github.com/gogf/gf/v2/os/gtime"
+	"github.com/mpcsdk/mpcCommon/mpccode"
 )
 
 // // @Summary 验证token，注册用户tfa
@@ -27,43 +29,48 @@ func (c *ControllerV1) CreateTFA(ctx context.Context, req *v1.CreateTFAReq) (res
 		g.Log().Errorf(ctx, "%+v", err)
 		return nil, gerror.NewCode(consts.CodeTokenInvalid)
 	}
-	///
-	tfainfo, _ := service.TFA().TFAInfoErr(ctx, info.UserId)
-	if tfainfo != nil {
-		g.Log().Errorf(ctx, "%+v", err)
-		return nil, gerror.NewCode(consts.CodeTFAExist)
-	}
+
 	///check phone or mail exists
-	err = service.DB().TfaMailNotExists(ctx, req.Mail)
-	if err != nil {
-		g.Log().Errorf(ctx, "%+v", err)
-		return nil, gerror.NewCode(consts.CodeTFAMailExists)
-	}
-	err = service.DB().TfaPhoneNotExists(ctx, req.Phone)
-	if err != nil {
-		g.Log().Errorf(ctx, "%+v", err)
-		return nil, gerror.NewCode(consts.CodeTFAPhoneExists)
-	}
+	// err = service.DB().TfaMailNotExists(ctx, req.Mail)
+	// if err != nil {
+	// 	g.Log().Errorf(ctx, "%+v", err)
+	// 	return nil, gerror.NewCode(consts.CodeTFAMailExists)
+	// }
+	// err = service.DB().TfaPhoneNotExists(ctx, req.Phone)
+	// if err != nil {
+	// 	g.Log().Errorf(ctx, "%+v", err)
+	// 	return nil, gerror.NewCode(consts.CodeTFAPhoneExists)
+	// }
 	// create nft
 	///
-	riskData := &conrisk.RiskTfa{
-		UserId: info.UserId,
-		Kind:   consts.KEY_TFAKindCreate,
-		Phone:  req.Phone,
-		Mail:   req.Mail,
-	}
-	riskSerial, code := service.Risk().RiskTFA(ctx, info.UserId, riskData)
-	if code == consts.RiskCodeError {
-		g.Log().Warning(ctx, "CreateTFA risk", "req:", req, "risk:", riskSerial, "code:", code)
-		return nil, gerror.NewCode(consts.CodePerformRiskError)
-	}
+	// riskData := &conrisk.RiskTfa{
+	// 	UserId: info.UserId,
+	// 	Kind:   consts.KEY_TFAKindCreate,
+	// 	Phone:  req.Phone,
+	// 	Mail:   req.Mail,
+	// }
+	// riskSerial, code := service.Risk().RiskTFA(ctx, info.UserId, riskData)
+	// if code == consts.RiskCodeError {
+	// 	g.Log().Warning(ctx, "CreateTFA risk", "req:", req, "risk:", riskSerial, "code:", code)
+	// 	return nil, gerror.NewCode(consts.CodePerformRiskError)
+	// }
 	////
-	_, err = service.TFA().TFACreate(ctx, info.UserId, req.Phone, req.Mail, riskSerial)
+	// _, err = service.TFA().TFACreate(ctx, info.UserId, req.Phone, req.Mail, riskSerial)
+	// if err != nil {
+	// 	g.Log().Errorf(ctx, "%+v", err)
+	// 	return nil, err
+	// }
+	////
+	err = service.DB().InsertTfaInfo(ctx, info.UserId, &do.Tfa{
+		UserId:    info.UserId,
+		CreatedAt: gtime.Now(),
+	})
 	if err != nil {
-		g.Log().Errorf(ctx, "%+v", err)
+		err = gerror.Wrap(err, mpccode.ErrDetails(
+			mpccode.ErrDetail("userId", info.UserId),
+		))
 		return nil, err
 	}
-	////
 	///
 	res = &v1.CreateTFARes{}
 	if req.Phone != "" {
@@ -71,24 +78,24 @@ func (c *ControllerV1) CreateTFA(ctx context.Context, req *v1.CreateTFAReq) (res
 			Phone: req.Phone,
 			Token: req.Token,
 		})
-		if err != nil {
-			return nil, err
+		if rst != nil {
+			res.RiskSerial = rst.RiskSerial
 		}
-		res.RiskSerial = rst.RiskSerial
 		res.RiskKind = []string{"phone"}
+		return res, err
 	} else if req.Mail != "" {
 		rst, err := c.UpMail(ctx, &v1.UpMailReq{
 			Mail:  req.Mail,
 			Token: req.Token,
 		})
-		if err != nil {
-			return nil, err
+		if rst != nil {
+			res.RiskSerial = rst.RiskSerial
 		}
-		res.RiskSerial = rst.RiskSerial
 		res.RiskKind = []string{"mail"}
+		return res, err
+	} else {
+		return nil, gerror.NewCode(consts.CodeInternalError)
 	}
-
-	return res, err
 }
 
 func (c *ControllerV1) DialCode(ctx context.Context, req *v1.DialCodeReq) (res *v1.DialCodeRes, err error) {

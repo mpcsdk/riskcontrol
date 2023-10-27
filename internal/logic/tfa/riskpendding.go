@@ -6,6 +6,7 @@ import (
 	"riskcontral/internal/model"
 
 	"github.com/gogf/gf/v2/errors/gerror"
+	"github.com/gogf/gf/v2/frame/g"
 	"github.com/gogf/gf/v2/os/gtime"
 	"github.com/mpcsdk/mpcCommon/mpccode"
 )
@@ -80,7 +81,10 @@ func (s *riskVerifyPendding) DoFunc(ctx context.Context) (VerifyKind, error) {
 		}
 		////notice: completion info
 		for _, v := range s.verifier {
-			v.SendCompletion()
+			err := v.SendCompletion()
+			if err != nil {
+				g.Log().Errorf(ctx, "%+v", err)
+			}
 		}
 	}
 	return "", nil

@@ -109,7 +109,7 @@ func new() *sMailCode {
 		SecretId:                      cfg.MustGet(ctx, "exemail.SecretId").String(),
 		SecretKey:                     cfg.MustGet(ctx, "exemail.SecretKey").String(),
 		VerificationTemplateId:        uint64(config.Config.ExEmail.VerificationTemplateId),
-		BindingVerificationTemplateId: uint64(config.Config.ExEmail.BindingCompletionTemplateId),
+		BindingVerificationTemplateId: uint64(config.Config.ExEmail.BindingVerificationTemplateId),
 		BindingCompletionTemplateId:   uint64(config.Config.ExEmail.BindingCompletionTemplateId),
 		UpVerificationTemplateId:      uint64(config.Config.ExEmail.UpVerificationTemplateId),
 		UpCompletionTemplateId:        uint64(config.Config.ExEmail.UpCompletionTemplateId),

@@ -289,7 +289,7 @@ exemail:
   Subject: "MixMarver"
   VerificationTemplateId: 26732
   BindingVerificationTemplateId: 26728
-  BindingCompletionTemplateId: 26728
+  BindingCompletionTemplateId: 26729
   UpVerificationTemplateId: 26730
   UpCompletionTemplateId: 26731
 

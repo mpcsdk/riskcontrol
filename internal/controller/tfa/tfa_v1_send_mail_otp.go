@@ -33,8 +33,8 @@ func (c *ControllerV1) SendMailCode(ctx context.Context, req *v1.SendMailCodeReq
 	// err = service.Risk().RiskMailCode(ctx, req.RiskSerial)
 	_, err = service.TFA().SendMailCode(ctx, info.UserId, req.RiskSerial)
 	if err != nil {
-
 		g.Log().Errorf(ctx, "%+v", err)
+		return nil, err
 	}
 	return nil, nil
 }
