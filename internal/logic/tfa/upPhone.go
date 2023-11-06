@@ -13,13 +13,17 @@ func (s *sTFA) TFAUpPhone(ctx context.Context, tfaInfo *entity.Tfa, phone string
 	/// need verification
 	var verifier IVerifier = nil
 	phoneExists := false
-	if tfaInfo.Phone == "" {
-		phoneExists = false
+
+	if tfaInfo == nil {
 		verifier = newVerifierPhone(RiskKind_BindPhone, phone)
+		phoneExists = false
 	} else {
-		phoneExists = true
 		verifier = newVerifierPhone(RiskKind_UpPhone, phone)
+		if tfaInfo.Phone != "" {
+			phoneExists = true
+		}
 	}
+
 	// //
 	risk := s.riskPenddingContainer.NewRiskPendding(tfaInfo.UserId, riskSerial, RiskKind_UpPhone)
 	//

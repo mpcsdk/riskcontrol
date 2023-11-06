@@ -19,8 +19,8 @@ func (s *sRisk) isBefor(upAt *gtime.Time, befor *gtime.Time) bool {
 }
 func (s *sRisk) checkTFAUpPhone(ctx context.Context, userId string) (int32, error) {
 	/////
-	info, err := service.TFA().TFAInfoErr(ctx, userId)
-	if err != nil {
+	info, err := service.TFA().TFAInfo(ctx, userId)
+	if err != nil || info == nil {
 		err = gerror.Wrap(err, mpccode.ErrDetails(
 			mpccode.ErrDetail("userid", userId),
 		))
@@ -53,8 +53,8 @@ func (s *sRisk) checkTFAUpPhone(ctx context.Context, userId string) (int32, erro
 
 func (s *sRisk) checkTfaUpMail(ctx context.Context, userId string) (int32, error) {
 	/////
-	info, err := service.TFA().TFAInfoErr(ctx, userId)
-	if err != nil {
+	info, err := service.TFA().TFAInfo(ctx, userId)
+	if err != nil || info == nil {
 		err = gerror.Wrap(err, mpccode.ErrDetails(
 			mpccode.ErrDetail("userid", userId),
 		))

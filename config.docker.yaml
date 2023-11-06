@@ -1,6 +1,6 @@
 server:
   address:     ":8002"
-  wordId: 1
+  workId: 1
   name: "riskcontrol"
 
 jaegerUrl: "127.0.0.1:6831"
@@ -13,6 +13,7 @@ logger:
 
 
 cache:
+  apiInterval: 1
   sessionDuration: 10000
 
 
@@ -23,7 +24,9 @@ redis:
 
 database:
   default:
-  - link: "pgsql:postgres:123456@tcp(123.60.148.168:10100)/riskcontrol"
+  - link: "pgsql:postgres:123456@tcp(127.0.0.1:10100)/riskcontrol"
+  scrapeLogs:
+  - link: "pgsql:postgres:123456@tcp(127.0.0.1:10100)/scrape_logs"
 
 grpc:
   name:             "riskRpc"  # 服务名称
@@ -36,13 +39,16 @@ grpc:
 #
 etcd:
   address: "127.0.0.1:2379"
+  riskRpc: "riskRpc"
+  scrapeLogsRpc: "scrapeLogsRpc"
 
 userTokenUrl: "https://auth-dev.mixmarvel-sdk.com/info"
 
 userRisk:
   userControl: true
   txControl: true
-  verificationDuration: 600 
+  verificationCodeDuration : 600
+  verificationCodeInterval: 60
   forbiddenTime: "-10m"
 
 txRisk:
@@ -174,9 +180,9 @@ txRisk:
     methodToField: "to"
     MethodTokenIdField: "tokenId"
 
-    eventName: "TransferFrom"
-    eventSig: "TransferFrom(address,uint256)"
-    eventFromField: ""
+    eventName: "Transfer"
+    eventSig: "Transfer(address,address,uint256)"
+    eventFromField: "from"
     eventToField : "to"
     eventTokenIdField: "tokenId"
     skipToAddr: 
@@ -193,9 +199,9 @@ txRisk:
     methodToField: "to"
     MethodTokenIdField: "tokenId"
 
-    eventName: "TransferFrom"
-    eventSig: "TransferFrom(address,uint256)"
-    eventFromField: ""
+    eventName: "Transfer"
+    eventSig: "Transfer(address,address,uint256)"
+    eventFromField: "from"
     eventToField : "to"
     eventTokenIdField: "tokenId"
     skipToAddr: 
@@ -212,9 +218,9 @@ txRisk:
     methodToField: "to"
     MethodTokenIdField: "tokenId"
 
-    eventName: "TransferFrom"
-    eventSig: "TransferFrom(address,uint256)"
-    eventFromField: ""
+    eventName: "Transfer"
+    eventSig: "Transfer(address,address,uint256)"
+    eventFromField: "from"
     eventToField : "to"
     eventTokenIdField: "tokenId"
     skipToAddr: 
@@ -232,9 +238,9 @@ txRisk:
     methodToField: "to"
     MethodTokenIdField: "tokenId"
 
-    eventName: "TransferFrom"
-    eventSig: "TransferFrom(address,uint256)"
-    eventFromField: ""
+    eventName: "Transfer"
+    eventSig: "Transfer(address,address,uint256)"
+    eventFromField: "from"
     eventToField : "to"
     eventTokenIdField: "tokenId"
     skipToAddr: 
@@ -278,8 +284,19 @@ exemail:
 gfcli:
   gen:
     dao:
-    - link:     "pgsql:postgres:123456@tcp(123.60.148.168:10100)/riskcontrol"
-      tables:   "contract_abi,rule,eth_tx,tfa,scrape_logs_stat,agg_ft_24h,agg_nft_24h"
+    - link:     "pgsql:postgres:123456@tcp(127.0.0.1:10100)/riskcontrol"
+      tables:   "contract_abi,rule,tfa"
+      jsonCase: "CamelLower"
+      typeMapping:
+        decimal:
+          type:   decimal.Decimal
+          import: github.com/shopspring/decimal
+        numeric:
+          type:   decimal.Decimal
+          import: github.com/shopspring/decimal
+    - link:     "pgsql:postgres:123456@tcp(127.0.0.1:10100)/scrape_logs"
+      group: scrapeLogs
+      tables:   "agg_ft_24h,agg_nft_24h"
       jsonCase: "CamelLower"
       typeMapping:
         decimal:

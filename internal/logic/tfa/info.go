@@ -9,7 +9,7 @@ import (
 	"github.com/mpcsdk/mpcCommon/mpccode"
 )
 
-func (s *sTFA) TFAInfoErr(ctx context.Context, userId string) (*entity.Tfa, error) {
+func (s *sTFA) TFAInfo(ctx context.Context, userId string) (*entity.Tfa, error) {
 	if userId == "" {
 		return nil, mpccode.ErrArg
 	}
@@ -21,7 +21,7 @@ func (s *sTFA) TFAInfoErr(ctx context.Context, userId string) (*entity.Tfa, erro
 		return nil, err
 	}
 	if info == nil {
-		return nil, mpccode.ErrEmpty
+		return nil, nil
 	}
 	///
 	return info, nil

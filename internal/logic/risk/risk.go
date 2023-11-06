@@ -42,8 +42,8 @@ func (s *sRisk) RiskTxs(ctx context.Context, userId string, signTx string) (stri
 	switch code {
 	case consts.RiskCodePass, consts.RiskCodeNeedVerification:
 		////if pass, chech tfa forbiddent
-		info, err := service.TFA().TFAInfoErr(ctx, userId)
-		if err != nil {
+		info, err := service.TFA().TFAInfo(ctx, userId)
+		if err != nil || info == nil {
 			g.Log().Warning(ctx, "PerformRiskTxs:", "userId:", userId)
 			g.Log().Errorf(ctx, "%+v", err)
 			return "", consts.RiskCodeError

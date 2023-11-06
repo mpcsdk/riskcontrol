@@ -14,12 +14,14 @@ func (s *sTFA) TFAUpMail(ctx context.Context, tfaInfo *entity.Tfa, mail string, 
 	////
 	var verifier IVerifier = nil
 	mailExists := false
-	if tfaInfo.Mail == "" {
-		mailExists = false
+	if tfaInfo == nil {
 		verifier = newVerifierMail(RiskKind_BindMail, mail)
+		mailExists = false
 	} else {
-		mailExists = true
 		verifier = newVerifierMail(RiskKind_UpMail, mail)
+		if tfaInfo.Mail != "" {
+			mailExists = true
+		}
 	}
 
 	risk := s.riskPenddingContainer.NewRiskPendding(tfaInfo.UserId, riskSerial, RiskKind_UpMail)

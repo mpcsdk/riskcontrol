@@ -13,7 +13,7 @@ import (
 
 type (
 	ITFA interface {
-		TFAInfoErr(ctx context.Context, userId string) (*entity.Tfa, error)
+		TFAInfo(ctx context.Context, userId string) (*entity.Tfa, error)
 		// /
 		SendPhoneCode(ctx context.Context, userId string, riskSerial string) (string, error)
 		SendMailCode(ctx context.Context, userId string, riskSerial string) (string, error)

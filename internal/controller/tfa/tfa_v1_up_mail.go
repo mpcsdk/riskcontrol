@@ -34,16 +34,20 @@ func (c *ControllerV1) UpMail(ctx context.Context, req *v1.UpMailReq) (res *v1.U
 		return nil, gerror.NewCode(consts.CodeTFAMailExists)
 	}
 	///
-	tfaInfo, err := service.TFA().TFAInfoErr(ctx, userInfo.UserId)
+	tfaInfo, err := service.TFA().TFAInfo(ctx, userInfo.UserId)
 	if err != nil {
 		g.Log().Warning(ctx, "UpMail:", req, err)
-		return nil, gerror.NewCode(consts.CodeTFANotExist)
+		return nil, gerror.NewCode(consts.CodeInternalError)
 	}
+
 	//upmail riskcontrol
 	riskData := &conrisk.RiskTfa{
 		UserId: userInfo.UserId,
 		Kind:   consts.KEY_TFAKindUpMail,
 		Mail:   req.Mail,
+	}
+	if tfaInfo == nil {
+		riskData.Kind = consts.KEY_TFAKindCreate
 	}
 	riskSerial, code := service.Risk().RiskTFA(ctx, userInfo.UserId, riskData)
 

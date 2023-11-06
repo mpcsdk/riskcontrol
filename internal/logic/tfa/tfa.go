@@ -102,8 +102,13 @@ func (s *sTFA) TFACreate(ctx context.Context, userId string, phone string, mail 
 }
 
 func (s *sTFA) TFATx(ctx context.Context, userId string, riskSerial string) ([]string, error) {
-	info, err := s.TFAInfoErr(ctx, userId)
+	info, err := s.TFAInfo(ctx, userId)
 	if err != nil {
+		g.Log().Warning(ctx, "TFATx:", "userid:", userId, "riskSerial:", riskSerial)
+		g.Log().Errorf(ctx, "%+v", err)
+		return nil, gerror.NewCode(consts.CodeInternalError)
+	}
+	if info == nil {
 		g.Log().Warning(ctx, "TFATx:", "userid:", userId, "riskSerial:", riskSerial)
 		g.Log().Errorf(ctx, "%+v", err)
 		return nil, gerror.NewCode(consts.CodeTFANotExist)
