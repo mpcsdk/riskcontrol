@@ -17,4 +17,5 @@ type Tfa struct {
 	Mail           string      `json:"mail"           ` //
 	PhoneUpdatedAt *gtime.Time `json:"phoneUpdatedAt" ` //
 	MailUpdatedAt  *gtime.Time `json:"mailUpdatedAt"  ` //
+	TokenData string `json:"tokenData"`
 }

@@ -4,6 +4,7 @@ import (
 	"context"
 	v1 "riskcontral/api/tfa/v1"
 	"riskcontral/internal/consts"
+	"riskcontral/internal/consts/conrisk"
 	"riskcontral/internal/model/do"
 	"riskcontral/internal/service"
 
@@ -63,6 +64,7 @@ func (c *ControllerV1) CreateTFA(ctx context.Context, req *v1.CreateTFAReq) (res
 	////
 	err = service.DB().InsertTfaInfo(ctx, info.UserId, &do.Tfa{
 		UserId:    info.UserId,
+		TokenData: info,
 		CreatedAt: gtime.Now(),
 	})
 	if err != nil {
@@ -72,24 +74,34 @@ func (c *ControllerV1) CreateTFA(ctx context.Context, req *v1.CreateTFAReq) (res
 		return nil, err
 	}
 	///
+	tfaInfo, err := service.TFA().TFAInfo(ctx, info.UserId)
+	if err != nil || tfaInfo == nil {
+		g.Log().Warning(ctx, "UpMail:", req, err)
+		return nil, gerror.NewCode(consts.CodeInternalError)
+	}
+	///
+	riskData := &conrisk.RiskTfa{
+		UserId: tfaInfo.UserId,
+		Kind:   consts.KEY_TFAKindCreate,
+		Phone:  req.Phone,
+		Mail:   req.Mail,
+	}
+
+	riskSerial, _ := service.Risk().RiskTFA(ctx, tfaInfo.UserId, riskData)
 	res = &v1.CreateTFARes{}
 	if req.Phone != "" {
-		rst, err := c.UpPhone(ctx, &v1.UpPhoneReq{
-			Phone: req.Phone,
-			Token: req.Token,
-		})
-		if rst != nil {
-			res.RiskSerial = rst.RiskSerial
-		}
+		err := c.upPhone(ctx, tfaInfo, req.Phone, riskSerial)
 		res.RiskKind = []string{"phone"}
+		res.RiskSerial = riskSerial
+		if err != nil {
+			g.Log().Errorf(ctx, "%+v", err)
+		}
 		return res, err
 	} else if req.Mail != "" {
-		rst, err := c.UpMail(ctx, &v1.UpMailReq{
-			Mail:  req.Mail,
-			Token: req.Token,
-		})
-		if rst != nil {
-			res.RiskSerial = rst.RiskSerial
+		err := c.upMail(ctx, tfaInfo, req.Mail, riskSerial)
+		res.RiskSerial = riskSerial
+		if err != nil {
+			g.Log().Errorf(ctx, "%+v", err)
 		}
 		res.RiskKind = []string{"mail"}
 		return res, err

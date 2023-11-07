@@ -19,4 +19,5 @@ type Tfa struct {
 	Mail           interface{} //
 	PhoneUpdatedAt *gtime.Time //
 	MailUpdatedAt  *gtime.Time //
+	TokenData  interface{}
 }

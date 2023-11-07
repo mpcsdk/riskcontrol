@@ -2,10 +2,8 @@ package tfa
 
 import (
 	"context"
-	"riskcontral/internal/consts"
 	"riskcontral/internal/model/entity"
 
-	"github.com/gogf/gf/v2/errors/gerror"
 	"github.com/gogf/gf/v2/frame/g"
 )
 
@@ -41,6 +39,6 @@ func (s *sTFA) TFAUpMail(ctx context.Context, tfaInfo *entity.Tfa, mail string, 
 		risk.AddVerifier(verifier)
 	}
 	//
-	return riskSerial, gerror.NewCode(consts.CodePerformRiskNeedVerification)
+	return riskSerial, nil
 	//
 }

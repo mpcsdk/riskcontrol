@@ -22,10 +22,6 @@ func (e *errCode) SetDetail(detail interface{}) *errCode {
 	return e
 }
 
-func newErr(code int, message string) *errCode {
-	return &errCode{code, message, map[string]interface{}{}}
-}
-
 type errDetail struct {
 	K string
 	V interface{}

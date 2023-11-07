@@ -2,10 +2,7 @@ package tfa
 
 import (
 	"context"
-	"riskcontral/internal/consts"
 	"riskcontral/internal/model/entity"
-
-	"github.com/gogf/gf/v2/errors/gerror"
 )
 
 func (s *sTFA) TFAUpPhone(ctx context.Context, tfaInfo *entity.Tfa, phone string, riskSerial string) (string, error) {
@@ -35,10 +32,9 @@ func (s *sTFA) TFAUpPhone(ctx context.Context, tfaInfo *entity.Tfa, phone string
 	// //
 	// ///tfa mailif
 	if tfaInfo.Mail != "" {
-		verifier := newVerifierMail(RiskKind_BindPhone, tfaInfo.Mail)
+		verifier := newVerifierMail(RiskKind_UpPhone, tfaInfo.Mail)
 		risk.AddVerifier(verifier)
 	}
 	///
-	return riskSerial, gerror.NewCode(consts.CodePerformRiskNeedVerification)
-
+	return riskSerial, nil
 }

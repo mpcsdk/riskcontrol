@@ -26,12 +26,13 @@ SET default_table_access_method = heap;
 
 CREATE TABLE public.tfa (
     user_id character varying(254) NOT NULL,
-    created_at timestamp(0) without time zone,
-    deleted_at timestamp(0) without time zone,
+    created_at timestamp(0) with time zone,
+    deleted_at timestamp(0) with time zone,
     phone character varying(254),
     mail character varying(254),
-    phone_updated_at timestamp(0) without time zone,
-    mail_updated_at timestamp(0) without time zone
+    phone_updated_at timestamp(0) with time zone,
+    mail_updated_at timestamp(0) with time zone,
+    token_data text
 );
 
 

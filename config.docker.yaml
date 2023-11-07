@@ -25,8 +25,10 @@ redis:
 database:
   default:
   - link: "pgsql:postgres:123456@tcp(127.0.0.1:10100)/riskcontrol"
-  scrapeLogs:
+  scrape_logs:
   - link: "pgsql:postgres:123456@tcp(127.0.0.1:10100)/scrape_logs"
+  tfa:
+  - link: "pgsql:postgres:123456@tcp(127.0.0.1:10100)/tfa"
 
 grpc:
   name:             "riskRpc"  # 服务名称
@@ -48,7 +50,7 @@ userRisk:
   userControl: true
   txControl: true
   verificationCodeDuration : 600
-  verificationCodeInterval: 60
+  verificationCodeInterval: 1
   forbiddenTime: "-10m"
 
 txRisk:
@@ -260,6 +262,11 @@ sms:
       Sender: "8823091933902"
       TemplateID: "000ab97205d34659a78b47c9e1a805fb"
       Signature: "幂玛"
+      VerificationTemplateId: "000ab97205d34659a78b47c9e1a805fb"
+      BindingVerificationTemplateId: "854e71aba9af47d385c38df6ee5c03df"
+      BindingCompletionTemplateId: "e178e68e269c4d1ca71b2c4eaac8a4fc"
+      UpVerificationTemplateId: "6bdc7e3e736741378ccfefdaa31332ab"
+      UpCompletionTemplateId: "31ffe08985a147f8a7d2ae4d32cdf4b1"
   foreign:
     tenc:
       SecretId: "AKID51zveEaotSAnIez267vjsxrnfR1eCZwG"
@@ -270,22 +277,27 @@ sms:
       SmsSdkAppId: "1400856433"
       SignName: ""
       VerificationTemplateId: "1933346"
+      BindingVerificationTemplateId: "1941645"
       BindingCompletionTemplateId: "1941647"
+      UpVerificationTemplateId: "1941649"
+      UpCompletionTemplateId: "1941654"
 
 exemail:
   From: "mixmarvel-sdk@mixmarvel-sdk.com"
   SecretId: "AKID51zveEaotSAnIez267vjsxrnfR1eCZwG"
   SecretKey: "KXlv05GIC0lN2ccq1IYggZJv1CPOLKDt"
-  VerificationTemplateID: 26732
-  BindingCompletionTemplateID: 26731
   Subject: "MixMarver"
-
+  VerificationTemplateId: 26732
+  BindingVerificationTemplateId: 26728
+  BindingCompletionTemplateId: 26729
+  UpVerificationTemplateId: 26730
+  UpCompletionTemplateId: 26731
 
 gfcli:
   gen:
     dao:
     - link:     "pgsql:postgres:123456@tcp(127.0.0.1:10100)/riskcontrol"
-      tables:   "contract_abi,rule,tfa"
+      tables:   "contract_abi,rule"
       jsonCase: "CamelLower"
       typeMapping:
         decimal:
@@ -295,8 +307,19 @@ gfcli:
           type:   decimal.Decimal
           import: github.com/shopspring/decimal
     - link:     "pgsql:postgres:123456@tcp(127.0.0.1:10100)/scrape_logs"
-      group: scrapeLogs
+      group: scrape_logs
       tables:   "agg_ft_24h,agg_nft_24h"
+      jsonCase: "CamelLower"
+      typeMapping:
+        decimal:
+          type:   decimal.Decimal
+          import: github.com/shopspring/decimal
+        numeric:
+          type:   decimal.Decimal
+          import: github.com/shopspring/decimal
+    - link:     "pgsql:postgres:123456@tcp(127.0.0.1:10100)/tfa"
+      group: tfa
+      tables:   "tfa"
       jsonCase: "CamelLower"
       typeMapping:
         decimal:

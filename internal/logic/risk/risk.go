@@ -51,16 +51,19 @@ func (s *sRisk) RiskTxs(ctx context.Context, userId string, signTx string) (stri
 		///
 		if info.MailUpdatedAt != nil {
 			befor24h := gtime.Now().Add(BeforH24)
-			g.Log().Notice(ctx, "PerformRiskTxs:", "befor24h:", befor24h.String(), "info.MailUpdatedAt:", info.MailUpdatedAt.String())
-			if !s.isBefor(info.MailUpdatedAt, befor24h) {
+			befor := info.MailUpdatedAt.Before(befor24h)
+			g.Log().Notice(ctx, "PerformRiskTxs:", "info.MailUpdatedAt:", info.MailUpdatedAt.String(), "befor24h:", befor24h.String(), "befor:", befor)
+			if !befor {
 				return "", consts.RiskCodeForbidden
 			}
 		}
 		///
 		if info.PhoneUpdatedAt != nil {
 			befor24h := gtime.Now().Add(BeforH24)
-			g.Log().Notice(ctx, "PerformRiskTxs:", "befor24h:", befor24h.String(), "info.PhoneUpdatedAt:", info.PhoneUpdatedAt.String())
-			if !s.isBefor(info.PhoneUpdatedAt, befor24h) {
+			befor := info.PhoneUpdatedAt.Before(befor24h)
+			// befor := info.PhoneUpdatedAt.Before(befor24h.Time())
+			g.Log().Notice(ctx, "PerformRiskTxs:", "info.PhoneUpdatedAt:", info.PhoneUpdatedAt.String(), "befor24h:", befor24h.String(), "befor:", befor)
+			if !befor {
 				return "", consts.RiskCodeForbidden
 				///, nil
 			}

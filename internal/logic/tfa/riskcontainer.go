@@ -68,6 +68,7 @@ func (s *riskPenddingContainer) NewRiskPendding(
 	risk := s.GetRiskVerify(userId, riskSerial)
 	if risk == nil {
 		risk = &riskVerifyPendding{
+			RiskKind:   riskKind,
 			UserId:     userId,
 			RiskSerial: riskSerial,
 			verifier:   map[VerifyKind]IVerifier{},

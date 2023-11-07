@@ -11,12 +11,6 @@ import (
 	"github.com/mpcsdk/mpcCommon/mpccode"
 )
 
-func (s *sRisk) isBefor(upAt *gtime.Time, befor *gtime.Time) bool {
-	if upAt.Before(befor) {
-		return true
-	}
-	return false
-}
 func (s *sRisk) checkTFAUpPhone(ctx context.Context, userId string) (int32, error) {
 	/////
 	info, err := service.TFA().TFAInfo(ctx, userId)
@@ -39,13 +33,14 @@ func (s *sRisk) checkTFAUpPhone(ctx context.Context, userId string) (int32, erro
 	}
 
 	befor24h := gtime.Now().Add(BeforH24)
+	g.Log().Notice(ctx, "checkTFAUpPhone check phoneUpTime:",
+		"userId:", userId,
+		"info:", info,
+		"info.PhoneUpdatedAt:", info.PhoneUpdatedAt.Local(),
+		"beforAt:", befor24h,
+	)
 	if info.PhoneUpdatedAt.Before(befor24h) {
-		g.Log().Notice(ctx, "checkTFAUpPhone check phoneUpTime:",
-			"userId:", userId,
-			"info:", info,
-			"info.PhoneUpdatedAt:", info.PhoneUpdatedAt,
-			"beforAt:", befor24h,
-		)
+		// if befor24h.Before(info.PhoneUpdatedAt) {
 		return consts.RiskCodeNeedVerification, nil
 	}
 	return consts.RiskCodeForbidden, nil
@@ -72,7 +67,6 @@ func (s *sRisk) checkTfaUpMail(ctx context.Context, userId string) (int32, error
 		return consts.RiskCodeNeedVerification, nil
 	}
 	befor24h := gtime.Now().Add(BeforH24)
-
 	if info.MailUpdatedAt.Before(befor24h) {
 		g.Log().Notice(ctx, "checkTfaUpMail notuptime :",
 			"userId:", userId,
