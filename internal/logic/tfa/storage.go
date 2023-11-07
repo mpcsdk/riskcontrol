@@ -44,9 +44,9 @@ func (s *sTFA) recordPhone(ctx context.Context, userId, phone string, phoneExist
 	}
 
 }
-func (s *sTFA) recordMail(ctx context.Context, userId, mail string, mailExists bool) error {
+func (s *sTFA) recordMail(ctx context.Context, userId, mail string, upMail bool) error {
 
-	if !mailExists {
+	if !upMail {
 		err := service.DB().UpdateTfaInfo(ctx, userId, &do.Tfa{
 			UserId: userId,
 			Mail:   mail,

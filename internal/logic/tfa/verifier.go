@@ -4,12 +4,12 @@ import (
 	"context"
 	"errors"
 	"fmt"
-	"riskcontral/internal/consts"
 	"riskcontral/internal/model"
 	"riskcontral/internal/service"
 
 	"github.com/gogf/gf/v2/errors/gerror"
 	"github.com/gogf/gf/v2/os/gctx"
+	"github.com/mpcsdk/mpcCommon/mpccode"
 )
 
 // //
@@ -155,7 +155,7 @@ func (s *verifierPhone) Verify(verifierCode *model.VerifyCode) (RiskKind, error)
 		return "", nil
 	} else {
 		s.verified = false
-		return VerifierKind_Phone, gerror.NewCode(consts.CodeRiskVerifyPhoneInvalid)
+		return VerifierKind_Phone, gerror.NewCode(mpccode.CodeRiskVerifyPhoneInvalid)
 	}
 	return "", nil
 }
@@ -211,7 +211,7 @@ func (s *verifierMail) Verify(verifierCode *model.VerifyCode) (RiskKind, error) 
 		return "", nil
 	} else {
 		s.verified = false
-		return VerifierKind_Phone, gerror.NewCode(consts.CodeRiskVerifyPhoneInvalid)
+		return VerifierKind_Phone, gerror.NewCode(mpccode.CodeRiskVerifyPhoneInvalid)
 	}
 }
 func (s *verifierMail) IsDone() bool {

@@ -3,14 +3,16 @@ package risk
 import (
 	"context"
 	"riskcontral/internal/config"
-	"riskcontral/internal/consts"
-	"riskcontral/internal/consts/conrisk"
+	"riskcontral/internal/model"
+	"riskcontral/internal/model/entity"
 	"riskcontral/internal/service"
+	"sync"
 	"time"
 
 	"github.com/gogf/gf/v2/frame/g"
 	"github.com/gogf/gf/v2/os/gtime"
 	"github.com/mpcsdk/mpcCommon/ethtx/analzyer"
+	"github.com/mpcsdk/mpcCommon/mpccode"
 	"github.com/mpcsdk/mpcCommon/mpcmodel"
 	"github.com/mpcsdk/mpcCommon/rand"
 )
@@ -22,15 +24,24 @@ type sRisk struct {
 	////
 	userControl bool
 	txControl   bool
+	////
+
+	riskStatLock sync.Mutex
+	riskStat     map[string]*model.RiskStat
+	///
 }
 
 func (s *sRisk) RiskTxs(ctx context.Context, userId string, signTx string) (string, int32) {
 	///
 	if !s.txControl {
-		return "", consts.RiskCodePass
+		return "", mpccode.RiskCodePass
 	}
 	///
 	riskserial := rand.GenNewSid()
+	s.riskStat[riskserial] = &model.RiskStat{
+		Kind: model.Kind_RiskTx,
+		Type: signTx,
+	}
 	///
 	code, err := s.checkTxs(ctx, signTx)
 	if err != nil {
@@ -40,13 +51,13 @@ func (s *sRisk) RiskTxs(ctx context.Context, userId string, signTx string) (stri
 	}
 	/////
 	switch code {
-	case consts.RiskCodePass, consts.RiskCodeNeedVerification:
+	case mpccode.RiskCodePass, mpccode.RiskCodeNeedVerification:
 		////if pass, chech tfa forbiddent
 		info, err := service.TFA().TFAInfo(ctx, userId)
 		if err != nil || info == nil {
 			g.Log().Warning(ctx, "PerformRiskTxs:", "userId:", userId)
 			g.Log().Errorf(ctx, "%+v", err)
-			return "", consts.RiskCodeError
+			return "", mpccode.RiskCodeError
 		}
 		///
 		if info.MailUpdatedAt != nil {
@@ -54,7 +65,7 @@ func (s *sRisk) RiskTxs(ctx context.Context, userId string, signTx string) (stri
 			befor := info.MailUpdatedAt.Before(befor24h)
 			g.Log().Notice(ctx, "PerformRiskTxs:", "info.MailUpdatedAt:", info.MailUpdatedAt.String(), "befor24h:", befor24h.String(), "befor:", befor)
 			if !befor {
-				return "", consts.RiskCodeForbidden
+				return "", mpccode.RiskCodeForbidden
 			}
 		}
 		///
@@ -64,56 +75,77 @@ func (s *sRisk) RiskTxs(ctx context.Context, userId string, signTx string) (stri
 			// befor := info.PhoneUpdatedAt.Before(befor24h.Time())
 			g.Log().Notice(ctx, "PerformRiskTxs:", "info.PhoneUpdatedAt:", info.PhoneUpdatedAt.String(), "befor24h:", befor24h.String(), "befor:", befor)
 			if !befor {
-				return "", consts.RiskCodeForbidden
+				return "", mpccode.RiskCodeForbidden
 				///, nil
 			}
 		}
 		///
 		return riskserial, code
-	case consts.RiskCodeForbidden:
-		return riskserial, consts.RiskCodeForbidden
-	case consts.RiskCodeError:
-		return riskserial, consts.RiskCodeError
-	case consts.RiskCodeNoRiskControl:
-		return riskserial, consts.RiskCodePass
+	case mpccode.RiskCodeForbidden:
+		return riskserial, mpccode.RiskCodeForbidden
+	case mpccode.RiskCodeError:
+		return riskserial, mpccode.RiskCodeError
+	case mpccode.RiskCodeNoRiskControl:
+		return riskserial, mpccode.RiskCodePass
 	default:
 		g.Log().Error(ctx, "PerformRiskTxs:", "code:", code)
-		return riskserial, consts.RiskCodeError
+		return riskserial, mpccode.RiskCodeError
 	}
 }
 
-func (s *sRisk) RiskTFA(ctx context.Context, userId string, riskData *conrisk.RiskTfa) (string, int32) {
+func (s *sRisk) RiskTFA(ctx context.Context, tfaInfo *entity.Tfa, riskData *model.RiskTfa) (string, int32) {
 	if !s.userControl {
-		return "", consts.RiskCodePass
+		return "", mpccode.RiskCodePass
 	}
 	//
 	riskserial := rand.GenNewSid()
+	s.riskStat[riskserial] = &model.RiskStat{
+		Kind: model.Kind_RiskTfa,
+		Type: riskData.Type,
+	}
 	///
-	code := consts.RiskCodePass
+	code := mpccode.RiskCodePass
 	var err error
 	///
-	switch riskData.Kind {
-	case consts.KEY_TFAKindUpPhone:
-		code, err = s.checkTFAUpPhone(ctx, userId)
-	case consts.KEY_TFAKindUpMail:
-		code, err = s.checkTfaUpMail(ctx, userId)
-	case consts.KEY_TFAKindCreate:
-		code, err = s.checkTfaCreate(ctx, userId)
+	switch riskData.Type {
+	case model.Type_TfaUpdatePhone:
+		code, err = s.checkTfaUpPhone(ctx, tfaInfo)
+	case model.Type_TfaUpdateMail:
+		code, err = s.checkTfaUpMail(ctx, tfaInfo)
+	case model.Type_TfaBindPhone:
+		code, err = s.checkTfaBindPhone(ctx, tfaInfo)
+	case model.Type_TfaBindMail:
+		code, err = s.checkTfaBindMail(ctx, tfaInfo)
 	default:
-		g.Log().Error(ctx, "PerformRiskTFA:", "kind:", riskData.Kind, "not support")
-		return riskserial, consts.RiskCodeError
+		g.Log().Error(ctx, "RiskTFA:", "kind:", riskData.Type, "not support")
+		return riskserial, mpccode.RiskCodeError
 	}
 	if err != nil {
-		g.Log().Warning(ctx, "PerformRiskTFA:", "userId:", userId, "riskDAta:", riskData)
+		g.Log().Warning(ctx, "RiskTFA:", "tfaInfo:", tfaInfo, "riskDAta:", riskData)
 		g.Log().Errorf(ctx, "%+v", err)
-		return riskserial, consts.RiskCodeError
+		return riskserial, mpccode.RiskCodeError
 		///, err
 	}
 	///
-	// service.Cache().Set(ctx, riskserial+consts.KEY_RiskUId, userId, 0)
 	return riskserial, code
 }
 
+func (s *sRisk) GetRiskStat(ctx context.Context, riskSerial string) *model.RiskStat {
+	s.riskStatLock.Lock()
+	defer s.riskStatLock.Unlock()
+	if r, ok := s.riskStat[riskSerial]; ok {
+		return r
+	}
+	return nil
+}
+
+func (s *sRisk) DelRiskStat(ctx context.Context, riskSerial string) {
+	s.riskStatLock.Lock()
+	defer s.riskStatLock.Unlock()
+	delete(s.riskStat, riskSerial)
+}
+
+// ///
 var BeforH24 time.Duration
 
 func new() *sRisk {
@@ -122,6 +154,7 @@ func new() *sRisk {
 		analzer:    analzyer.NewAnalzer(),
 		ftruleMap:  map[string]*mpcmodel.FtRule{},
 		nftruleMap: map[string]*mpcmodel.NftRule{},
+		riskStat:   map[string]*model.RiskStat{},
 	}
 	///
 	s.ftruleMap, _ = service.DB().GetFtRules(context.TODO())

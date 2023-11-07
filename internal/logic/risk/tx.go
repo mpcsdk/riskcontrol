@@ -2,7 +2,6 @@ package risk
 
 import (
 	"context"
-	"riskcontral/internal/consts"
 	"strings"
 
 	"github.com/gogf/gf/v2/errors/gerror"
@@ -14,7 +13,7 @@ import (
 func (s *sRisk) checkTxs(ctx context.Context, signTxStr string) (int32, error) {
 	signTx, err := s.analzer.SignTx(signTxStr)
 	if err != nil {
-		return consts.RiskCodeError, err
+		return mpccode.RiskCodeError, err
 	}
 
 	for _, tx := range signTx.Txs {
@@ -24,13 +23,13 @@ func (s *sRisk) checkTxs(ctx context.Context, signTxStr string) (int32, error) {
 				mpccode.ErrDetail("address", signTx.Address),
 				mpccode.ErrDetail("tx", tx),
 			))
-			return consts.RiskCodeError, err
+			return mpccode.RiskCodeError, err
 		}
-		if code != consts.RiskCodePass {
+		if code != mpccode.RiskCodePass {
 			return code, nil
 		}
 	}
-	return consts.RiskCodePass, nil
+	return mpccode.RiskCodePass, nil
 }
 
 func (s *sRisk) checkTx(ctx context.Context, from string, riskSignTx *analzyer.SignTxData) (int32, error) {
@@ -45,15 +44,15 @@ func (s *sRisk) checkTx(ctx context.Context, from string, riskSignTx *analzyer.S
 			g.Log().Warning(ctx, "checkTx:", "riskSignTx:", riskSignTx)
 			g.Log().Warning(ctx, "checkTx:", "ftrule:", ftrule)
 			g.Log().Errorf(ctx, "%+v", err)
-			return consts.RiskCodeNeedVerification, nil
+			return mpccode.RiskCodeNeedVerification, nil
 		}
 		if ethtx.MethodName != ftrule.MethodName {
 			g.Log().Warning(ctx, "checkTx:", "methodName unmath:", ethtx.MethodName, ftrule.MethodName)
-			return consts.RiskCodeNoRiskControl, nil
+			return mpccode.RiskCodeNoRiskControl, nil
 		}
 		if ethtx.Value.Cmp(ftrule.Threshold) > 0 {
 			g.Log().Notice(ctx, "riskTx.Value > threshold:", ethtx, ftrule.Threshold.String())
-			return consts.RiskCodeNeedVerification, nil
+			return mpccode.RiskCodeNeedVerification, nil
 		}
 		///
 		cnt, err := rule_ftcnt(ctx, from, ftrule.Contract, ftrule.MethodName)
@@ -63,7 +62,7 @@ func (s *sRisk) checkTx(ctx context.Context, from string, riskSignTx *analzyer.S
 				mpccode.ErrDetail("contract", ftrule.Contract),
 				mpccode.ErrDetail("methodName", ftrule.MethodName),
 			))
-			return consts.RiskCodeError, err
+			return mpccode.RiskCodeError, err
 		}
 
 		cnt = cnt.Add(cnt, ethtx.Value)
@@ -71,12 +70,12 @@ func (s *sRisk) checkTx(ctx context.Context, from string, riskSignTx *analzyer.S
 			g.Log().Notice(ctx, "riskTx.Value > threshold:", "ethtx:", ethtx,
 				"txcnt:", cnt.String(),
 				"threshold:", ftrule.Threshold.String())
-			return consts.RiskCodeNeedVerification, nil
+			return mpccode.RiskCodeNeedVerification, nil
 		}
 		g.Log().Notice(ctx, "riskTx.Value < threshold:", "ethtx:", ethtx,
 			"txcnt:", cnt.String(),
 			"threshold:", ftrule.Threshold.String())
-		return consts.RiskCodePass, nil
+		return mpccode.RiskCodePass, nil
 	} else if nftrule, ok := s.nftruleMap[riskSignTx.Target]; ok {
 		ethtx, err := s.analzer.AnalzyTxDataNFT(
 			riskSignTx.Target,
@@ -86,11 +85,11 @@ func (s *sRisk) checkTx(ctx context.Context, from string, riskSignTx *analzyer.S
 			g.Log().Warning(ctx, "checkTx:", "riskSignTx:", riskSignTx)
 			g.Log().Warning(ctx, "checkTx:", "nftrule:", nftrule)
 			g.Log().Errorf(ctx, "%+v", err)
-			return consts.RiskCodeNeedVerification, nil
+			return mpccode.RiskCodeNeedVerification, nil
 		}
 		if ethtx.MethodName != nftrule.MethodName {
 			g.Log().Warning(ctx, "checkTx:", "methodName unmath:", ethtx.MethodName, nftrule.MethodName)
-			return consts.RiskCodeNoRiskControl, nil
+			return mpccode.RiskCodeNoRiskControl, nil
 		}
 		//nft
 		cnt, err := rule_nftcnt(ctx, from, nftrule.Contract, nftrule.MethodName)
@@ -100,7 +99,7 @@ func (s *sRisk) checkTx(ctx context.Context, from string, riskSignTx *analzyer.S
 				mpccode.ErrDetail("contract", nftrule.Contract),
 				mpccode.ErrDetail("methodName", nftrule.MethodName),
 			))
-			return consts.RiskCodeError, err
+			return mpccode.RiskCodeError, err
 		}
 
 		cnt += 1
@@ -108,14 +107,14 @@ func (s *sRisk) checkTx(ctx context.Context, from string, riskSignTx *analzyer.S
 			g.Log().Notice(ctx, "riskTx.Value > threshold:", "ethtx:", ethtx,
 				"txcnt:", cnt,
 				"threshold:", nftrule.Threshold)
-			return consts.RiskCodeNeedVerification, nil
+			return mpccode.RiskCodeNeedVerification, nil
 		}
 		g.Log().Notice(ctx, "checTx < threshold:", "ethtx:", ethtx,
 			"txcnt:", cnt,
 			"threshold:", nftrule.Threshold)
-		return consts.RiskCodePass, nil
+		return mpccode.RiskCodePass, nil
 
 	}
 	g.Log().Warning(ctx, "checkTx unkonwo contract:", riskSignTx)
-	return consts.RiskCodeNoRiskControl, nil
+	return mpccode.RiskCodeNoRiskControl, nil
 }

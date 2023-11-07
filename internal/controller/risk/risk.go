@@ -3,7 +3,6 @@ package risk
 import (
 	"context"
 	v1 "riskcontral/api/risk/v1"
-	"riskcontral/internal/consts"
 	"riskcontral/internal/model"
 	"riskcontral/internal/service"
 
@@ -13,6 +12,7 @@ import (
 	"github.com/gogf/gf/v2/frame/g"
 	"github.com/gogf/gf/v2/net/gtrace"
 	"github.com/golang/protobuf/ptypes/empty"
+	"github.com/mpcsdk/mpcCommon/mpccode"
 )
 
 type Controller struct {
@@ -92,21 +92,21 @@ func (*Controller) PerformRiskTxs(ctx context.Context, req *v1.TxRiskReq) (res *
 	defer span.End()
 	///
 	serial, code := service.Risk().RiskTxs(ctx, req.UserId, req.SignTxData)
-	if code == consts.RiskCodeError {
+	if code == mpccode.RiskCodeError {
 		return &v1.TxRiskRes{
 			Ok: code,
 		}, nil
-		// gerror.NewCode(consts.CodePerformRiskError)
+		// gerror.NewCode(mpccode.CodePerformRiskError)
 	}
 	///: pass or forbidden
 	//
 
-	if code == consts.RiskCodePass {
+	if code == mpccode.RiskCodePass {
 		return &v1.TxRiskRes{
 			Ok: code,
 		}, nil
 	}
-	if code == consts.RiskCodeForbidden {
+	if code == mpccode.RiskCodeForbidden {
 		return &v1.TxRiskRes{
 			Ok: code,
 		}, nil
@@ -117,7 +117,7 @@ func (*Controller) PerformRiskTxs(ctx context.Context, req *v1.TxRiskReq) (res *
 	kinds, err := service.TFA().TFATx(ctx, req.UserId, serial)
 	if err != nil {
 		g.Log().Errorf(ctx, "%+v", err)
-		return nil, gerror.NewCode(consts.CodePerformRiskError)
+		return nil, gerror.NewCode(mpccode.CodePerformRiskError)
 	}
 	///
 	g.Log().Notice(ctx, "PerformRiskTFA:", req.UserId, serial, kinds)
@@ -136,7 +136,7 @@ func (*Controller) PerformRiskTFA(ctx context.Context, req *v1.TFARiskReq) (res 
 func (*Controller) PerformAllAbi(ctx context.Context, req *v1.AllAbiReq) (res *v1.AllAbiRes, err error) {
 	rst, err := service.DB().GetAbiAll(ctx)
 	if err != nil {
-		return nil, gerror.NewCode(consts.CodeInternalError)
+		return nil, gerror.NewCode(mpccode.CodeInternalError)
 	}
 	res = &v1.AllAbiRes{
 		Abis: map[string]string{},
@@ -152,7 +152,7 @@ func (*Controller) PerformAllNftRules(ctx context.Context, req *v1.NftRulesReq) 
 	rst, err := service.DB().GetNftRules(ctx)
 	if err != nil {
 		g.Log().Errorf(ctx, "%+v", err)
-		return nil, gerror.NewCode(consts.CodeInternalError)
+		return nil, gerror.NewCode(mpccode.CodeInternalError)
 	}
 	res = &v1.NftRulesRes{
 		NftRules: map[string]*v1.NftRules{},
@@ -186,7 +186,7 @@ func (*Controller) PerformAllFtRules(ctx context.Context, req *v1.FtRulesReq) (r
 	rst, err := service.DB().GetFtRules(ctx)
 	if err != nil {
 		g.Log().Errorf(ctx, "%+v", err)
-		return nil, gerror.NewCode(consts.CodeInternalError)
+		return nil, gerror.NewCode(mpccode.CodeInternalError)
 	}
 	res = &v1.FtRulesRes{
 		FtRules: map[string]*v1.Ftrules{},

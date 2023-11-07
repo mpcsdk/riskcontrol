@@ -6,9 +6,9 @@ import (
 	"github.com/gogf/gf/v2/errors/gerror"
 	"github.com/gogf/gf/v2/frame/g"
 	"github.com/gogf/gf/v2/net/gtrace"
+	"github.com/mpcsdk/mpcCommon/mpccode"
 
 	v1 "riskcontral/api/tfa/v1"
-	"riskcontral/internal/consts"
 	"riskcontral/internal/model"
 	"riskcontral/internal/service"
 )
@@ -24,7 +24,7 @@ func (c *ControllerV1) VerifyCode(ctx context.Context, req *v1.VerifyCodeReq) (r
 	// ///
 	userInfo, err := service.UserInfo().GetUserInfo(ctx, req.Token)
 	if err != nil {
-		return nil, gerror.NewCode(consts.CodeTFANotExist)
+		return nil, gerror.NewCode(mpccode.CodeTFANotExist)
 	}
 
 	code := &model.VerifyCode{

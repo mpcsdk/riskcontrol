@@ -3,7 +3,6 @@ package tfa
 import (
 	"context"
 	"riskcontral/internal/config"
-	"riskcontral/internal/consts"
 	"riskcontral/internal/model/do"
 	"riskcontral/internal/service"
 
@@ -106,12 +105,12 @@ func (s *sTFA) TFATx(ctx context.Context, userId string, riskSerial string) ([]s
 	if err != nil {
 		g.Log().Warning(ctx, "TFATx:", "userid:", userId, "riskSerial:", riskSerial)
 		g.Log().Errorf(ctx, "%+v", err)
-		return nil, gerror.NewCode(consts.CodeInternalError)
+		return nil, gerror.NewCode(mpccode.CodeInternalError)
 	}
 	if info == nil {
 		g.Log().Warning(ctx, "TFATx:", "userid:", userId, "riskSerial:", riskSerial)
 		g.Log().Errorf(ctx, "%+v", err)
-		return nil, gerror.NewCode(consts.CodeTFANotExist)
+		return nil, gerror.NewCode(mpccode.CodeTFANotExist)
 	}
 
 	//

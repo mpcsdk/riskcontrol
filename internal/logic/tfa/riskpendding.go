@@ -2,7 +2,6 @@ package tfa
 
 import (
 	"context"
-	"riskcontral/internal/consts"
 	"riskcontral/internal/model"
 
 	"github.com/gogf/gf/v2/errors/gerror"
@@ -101,7 +100,7 @@ func (s *riskVerifyPendding) DoBefor(ctx context.Context) (string, error) {
 func (s *riskVerifyPendding) DoAfter(ctx context.Context) (string, error) {
 	for _, verifer := range s.verifier {
 		if !verifer.IsDone() {
-			return string(verifer.VerifyKind()), gerror.NewCode(consts.CodeRiskVerifyCodeInvalid)
+			return string(verifer.VerifyKind()), gerror.NewCode(mpccode.CodeRiskVerifyCodeInvalid)
 		}
 	}
 	//done

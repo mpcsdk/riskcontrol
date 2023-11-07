@@ -2,87 +2,68 @@ package risk
 
 import (
 	"context"
-	"riskcontral/internal/consts"
-	"riskcontral/internal/service"
+	"riskcontral/internal/model/entity"
 
-	"github.com/gogf/gf/v2/errors/gerror"
 	"github.com/gogf/gf/v2/frame/g"
 	"github.com/gogf/gf/v2/os/gtime"
 	"github.com/mpcsdk/mpcCommon/mpccode"
 )
 
-func (s *sRisk) checkTFAUpPhone(ctx context.Context, userId string) (int32, error) {
+func (s *sRisk) checkTfaUpPhone(ctx context.Context, tfaInfo *entity.Tfa) (int32, error) {
 	/////
-	info, err := service.TFA().TFAInfo(ctx, userId)
-	if err != nil || info == nil {
-		err = gerror.Wrap(err, mpccode.ErrDetails(
-			mpccode.ErrDetail("userid", userId),
-		))
-		return consts.RiskCodeError, err
+	if tfaInfo == nil {
+		g.Log().Warning(ctx, "checkTFAUpPhone userinfo not exists:", tfaInfo)
+		return mpccode.RiskCodeNeedVerification, nil
 	}
-	// if info == nil {
-	// 	g.Log().Warning(ctx, "checkTFAUpPhone userinfo not exists:", userId)
-	// 	return consts.RiskCodeNeedVerification, nil
-	// }
-	if info.PhoneUpdatedAt == nil {
+	if tfaInfo.PhoneUpdatedAt == nil {
 		g.Log().Notice(ctx, "checkTFAUpPhone notuptime :",
-			"userId:", userId,
-			"info:", info,
-			"info.PhoneUpdatedAt:", info.PhoneUpdatedAt)
-		return consts.RiskCodeNeedVerification, nil
+			"tfaInfo:", tfaInfo,
+			"info.PhoneUpdatedAt:", tfaInfo.PhoneUpdatedAt)
+		return mpccode.RiskCodeNeedVerification, nil
 	}
 
 	befor24h := gtime.Now().Add(BeforH24)
 	g.Log().Notice(ctx, "checkTFAUpPhone check phoneUpTime:",
-		"userId:", userId,
-		"info:", info,
-		"info.PhoneUpdatedAt:", info.PhoneUpdatedAt.Local(),
+		"tfaInfo:", tfaInfo,
+		"info.PhoneUpdatedAt:", tfaInfo.PhoneUpdatedAt.Local(),
 		"beforAt:", befor24h,
 	)
-	if info.PhoneUpdatedAt.Before(befor24h) {
-		// if befor24h.Before(info.PhoneUpdatedAt) {
-		return consts.RiskCodeNeedVerification, nil
+	if tfaInfo.PhoneUpdatedAt.Before(befor24h) {
+		return mpccode.RiskCodeNeedVerification, nil
 	}
-	return consts.RiskCodeForbidden, nil
+	return mpccode.RiskCodeForbidden, nil
 }
 
-func (s *sRisk) checkTfaUpMail(ctx context.Context, userId string) (int32, error) {
-	/////
-	info, err := service.TFA().TFAInfo(ctx, userId)
-	if err != nil || info == nil {
-		err = gerror.Wrap(err, mpccode.ErrDetails(
-			mpccode.ErrDetail("userid", userId),
-		))
-		return consts.RiskCodeError, err
+func (s *sRisk) checkTfaUpMail(ctx context.Context, tfaInfo *entity.Tfa) (int32, error) {
+
+	if tfaInfo == nil {
+		g.Log().Warning(ctx, "checkTfaUpMail userinfo not exists:", tfaInfo)
+		return mpccode.RiskCodeNeedVerification, nil
 	}
-	if info == nil {
-		g.Log().Warning(ctx, "checkTfaUpMail userinfo not exists:", userId)
-		return consts.RiskCodeNeedVerification, nil
-	}
-	if info.MailUpdatedAt == nil {
+	if tfaInfo.MailUpdatedAt == nil {
 		g.Log().Notice(ctx, "checkTfaUpMail notuptime :",
-			"userId:", userId,
-			"info:", info,
-			"info.PhoneUpdatedAt:", info.PhoneUpdatedAt)
-		return consts.RiskCodeNeedVerification, nil
+			"tfaInfo:", tfaInfo,
+			"info.PhoneUpdatedAt:", tfaInfo.PhoneUpdatedAt)
+		return mpccode.RiskCodeNeedVerification, nil
 	}
 	befor24h := gtime.Now().Add(BeforH24)
-	if info.MailUpdatedAt.Before(befor24h) {
+	if tfaInfo.MailUpdatedAt.Before(befor24h) {
 		g.Log().Notice(ctx, "checkTfaUpMail notuptime :",
-			"userId:", userId,
-			"info:", info,
-			"info.PhoneUpdatedAt:", info.PhoneUpdatedAt)
-		return consts.RiskCodeNeedVerification, nil
+			"tfaInfo:", tfaInfo,
+			"info.PhoneUpdatedAt:", tfaInfo.PhoneUpdatedAt)
+		return mpccode.RiskCodeNeedVerification, nil
 	}
 	g.Log().Notice(ctx, "checkTfaUpMail check phoneUpTime:",
-		"userId:", userId,
-		"info:", info,
-		"info.PhoneUpdatedAt:", info.PhoneUpdatedAt,
+		"tfaInfo:", tfaInfo,
+		"info.PhoneUpdatedAt:", tfaInfo.PhoneUpdatedAt,
 		"beforAt:", befor24h,
 	)
-	return consts.RiskCodeForbidden, nil
+	return mpccode.RiskCodeForbidden, nil
 }
 
-func (s *sRisk) checkTfaCreate(ctx context.Context, userId string) (int32, error) {
-	return consts.RiskCodePass, nil
+func (s *sRisk) checkTfaBindPhone(ctx context.Context, tfaInfo *entity.Tfa) (int32, error) {
+	return mpccode.RiskCodePass, nil
+}
+func (s *sRisk) checkTfaBindMail(ctx context.Context, tfaInfo *entity.Tfa) (int32, error) {
+	return mpccode.RiskCodePass, nil
 }

@@ -19,7 +19,12 @@ type (
 		SendMailCode(ctx context.Context, userId string, riskSerial string) (string, error)
 		TFACreate(ctx context.Context, userId string, phone string, mail string, riskSerial string) ([]string, error)
 		TFATx(ctx context.Context, userId string, riskSerial string) ([]string, error)
-		TFAUpMail(ctx context.Context, tfaInfo *entity.Tfa, mail string, riskSerial string) (string, error)
+		TfaSetMail(ctx context.Context, tfaInfo *entity.Tfa, mail string, riskSerial string, codetype string) (string, error)
+		TfaSetPhone_mail(ctx context.Context, tfaInfo *entity.Tfa, riskSerial string, codetype string) (string, error)
+		// //
+		TfaBindMail(ctx context.Context, tfaInfo *entity.Tfa, mail string, riskSerial string) (string, error)
+		TfaUpMail(ctx context.Context, tfaInfo *entity.Tfa, mail string, riskSerial string) (string, error)
+		TFABindPhone(ctx context.Context, tfaInfo *entity.Tfa, phone string, riskSerial string) (string, error)
 		TFAUpPhone(ctx context.Context, tfaInfo *entity.Tfa, phone string, riskSerial string) (string, error)
 		VerifyCode(ctx context.Context, userId string, riskSerial string, code *model.VerifyCode) error
 	}

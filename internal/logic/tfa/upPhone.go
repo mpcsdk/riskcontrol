@@ -5,6 +5,10 @@ import (
 	"riskcontral/internal/model/entity"
 )
 
+func (s *sTFA) TFABindPhone(ctx context.Context, tfaInfo *entity.Tfa, phone string, riskSerial string) (string, error) {
+
+	return "", nil
+}
 func (s *sTFA) TFAUpPhone(ctx context.Context, tfaInfo *entity.Tfa, phone string, riskSerial string) (string, error) {
 
 	/// need verification
