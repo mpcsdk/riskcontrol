@@ -14,6 +14,7 @@ import (
 	"github.com/gogf/gf/v2/frame/g"
 	"github.com/gogf/gf/v2/net/ghttp"
 	"github.com/gogf/gf/v2/os/gcmd"
+	"github.com/mpcsdk/mpcCommon/mpccode"
 )
 
 func MiddlewareCORS(r *ghttp.Request) {
@@ -31,6 +32,10 @@ func ResponseHandler(r *ghttp.Request) {
 		res  = r.GetHandlerResponse()
 		code = gerror.Code(err)
 	)
+	if err := r.GetError(); err != nil {
+		g.Log().Errorf(context.Background(), "%+v", err)
+		code = mpccode.CodeParamInvalid
+	}
 	if code == gcode.CodeNil {
 		if err != nil {
 			code = gcode.CodeInternalError

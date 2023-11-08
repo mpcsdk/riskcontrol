@@ -21,10 +21,6 @@ func (c *ControllerV1) TfaRequest(ctx context.Context, req *v1.TfaRequestReq) (r
 		g.Log().Errorf(ctx, "%+v", err)
 		return nil, err
 	}
-	if err := g.Validator().Data(req).Run(ctx); err != nil {
-		g.Log().Warningf(ctx, "%+v", err)
-		return nil, gerror.NewCode(mpccode.CodeParamInvalid)
-	}
 	/////
 	//trace
 	ctx, span := gtrace.NewSpan(ctx, "SendMailCode")
