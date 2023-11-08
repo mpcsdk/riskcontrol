@@ -95,10 +95,7 @@ func (s *sDB) FetchTfaInfo(ctx context.Context, userId string) (*entity.Tfa, err
 		return nil, err
 	}
 	if rst.IsEmpty() {
-		err = gerror.Wrap(errEmpty, mpccode.ErrDetails(
-			mpccode.ErrDetail("aggdo", aggdo),
-		))
-		return nil, err
+		return nil, nil
 	}
 	err = rst.Struct(&data)
 	return data, err

@@ -40,7 +40,7 @@ func (c *ControllerV1) TfaRequest(ctx context.Context, req *v1.TfaRequestReq) (r
 	tfaInfo, err := service.TFA().TFAInfo(ctx, info.UserId)
 	if err != nil {
 		g.Log().Warning(ctx, "UpMail:", req, err)
-		return nil, gerror.NewCode(mpccode.CodeTokenInvalid)
+		return nil, gerror.NewCode(mpccode.CodeTFANotExist)
 	}
 	///
 	///
@@ -49,32 +49,36 @@ func (c *ControllerV1) TfaRequest(ctx context.Context, req *v1.TfaRequestReq) (r
 		if tfaInfo != nil && tfaInfo.Phone != "" {
 			return nil, gerror.NewCode(mpccode.CodeTFAExist)
 		}
-		err = service.DB().InsertTfaInfo(ctx, info.UserId, &do.Tfa{
-			UserId:    info.UserId,
-			TokenData: info,
-			CreatedAt: gtime.Now(),
-		})
-		if err != nil {
-			err = gerror.Wrap(err, mpccode.ErrDetails(
-				mpccode.ErrDetail("userId", info.UserId),
-			))
-			return nil, err
+		if tfaInfo == nil {
+			err = service.DB().InsertTfaInfo(ctx, info.UserId, &do.Tfa{
+				UserId:    info.UserId,
+				TokenData: info,
+				CreatedAt: gtime.Now(),
+			})
+			if err != nil {
+				err = gerror.Wrap(err, mpccode.ErrDetails(
+					mpccode.ErrDetail("userId", info.UserId),
+				))
+				return nil, err
+			}
 		}
 		///
 	case model.Type_TfaBindMail:
 		if tfaInfo != nil && tfaInfo.Mail != "" {
 			return nil, gerror.NewCode(mpccode.CodeTFAExist)
 		}
-		err = service.DB().InsertTfaInfo(ctx, info.UserId, &do.Tfa{
-			UserId:    info.UserId,
-			TokenData: info,
-			CreatedAt: gtime.Now(),
-		})
-		if err != nil {
-			err = gerror.Wrap(err, mpccode.ErrDetails(
-				mpccode.ErrDetail("userId", info.UserId),
-			))
-			return nil, err
+		if tfaInfo == nil {
+			err = service.DB().InsertTfaInfo(ctx, info.UserId, &do.Tfa{
+				UserId:    info.UserId,
+				TokenData: info,
+				CreatedAt: gtime.Now(),
+			})
+			if err != nil {
+				err = gerror.Wrap(err, mpccode.ErrDetails(
+					mpccode.ErrDetail("userId", info.UserId),
+				))
+				return nil, err
+			}
 		}
 		////
 	case model.Type_TfaUpdatePhone:
@@ -106,8 +110,10 @@ func (c *ControllerV1) TfaRequest(ctx context.Context, req *v1.TfaRequestReq) (r
 		return nil, gerror.NewCode(mpccode.CodePerformRiskError)
 	}
 	///
+	vl, _ := service.TFA().TfaRiskTidy(ctx, tfaInfo, riskSerial, req.CodeType)
 	res = &v1.TfaRequestRes{
 		RiskSerial: riskSerial,
+		VList:      vl,
 	}
 	return res, nil
 	///

@@ -43,21 +43,18 @@ func (s *sRisk) checkTfaUpMail(ctx context.Context, tfaInfo *entity.Tfa) (int32,
 	if tfaInfo.MailUpdatedAt == nil {
 		g.Log().Notice(ctx, "checkTfaUpMail notuptime :",
 			"tfaInfo:", tfaInfo,
-			"info.PhoneUpdatedAt:", tfaInfo.PhoneUpdatedAt)
+			"info.MailUpdatedAt:", tfaInfo.MailUpdatedAt)
 		return mpccode.RiskCodeNeedVerification, nil
 	}
 	befor24h := gtime.Now().Add(BeforH24)
-	if tfaInfo.MailUpdatedAt.Before(befor24h) {
-		g.Log().Notice(ctx, "checkTfaUpMail notuptime :",
-			"tfaInfo:", tfaInfo,
-			"info.PhoneUpdatedAt:", tfaInfo.PhoneUpdatedAt)
-		return mpccode.RiskCodeNeedVerification, nil
-	}
 	g.Log().Notice(ctx, "checkTfaUpMail check phoneUpTime:",
 		"tfaInfo:", tfaInfo,
-		"info.PhoneUpdatedAt:", tfaInfo.PhoneUpdatedAt,
+		"info.MailUpdatedAt:", tfaInfo.MailUpdatedAt,
 		"beforAt:", befor24h,
 	)
+	if tfaInfo.MailUpdatedAt.Before(befor24h) {
+		return mpccode.RiskCodeNeedVerification, nil
+	}
 	return mpccode.RiskCodeForbidden, nil
 }
 

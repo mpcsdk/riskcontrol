@@ -2,7 +2,6 @@ package v1
 
 import (
 	"github.com/gogf/gf/v2/frame/g"
-	"github.com/gogf/gf/v2/os/gtime"
 )
 
 type TFAInfoReq struct {
@@ -11,10 +10,10 @@ type TFAInfoReq struct {
 }
 type TFAInfoRes struct {
 	g.Meta      `mime:"text/html" example:"string"`
-	Phone       string      `json:"phone"`
-	UpPhoneTime *gtime.Time `json:"upPhoneTime"`
-	Mail        string      `json:"mail"`
-	UpMailTime  *gtime.Time `json:"upMailTime"`
+	Phone       string `json:"phone"`
+	UpPhoneTime string `json:"upPhoneTime"`
+	Mail        string `json:"mail"`
+	UpMailTime  string `json:"upMailTime"`
 }
 
 // /
@@ -55,13 +54,14 @@ type VerifyCodeRes struct {
 // /
 
 type TfaRequestReq struct {
-	g.Meta   `path:"/TfaRequestReq" tags:"TfaRequestReq" method:"post" summary:"TfaRequestReq"`
+	g.Meta   `path:"/tfaRequest" tags:"tfaRequest" method:"post" summary:"tfaRequest"`
 	CodeType string `json:"codeType" v:"in:bindPhone,bindMail,updatePhone,updateMail"`
 	Token    string `json:"token"`
 }
 type TfaRequestRes struct {
 	g.Meta     `mime:"text/html" example:"string"`
-	RiskSerial string `json:"riskSerial"`
+	RiskSerial string   `json:"riskSerial"`
+	VList      []string `json:"vlist"`
 }
 
 // /

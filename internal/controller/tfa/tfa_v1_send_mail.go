@@ -43,6 +43,7 @@ func (c *ControllerV1) SendMailCode(ctx context.Context, req *v1.SendMailCodeReq
 		return nil, gerror.NewCode(mpccode.CodeRiskSerialNotExist)
 	}
 	///
+	////
 	switch riskStat.Type {
 	case model.Type_TfaBindMail, model.Type_TfaUpdateMail:
 		if req.Mail == "" {
@@ -57,7 +58,6 @@ func (c *ControllerV1) SendMailCode(ctx context.Context, req *v1.SendMailCodeReq
 		service.TFA().TfaSetMail(ctx, tfaInfo, req.Mail, req.RiskSerial, riskStat.Type)
 		///
 	case model.Type_TfaBindPhone, model.Type_TfaUpdatePhone:
-		service.TFA().TfaSetPhone_mail(ctx, tfaInfo, req.RiskSerial, riskStat.Type)
 	default:
 		return nil, gerror.NewCode(mpccode.CodeRiskSerialNotExist)
 	}

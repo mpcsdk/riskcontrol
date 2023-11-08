@@ -40,10 +40,20 @@ func (c *ControllerV1) TFAInfo(ctx context.Context, req *v1.TFAInfoReq) (res *v1
 	///
 
 	res = &v1.TFAInfoRes{
-		Phone:       info.Phone,
-		UpPhoneTime: info.PhoneUpdatedAt,
-		Mail:        info.Mail,
-		UpMailTime:  info.MailUpdatedAt,
+		Phone: info.Phone,
+		UpPhoneTime: func() string {
+			if info.PhoneUpdatedAt == nil {
+				return ""
+			}
+			return info.PhoneUpdatedAt.Local().String()
+		}(),
+		Mail: info.Mail,
+		UpMailTime: func() string {
+			if info.MailUpdatedAt == nil {
+				return ""
+			}
+			return info.MailUpdatedAt.Local().String()
+		}(),
 	}
 	return
 }

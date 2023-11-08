@@ -3,13 +3,13 @@ package tfa
 import (
 	"context"
 	"riskcontral/internal/config"
-	"riskcontral/internal/model/do"
+	"riskcontral/internal/model"
+	"riskcontral/internal/model/entity"
 	"riskcontral/internal/service"
 
 	"github.com/gogf/gf/v2/errors/gerror"
 	"github.com/gogf/gf/v2/frame/g"
 	"github.com/gogf/gf/v2/os/gctx"
-	"github.com/gogf/gf/v2/os/gtime"
 	"github.com/mpcsdk/mpcCommon/mpccode"
 )
 
@@ -50,54 +50,54 @@ func init() {
 	service.RegisterTFA(new())
 }
 
-func (s *sTFA) TFACreate(ctx context.Context, userId string, phone string, mail string, riskSerial string) ([]string, error) {
+func (s *sTFA) TfaRiskTidy(ctx context.Context, tfaInfo *entity.Tfa, riskSerial string, codetype string) ([]string, error) {
 	///
-	err := service.DB().InsertTfaInfo(ctx, userId, &do.Tfa{
-		UserId:    userId,
-		CreatedAt: gtime.Now(),
-	})
-	if err != nil {
-		err = gerror.Wrap(err, mpccode.ErrDetails(
-			mpccode.ErrDetail("userId", userId),
-			mpccode.ErrDetail("phone", phone),
-			mpccode.ErrDetail("mail", mail),
-		))
-		return nil, err
+	vlist := []string{}
+
+	switch codetype {
+	case model.Type_TfaBindPhone:
+		risk := s.riskPenddingContainer.NewRiskPendding(tfaInfo.UserId, riskSerial, RiskKind_BindPhone)
+		verifier := newVerifierPhone(RiskKind_BindPhone, "")
+		risk.AddVerifier(verifier)
+		vlist = append(vlist, "phone")
+		if tfaInfo.Mail != "" {
+			verifier := newVerifierMail(RiskKind_BindPhone, tfaInfo.Mail)
+			risk.AddVerifier(verifier)
+			vlist = append(vlist, "mail")
+		}
+	case model.Type_TfaBindMail:
+		risk := s.riskPenddingContainer.NewRiskPendding(tfaInfo.UserId, riskSerial, RiskKind_BindMail)
+		verifier := newVerifierMail(RiskKind_BindMail, "")
+		risk.AddVerifier(verifier)
+		vlist = append(vlist, "mail")
+		if tfaInfo.Phone != "" {
+			verifier := newVerifierPhone(RiskKind_BindMail, tfaInfo.Phone)
+			risk.AddVerifier(verifier)
+			vlist = append(vlist, "phone")
+		}
+	case model.Type_TfaUpdateMail:
+		risk := s.riskPenddingContainer.NewRiskPendding(tfaInfo.UserId, riskSerial, RiskKind_UpMail)
+		verifier := newVerifierMail(RiskKind_UpMail, "")
+		risk.AddVerifier(verifier)
+		vlist = append(vlist, "mail")
+		if tfaInfo.Phone != "" {
+			verifier := newVerifierPhone(RiskKind_UpMail, tfaInfo.Phone)
+			risk.AddVerifier(verifier)
+			vlist = append(vlist, "phone")
+		}
+	case model.Type_TfaUpdatePhone:
+		risk := s.riskPenddingContainer.NewRiskPendding(tfaInfo.UserId, riskSerial, RiskKind_UpPhone)
+		verifier := newVerifierPhone(RiskKind_UpPhone, "")
+		risk.AddVerifier(verifier)
+		vlist = append(vlist, "phone")
+		if tfaInfo.Mail != "" {
+			verifier := newVerifierMail(RiskKind_UpPhone, tfaInfo.Mail)
+			risk.AddVerifier(verifier)
+			vlist = append(vlist, "mail")
+		}
 	}
-	return nil, nil
-
-	// if err != nil || code != 0 {
-	// kind := []string{}
-	// var risk *riskVerifyPendding = nil
-	// /// need verification
-	// if phone != "" {
-	// 	verifier := newVerifierPhone(RiskKind_BindPhone, phone)
-	// 	risk = s.riskPenddingContainer.NewRiskPendding(userId, riskSerial, RiskKind_BindPhone)
-	// 	risk.AddVerifier(verifier)
-	// 	risk.AddAfterFunc(nil)
-	// 	risk.AddAfterFunc(func(ctx context.Context) error {
-	// 		return s.recordPhone(ctx, userId, phone, false)
-	// 	})
-
-	// 	kind = append(kind, "phone")
-	// } else if mail != "" {
-	// 	risk = s.riskPenddingContainer.NewRiskPendding(userId, riskSerial, RiskKind_BindMail)
-	// 	verifier := newVerifierMail(RiskKind_BindPhone, mail)
-	// 	risk.AddVerifier(verifier)
-	// 	risk.AddAfterFunc(nil)
-	// 	risk.AddAfterFunc(func(ctx context.Context) error {
-	// 		return s.recordMail(ctx, userId, mail, false)
-	// 	})
-
-	// 	kind = append(kind, "mail")
-	// }
-	// ///
-
-	// risk.AddBeforFunc(func(ctx context.Context) error {
-	// 	return s.createTFA(ctx, userId, mail, phone)
-	// })
 	///
-	// return kind, nil
+	return vlist, nil
 }
 
 func (s *sTFA) TFATx(ctx context.Context, userId string, riskSerial string) ([]string, error) {
