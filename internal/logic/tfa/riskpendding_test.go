@@ -15,8 +15,8 @@ var s *sTFA = &sTFA{
 
 func Test_riskPhone(t *testing.T) {
 
-	risk := s.riskPenddingContainer.NewRiskPendding(userId, riskSerial, RiskKind_Tx)
-	verifier := newVerifierPhone(RiskKind_Tx, phone)
+	risk := s.riskPenddingContainer.NewRiskPendding(userId, riskSerial, model.RiskKind_Tx)
+	verifier := newVerifierPhone(model.RiskKind_Tx, phone)
 	risk.AddBeforFunc(nil)
 	risk.AddAfterFunc(nil)
 	///

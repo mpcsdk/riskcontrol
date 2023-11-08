@@ -14,7 +14,7 @@ import (
 )
 
 type UserRiskId string
-type RiskKind string
+
 type VerifyKind string
 
 func keyUserRiskId(userId string, riskSerial string) UserRiskId {
@@ -50,48 +50,55 @@ func init() {
 	service.RegisterTFA(new())
 }
 
-func (s *sTFA) TfaRiskTidy(ctx context.Context, tfaInfo *entity.Tfa, riskSerial string, codetype string) ([]string, error) {
+func (s *sTFA) TfaRiskKind(ctx context.Context, tfaInfo *entity.Tfa, riskSerial string) (model.RiskKind, error) {
+	risk := s.riskPenddingContainer.GetRiskVerify(tfaInfo.UserId, riskSerial)
+	if risk == nil {
+		return "", mpccode.ErrArg
+	}
+	return risk.RiskKind, nil
+}
+func (s *sTFA) TfaRiskTidy(ctx context.Context, tfaInfo *entity.Tfa, riskSerial string, riskKind model.RiskKind) ([]string, error) {
 	///
 	vlist := []string{}
 
-	switch codetype {
-	case model.Type_TfaBindPhone:
-		risk := s.riskPenddingContainer.NewRiskPendding(tfaInfo.UserId, riskSerial, RiskKind_BindPhone)
-		verifier := newVerifierPhone(RiskKind_BindPhone, "")
+	switch riskKind {
+	case model.RiskKind_BindPhone:
+		risk := s.riskPenddingContainer.NewRiskPendding(tfaInfo.UserId, riskSerial, model.RiskKind_BindPhone)
+		verifier := newVerifierPhone(model.RiskKind_BindPhone, "")
 		risk.AddVerifier(verifier)
 		vlist = append(vlist, "phone")
 		if tfaInfo.Mail != "" {
-			verifier := newVerifierMail(RiskKind_BindPhone, tfaInfo.Mail)
+			verifier := newVerifierMail(model.RiskKind_BindPhone, tfaInfo.Mail)
 			risk.AddVerifier(verifier)
 			vlist = append(vlist, "mail")
 		}
-	case model.Type_TfaBindMail:
-		risk := s.riskPenddingContainer.NewRiskPendding(tfaInfo.UserId, riskSerial, RiskKind_BindMail)
-		verifier := newVerifierMail(RiskKind_BindMail, "")
+	case model.RiskKind_BindMail:
+		risk := s.riskPenddingContainer.NewRiskPendding(tfaInfo.UserId, riskSerial, model.RiskKind_BindMail)
+		verifier := newVerifierMail(model.RiskKind_BindMail, "")
 		risk.AddVerifier(verifier)
 		vlist = append(vlist, "mail")
 		if tfaInfo.Phone != "" {
-			verifier := newVerifierPhone(RiskKind_BindMail, tfaInfo.Phone)
+			verifier := newVerifierPhone(model.RiskKind_BindMail, tfaInfo.Phone)
 			risk.AddVerifier(verifier)
 			vlist = append(vlist, "phone")
 		}
-	case model.Type_TfaUpdateMail:
-		risk := s.riskPenddingContainer.NewRiskPendding(tfaInfo.UserId, riskSerial, RiskKind_UpMail)
-		verifier := newVerifierMail(RiskKind_UpMail, "")
+	case model.RiskKind_UpMail:
+		risk := s.riskPenddingContainer.NewRiskPendding(tfaInfo.UserId, riskSerial, model.RiskKind_UpMail)
+		verifier := newVerifierMail(model.RiskKind_UpMail, "")
 		risk.AddVerifier(verifier)
 		vlist = append(vlist, "mail")
 		if tfaInfo.Phone != "" {
-			verifier := newVerifierPhone(RiskKind_UpMail, tfaInfo.Phone)
+			verifier := newVerifierPhone(model.RiskKind_UpMail, tfaInfo.Phone)
 			risk.AddVerifier(verifier)
 			vlist = append(vlist, "phone")
 		}
-	case model.Type_TfaUpdatePhone:
-		risk := s.riskPenddingContainer.NewRiskPendding(tfaInfo.UserId, riskSerial, RiskKind_UpPhone)
-		verifier := newVerifierPhone(RiskKind_UpPhone, "")
+	case model.RiskKind_UpPhone:
+		risk := s.riskPenddingContainer.NewRiskPendding(tfaInfo.UserId, riskSerial, model.RiskKind_UpPhone)
+		verifier := newVerifierPhone(model.RiskKind_UpPhone, "")
 		risk.AddVerifier(verifier)
 		vlist = append(vlist, "phone")
 		if tfaInfo.Mail != "" {
-			verifier := newVerifierMail(RiskKind_UpPhone, tfaInfo.Mail)
+			verifier := newVerifierMail(model.RiskKind_UpPhone, tfaInfo.Mail)
 			risk.AddVerifier(verifier)
 			vlist = append(vlist, "mail")
 		}
@@ -115,15 +122,15 @@ func (s *sTFA) TFATx(ctx context.Context, userId string, riskSerial string) ([]s
 
 	//
 	kind := []string{}
-	risk := s.riskPenddingContainer.NewRiskPendding(userId, riskSerial, RiskKind_Tx)
+	risk := s.riskPenddingContainer.NewRiskPendding(userId, riskSerial, model.RiskKind_Tx)
 	if info.Phone != "" {
-		verifier := newVerifierPhone(RiskKind_Tx, info.Phone)
+		verifier := newVerifierPhone(model.RiskKind_Tx, info.Phone)
 		risk.AddVerifier(verifier)
 		kind = append(kind, "phone")
 	}
 
 	if info.Mail != "" {
-		verifer := newVerifierMail(RiskKind_Tx, info.Mail)
+		verifer := newVerifierMail(model.RiskKind_Tx, info.Mail)
 		risk.AddVerifier(verifer)
 		kind = append(kind, "mail")
 	}

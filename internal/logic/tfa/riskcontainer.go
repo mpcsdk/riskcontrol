@@ -3,6 +3,7 @@ package tfa
 import (
 	"context"
 	"errors"
+	"riskcontral/internal/model"
 	"sync"
 	"time"
 
@@ -10,14 +11,6 @@ import (
 	"github.com/gogf/gf/v2/os/gtimer"
 )
 
-const (
-	RiskKind_Nil       = "RiskKind_Nil"
-	RiskKind_Tx        = "RiskKind_Tx"
-	RiskKind_BindPhone = "RiskKind_BindPhone"
-	RiskKind_UpPhone   = "RiskKind_UpPhone"
-	RiskKind_BindMail  = "RiskKind_BindMail"
-	RiskKind_UpMail    = "RiskKind_UpMail"
-)
 const (
 	VerifierKind_Nil   = "nil"
 	VerifierKind_Phone = "Phone"
@@ -63,7 +56,7 @@ func (s *riskPenddingContainer) GetRiskVerify(userId, riskSerial string) *riskVe
 
 func (s *riskPenddingContainer) NewRiskPendding(
 	userId, riskSerial string,
-	riskKind RiskKind,
+	riskKind model.RiskKind,
 ) *riskVerifyPendding {
 	risk := s.GetRiskVerify(userId, riskSerial)
 	if risk == nil {

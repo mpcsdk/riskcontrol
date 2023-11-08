@@ -44,8 +44,11 @@ func (c *ControllerV1) TfaRequest(ctx context.Context, req *v1.TfaRequestReq) (r
 	}
 	///
 	///
+	var riskKind model.RiskKind = model.RiskKind_Nil
+	//
 	switch req.CodeType {
 	case model.Type_TfaBindPhone:
+		riskKind = model.RiskKind_BindPhone
 		if tfaInfo != nil && tfaInfo.Phone != "" {
 			return nil, gerror.NewCode(mpccode.CodeTFAExist)
 		}
@@ -64,6 +67,7 @@ func (c *ControllerV1) TfaRequest(ctx context.Context, req *v1.TfaRequestReq) (r
 		}
 		///
 	case model.Type_TfaBindMail:
+		riskKind = model.RiskKind_BindMail
 		if tfaInfo != nil && tfaInfo.Mail != "" {
 			return nil, gerror.NewCode(mpccode.CodeTFAExist)
 		}
@@ -82,10 +86,12 @@ func (c *ControllerV1) TfaRequest(ctx context.Context, req *v1.TfaRequestReq) (r
 		}
 		////
 	case model.Type_TfaUpdatePhone:
+		riskKind = model.RiskKind_UpPhone
 		if tfaInfo == nil || tfaInfo.Phone == "" {
 			return nil, gerror.NewCode(mpccode.CodeTFANotExist)
 		}
 	case model.Type_TfaUpdateMail:
+		riskKind = model.RiskKind_UpMail
 		if tfaInfo == nil || tfaInfo.Mail == "" {
 			return nil, gerror.NewCode(mpccode.CodeTFANotExist)
 		}
@@ -110,7 +116,7 @@ func (c *ControllerV1) TfaRequest(ctx context.Context, req *v1.TfaRequestReq) (r
 		return nil, gerror.NewCode(mpccode.CodePerformRiskError)
 	}
 	///
-	vl, _ := service.TFA().TfaRiskTidy(ctx, tfaInfo, riskSerial, req.CodeType)
+	vl, _ := service.TFA().TfaRiskTidy(ctx, tfaInfo, riskSerial, riskKind)
 	res = &v1.TfaRequestRes{
 		RiskSerial: riskSerial,
 		VList:      vl,

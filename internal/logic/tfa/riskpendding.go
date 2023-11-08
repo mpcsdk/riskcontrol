@@ -13,14 +13,14 @@ import (
 // //
 // //
 type riskVerifyPendding struct {
-	RiskKind RiskKind
+	RiskKind model.RiskKind
 	//风控序号
 	RiskSerial string
 	//用户id
 	UserId string
 	///
 	riskBeforFunc []func(context.Context) error
-	// riskVerify    map[RiskKind]*riskVerify
+	// riskVerify    map[model.RiskKind]*riskVerify
 	verifier map[VerifyKind]IVerifier
 	// sender        map[VerifyKind]sender
 	riskAfterFunc []func(context.Context) error

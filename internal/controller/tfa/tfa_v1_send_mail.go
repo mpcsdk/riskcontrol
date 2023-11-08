@@ -38,14 +38,14 @@ func (c *ControllerV1) SendMailCode(ctx context.Context, req *v1.SendMailCodeReq
 		return nil, gerror.NewCode(mpccode.CodeTFANotExist)
 	}
 	////
-	riskStat := service.Risk().GetRiskStat(ctx, req.RiskSerial)
-	if riskStat == nil {
+	riskKind, err := service.TFA().TfaRiskKind(ctx, tfaInfo, req.RiskSerial)
+	if err != nil {
 		return nil, gerror.NewCode(mpccode.CodeRiskSerialNotExist)
 	}
 	///
 	////
-	switch riskStat.Type {
-	case model.Type_TfaBindMail, model.Type_TfaUpdateMail:
+	switch riskKind {
+	case model.RiskKind_BindMail, model.RiskKind_UpMail:
 		if req.Mail == "" {
 			return nil, gerror.NewCode(mpccode.CodeParamInvalid)
 		}
@@ -55,9 +55,9 @@ func (c *ControllerV1) SendMailCode(ctx context.Context, req *v1.SendMailCodeReq
 			return nil, gerror.NewCode(mpccode.CodeTFAMailExists)
 		}
 		////
-		service.TFA().TfaSetMail(ctx, tfaInfo, req.Mail, req.RiskSerial, riskStat.Type)
+		service.TFA().TfaSetMail(ctx, tfaInfo, req.Mail, req.RiskSerial, riskKind)
 		///
-	case model.Type_TfaBindPhone, model.Type_TfaUpdatePhone:
+	case model.RiskKind_BindPhone, model.RiskKind_UpPhone:
 	default:
 		return nil, gerror.NewCode(mpccode.CodeRiskSerialNotExist)
 	}

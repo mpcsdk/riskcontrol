@@ -9,8 +9,8 @@ import (
 	"github.com/mpcsdk/mpcCommon/mpccode"
 )
 
-func (s *sTFA) TfaSetPhone(ctx context.Context, tfaInfo *entity.Tfa, phone string, riskSerial string, codetype string) (string, error) {
-	if codetype == model.Type_TfaBindPhone {
+func (s *sTFA) TfaSetPhone(ctx context.Context, tfaInfo *entity.Tfa, phone string, riskSerial string, riskKind model.RiskKind) (string, error) {
+	if riskKind == model.RiskKind_BindPhone {
 		return s.TfaBindPhone(ctx, tfaInfo, phone, riskSerial)
 	} else {
 		return s.TfaUpPhone(ctx, tfaInfo, phone, riskSerial)
@@ -22,8 +22,8 @@ func (s *sTFA) TfaBindPhone(ctx context.Context, tfaInfo *entity.Tfa, phone stri
 	if tfaInfo == nil || tfaInfo.Phone != "" {
 		return "", mpccode.CodeParamInvalid.Error()
 	}
-	verifier := newVerifierPhone(RiskKind_BindPhone, phone)
-	risk := s.riskPenddingContainer.NewRiskPendding(tfaInfo.UserId, riskSerial, RiskKind_BindPhone)
+	verifier := newVerifierPhone(model.RiskKind_BindPhone, phone)
+	risk := s.riskPenddingContainer.NewRiskPendding(tfaInfo.UserId, riskSerial, model.RiskKind_BindPhone)
 
 	risk.AddVerifier(verifier)
 	risk.AddAfterFunc(func(ctx context.Context) error {
@@ -36,7 +36,7 @@ func (s *sTFA) TfaBindPhone(ctx context.Context, tfaInfo *entity.Tfa, phone stri
 	})
 	///tfa phone if
 	if tfaInfo.Phone != "" {
-		verifier := newVerifierPhone(RiskKind_UpPhone, tfaInfo.Phone)
+		verifier := newVerifierPhone(model.RiskKind_UpPhone, tfaInfo.Phone)
 		risk.AddVerifier(verifier)
 	}
 	//
@@ -47,8 +47,8 @@ func (s *sTFA) TfaUpPhone(ctx context.Context, tfaInfo *entity.Tfa, phone string
 	if tfaInfo == nil || tfaInfo.Phone == "" {
 		return "", mpccode.CodeParamInvalid.Error()
 	}
-	verifier := newVerifierPhone(RiskKind_BindPhone, phone)
-	risk := s.riskPenddingContainer.NewRiskPendding(tfaInfo.UserId, riskSerial, RiskKind_UpPhone)
+	verifier := newVerifierPhone(model.RiskKind_BindPhone, phone)
+	risk := s.riskPenddingContainer.NewRiskPendding(tfaInfo.UserId, riskSerial, model.RiskKind_UpPhone)
 
 	risk.AddVerifier(verifier)
 	risk.AddAfterFunc(func(ctx context.Context) error {
@@ -61,7 +61,7 @@ func (s *sTFA) TfaUpPhone(ctx context.Context, tfaInfo *entity.Tfa, phone string
 	})
 	///tfa phone if
 	if tfaInfo.Phone != "" {
-		verifier := newVerifierPhone(RiskKind_UpPhone, tfaInfo.Phone)
+		verifier := newVerifierPhone(model.RiskKind_UpPhone, tfaInfo.Phone)
 		risk.AddVerifier(verifier)
 	}
 	//

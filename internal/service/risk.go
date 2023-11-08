@@ -15,8 +15,6 @@ type (
 	IRisk interface {
 		RiskTxs(ctx context.Context, userId string, signTx string) (string, int32)
 		RiskTFA(ctx context.Context, tfaInfo *entity.Tfa, riskData *model.RiskTfa) (string, int32)
-		GetRiskStat(ctx context.Context, riskSerial string) *model.RiskStat
-		DelRiskStat(ctx context.Context, riskSerial string)
 	}
 )
 

@@ -12,6 +12,17 @@ const (
 	Type_TfaUpdateMail  string = "updateMail"
 )
 
+type RiskKind string
+
+const (
+	RiskKind_Nil       = "RiskKind_Nil"
+	RiskKind_Tx        = "RiskKind_Tx"
+	RiskKind_BindPhone = "RiskKind_BindPhone"
+	RiskKind_UpPhone   = "RiskKind_UpPhone"
+	RiskKind_BindMail  = "RiskKind_BindMail"
+	RiskKind_UpMail    = "RiskKind_UpMail"
+)
+
 type RiskStat struct {
 	Kind string
 	Type string

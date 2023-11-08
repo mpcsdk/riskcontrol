@@ -14,9 +14,9 @@ import (
 
 // //
 type IVerifier interface {
-	Verify(verifierCode *model.VerifyCode) (RiskKind, error)
+	Verify(verifierCode *model.VerifyCode) (model.RiskKind, error)
 	SetCode(string)
-	RiskKind() RiskKind
+	RiskKind() model.RiskKind
 	VerifyKind() VerifyKind
 	IsDone() bool
 	///
@@ -31,10 +31,10 @@ var errRiskKindUpPhone = errors.New("riskKindUpPhone")
 var errRiskKindUpMail = errors.New("riskKindUpMail")
 
 type emptyVerifier struct {
-	riskKind RiskKind
+	riskKind model.RiskKind
 }
 
-func newEmptyVerifier(riskKind RiskKind) IVerifier {
+func newEmptyVerifier(riskKind model.RiskKind) IVerifier {
 	return &emptyVerifier{
 		riskKind: riskKind,
 	}
@@ -43,15 +43,15 @@ func newEmptyVerifier(riskKind RiskKind) IVerifier {
 func (s *emptyVerifier) SendCompletion() error {
 	fmt.Println(s.riskKind)
 	switch s.riskKind {
-	case RiskKind_Tx:
+	case model.RiskKind_Tx:
 		return errRiskKindTx
-	case RiskKind_BindPhone:
+	case model.RiskKind_BindPhone:
 		return errRiskKindBindPhone
-	case RiskKind_BindMail:
+	case model.RiskKind_BindMail:
 		return errRiskKindBindMail
-	case RiskKind_UpPhone:
+	case model.RiskKind_UpPhone:
 		return errRiskKindUpPhone
-	case RiskKind_UpMail:
+	case model.RiskKind_UpMail:
 		return errRiskKindUpMail
 	}
 	return nil
@@ -59,15 +59,15 @@ func (s *emptyVerifier) SendCompletion() error {
 func (s *emptyVerifier) SendVerificationCode() (string, error) {
 	fmt.Println(s.riskKind)
 	switch s.riskKind {
-	case RiskKind_Tx:
+	case model.RiskKind_Tx:
 		return "", errRiskKindTx
-	case RiskKind_BindPhone:
+	case model.RiskKind_BindPhone:
 		return "", errRiskKindBindPhone
-	case RiskKind_BindMail:
+	case model.RiskKind_BindMail:
 		return "", errRiskKindBindMail
-	case RiskKind_UpPhone:
+	case model.RiskKind_UpPhone:
 		return "", errRiskKindUpPhone
-	case RiskKind_UpMail:
+	case model.RiskKind_UpMail:
 		return "", errRiskKindUpMail
 	}
 	return "", nil
@@ -78,13 +78,13 @@ func (s *emptyVerifier) IsDone() bool {
 func (s *emptyVerifier) VerifyKind() VerifyKind {
 	return VerifierKind_Nil
 }
-func (s *emptyVerifier) RiskKind() RiskKind {
-	return RiskKind_Nil
+func (s *emptyVerifier) RiskKind() model.RiskKind {
+	return model.RiskKind_Nil
 }
 
 func (s *emptyVerifier) SetCode(code string) {
 }
-func (s *emptyVerifier) Verify(verifierCode *model.VerifyCode) (RiskKind, error) {
+func (s *emptyVerifier) Verify(verifierCode *model.VerifyCode) (model.RiskKind, error) {
 	return "", nil
 }
 
@@ -92,14 +92,14 @@ func (s *emptyVerifier) Verify(verifierCode *model.VerifyCode) (RiskKind, error)
 // /
 type verifierPhone struct {
 	ctx        context.Context
-	riskKind   RiskKind
+	riskKind   model.RiskKind
 	verifyKind VerifyKind
 	code       string
 	phone      string
 	verified   bool
 }
 
-func newVerifierPhone(riskKind RiskKind, phone string) IVerifier {
+func newVerifierPhone(riskKind model.RiskKind, phone string) IVerifier {
 	return &verifierPhone{
 		ctx:        gctx.GetInitCtx(),
 		riskKind:   riskKind,
@@ -109,28 +109,28 @@ func newVerifierPhone(riskKind RiskKind, phone string) IVerifier {
 }
 func (s *verifierPhone) SendCompletion() error {
 	switch s.riskKind {
-	case RiskKind_Tx:
-	case RiskKind_BindPhone:
+	case model.RiskKind_Tx:
+	case model.RiskKind_BindPhone:
 		return service.SmsCode().SendBindingCompletionPhone(s.ctx, s.phone)
-	case RiskKind_BindMail:
-	case RiskKind_UpPhone:
+	case model.RiskKind_BindMail:
+	case model.RiskKind_UpPhone:
 		return service.SmsCode().SendUpCompletionPhone(s.ctx, s.phone)
-	case RiskKind_UpMail:
+	case model.RiskKind_UpMail:
 	}
 	return nil
 }
 func (s *verifierPhone) SendVerificationCode() (string, error) {
 	switch s.riskKind {
-	case RiskKind_Tx:
+	case model.RiskKind_Tx:
 		return service.SmsCode().SendVerificationCode(s.ctx, s.phone)
-	case RiskKind_BindPhone:
+	case model.RiskKind_BindPhone:
 		return service.SmsCode().SendVerificationCode(s.ctx, s.phone)
 		// return service.SmsCode().SendBindingPhoneCode(s.ctx, s.phone)
-	case RiskKind_BindMail:
+	case model.RiskKind_BindMail:
 		return service.SmsCode().SendVerificationCode(s.ctx, s.phone)
-	case RiskKind_UpPhone:
+	case model.RiskKind_UpPhone:
 		return service.SmsCode().SendUpPhoneCode(s.ctx, s.phone)
-	case RiskKind_UpMail:
+	case model.RiskKind_UpMail:
 		return service.SmsCode().SendVerificationCode(s.ctx, s.phone)
 	}
 	return "", nil
@@ -139,7 +139,7 @@ func (s *verifierPhone) SendVerificationCode() (string, error) {
 func (s *verifierPhone) VerifyKind() VerifyKind {
 	return VerifierKind_Phone
 }
-func (s *verifierPhone) RiskKind() RiskKind {
+func (s *verifierPhone) RiskKind() model.RiskKind {
 	return s.riskKind
 }
 func (s *verifierPhone) IsDone() bool {
@@ -149,7 +149,7 @@ func (s *verifierPhone) IsDone() bool {
 func (s *verifierPhone) SetCode(code string) {
 	s.code = code
 }
-func (s *verifierPhone) Verify(verifierCode *model.VerifyCode) (RiskKind, error) {
+func (s *verifierPhone) Verify(verifierCode *model.VerifyCode) (model.RiskKind, error) {
 	if s.code == verifierCode.PhoneCode && verifierCode.PhoneCode != "" {
 		s.verified = true
 		return "", nil
@@ -163,13 +163,13 @@ func (s *verifierPhone) Verify(verifierCode *model.VerifyCode) (RiskKind, error)
 type verifierMail struct {
 	ctx        context.Context
 	code       string
-	riskKind   RiskKind
+	riskKind   model.RiskKind
 	verifyKind VerifyKind
 	mail       string
 	verified   bool
 }
 
-func newVerifierMail(riskKind RiskKind, mail string) IVerifier {
+func newVerifierMail(riskKind model.RiskKind, mail string) IVerifier {
 	return &verifierMail{
 		ctx:        gctx.GetInitCtx(),
 		riskKind:   riskKind,
@@ -179,32 +179,32 @@ func newVerifierMail(riskKind RiskKind, mail string) IVerifier {
 }
 func (s *verifierMail) SendCompletion() error {
 	switch s.riskKind {
-	case RiskKind_Tx:
-	case RiskKind_BindPhone:
-	case RiskKind_BindMail:
+	case model.RiskKind_Tx:
+	case model.RiskKind_BindPhone:
+	case model.RiskKind_BindMail:
 		return service.MailCode().SendBindingCompletionMail(s.ctx, s.mail)
-	case RiskKind_UpPhone:
-	case RiskKind_UpMail:
+	case model.RiskKind_UpPhone:
+	case model.RiskKind_UpMail:
 		return service.MailCode().SendUpCompletionMail(s.ctx, s.mail)
 	}
 	return nil
 }
 func (s *verifierMail) SendVerificationCode() (string, error) {
 	switch s.riskKind {
-	case RiskKind_Tx:
+	case model.RiskKind_Tx:
 		return service.MailCode().SendVerificationCode(s.ctx, s.mail)
-	case RiskKind_BindPhone:
+	case model.RiskKind_BindPhone:
 		return service.MailCode().SendVerificationCode(s.ctx, s.mail)
-	case RiskKind_BindMail:
+	case model.RiskKind_BindMail:
 		return service.MailCode().SendBindingMailCode(s.ctx, s.mail)
-	case RiskKind_UpPhone:
+	case model.RiskKind_UpPhone:
 		return service.MailCode().SendVerificationCode(s.ctx, s.mail)
-	case RiskKind_UpMail:
+	case model.RiskKind_UpMail:
 		return service.MailCode().SendUpMailCode(s.ctx, s.mail)
 	}
 	return "", nil
 }
-func (s *verifierMail) Verify(verifierCode *model.VerifyCode) (RiskKind, error) {
+func (s *verifierMail) Verify(verifierCode *model.VerifyCode) (model.RiskKind, error) {
 	if s.code == verifierCode.MailCode && verifierCode.MailCode != "" {
 		s.verified = true
 
@@ -220,7 +220,7 @@ func (s *verifierMail) IsDone() bool {
 func (s *verifierMail) VerifyKind() VerifyKind {
 	return s.verifyKind
 }
-func (s *verifierMail) RiskKind() RiskKind {
+func (s *verifierMail) RiskKind() model.RiskKind {
 	return s.riskKind
 }
 func (s *verifierMail) SetCode(code string) {

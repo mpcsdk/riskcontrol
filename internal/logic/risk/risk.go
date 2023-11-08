@@ -6,7 +6,6 @@ import (
 	"riskcontral/internal/model"
 	"riskcontral/internal/model/entity"
 	"riskcontral/internal/service"
-	"sync"
 	"time"
 
 	"github.com/gogf/gf/v2/frame/g"
@@ -26,8 +25,6 @@ type sRisk struct {
 	txControl   bool
 	////
 
-	riskStatLock sync.Mutex
-	riskStat     map[string]*model.RiskStat
 	///
 }
 
@@ -38,10 +35,7 @@ func (s *sRisk) RiskTxs(ctx context.Context, userId string, signTx string) (stri
 	}
 	///
 	riskserial := rand.GenNewSid()
-	s.riskStat[riskserial] = &model.RiskStat{
-		Kind: model.Kind_RiskTx,
-		Type: signTx,
-	}
+
 	///
 	code, err := s.checkTxs(ctx, signTx)
 	if err != nil {
@@ -99,10 +93,7 @@ func (s *sRisk) RiskTFA(ctx context.Context, tfaInfo *entity.Tfa, riskData *mode
 	}
 	//
 	riskserial := rand.GenNewSid()
-	s.riskStat[riskserial] = &model.RiskStat{
-		Kind: model.Kind_RiskTfa,
-		Type: riskData.Type,
-	}
+
 	///
 	code := mpccode.RiskCodePass
 	var err error
@@ -130,21 +121,6 @@ func (s *sRisk) RiskTFA(ctx context.Context, tfaInfo *entity.Tfa, riskData *mode
 	return riskserial, code
 }
 
-func (s *sRisk) GetRiskStat(ctx context.Context, riskSerial string) *model.RiskStat {
-	s.riskStatLock.Lock()
-	defer s.riskStatLock.Unlock()
-	if r, ok := s.riskStat[riskSerial]; ok {
-		return r
-	}
-	return nil
-}
-
-func (s *sRisk) DelRiskStat(ctx context.Context, riskSerial string) {
-	s.riskStatLock.Lock()
-	defer s.riskStatLock.Unlock()
-	delete(s.riskStat, riskSerial)
-}
-
 // ///
 var BeforH24 time.Duration
 
@@ -154,7 +130,6 @@ func new() *sRisk {
 		analzer:    analzyer.NewAnalzer(),
 		ftruleMap:  map[string]*mpcmodel.FtRule{},
 		nftruleMap: map[string]*mpcmodel.NftRule{},
-		riskStat:   map[string]*model.RiskStat{},
 	}
 	///
 	s.ftruleMap, _ = service.DB().GetFtRules(context.TODO())

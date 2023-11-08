@@ -39,14 +39,15 @@ func (c *ControllerV1) SendSmsCode(ctx context.Context, req *v1.SendSmsCodeReq) 
 		return nil, gerror.NewCode(mpccode.CodeTFANotExist)
 	}
 	////
-	riskStat := service.Risk().GetRiskStat(ctx, req.RiskSerial)
-	if riskStat == nil {
+	riskKind, err := service.TFA().TfaRiskKind(ctx, tfaInfo, req.RiskSerial)
+	if err != nil {
 		return nil, gerror.NewCode(mpccode.CodeRiskSerialNotExist)
 	}
 	///
 	////
-	switch riskStat.Type {
-	case model.Type_TfaBindPhone, model.Type_TfaUpdatePhone:
+	switch riskKind {
+	case model.RiskKind_BindPhone, model.RiskKind_UpPhone:
+		// case model.Type_TfaBindPhone, model.Type_TfaUpdatePhone:
 		if req.Phone == "" {
 			return nil, gerror.NewCode(mpccode.CodeParamInvalid)
 		}
@@ -56,9 +57,10 @@ func (c *ControllerV1) SendSmsCode(ctx context.Context, req *v1.SendSmsCodeReq) 
 			return nil, gerror.NewCode(mpccode.CodeTFAMailExists)
 		}
 		////
-		service.TFA().TfaSetPhone(ctx, tfaInfo, req.Phone, req.RiskSerial, riskStat.Type)
+		service.TFA().TfaSetPhone(ctx, tfaInfo, req.Phone, req.RiskSerial, riskKind)
 		///
-	case model.Type_TfaBindMail, model.Type_TfaUpdateMail:
+	case model.RiskKind_BindMail, model.RiskKind_UpMail:
+	// case model.Type_TfaBindMail, model.Type_TfaUpdateMail:
 	default:
 		return nil, gerror.NewCode(mpccode.CodeRiskSerialNotExist)
 	}
