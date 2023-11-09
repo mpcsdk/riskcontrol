@@ -53,7 +53,11 @@ func init() {
 func (s *sTFA) TfaRiskKind(ctx context.Context, tfaInfo *entity.Tfa, riskSerial string) (model.RiskKind, error) {
 	risk := s.riskPenddingContainer.GetRiskVerify(tfaInfo.UserId, riskSerial)
 	if risk == nil {
-		return "", mpccode.ErrArg
+		err := gerror.Wrap(mpccode.ErrArg, mpccode.ErrDetails(
+			mpccode.ErrDetail("tfaInfo", tfaInfo),
+			mpccode.ErrDetail("riskSerial", riskSerial),
+		))
+		return "", err
 	}
 	return risk.RiskKind, nil
 }
