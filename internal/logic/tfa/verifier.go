@@ -155,7 +155,11 @@ func (s *verifierPhone) Verify(verifierCode *model.VerifyCode) (model.RiskKind, 
 		return "", nil
 	} else {
 		s.verified = false
-		return VerifierKind_Phone, gerror.NewCode(mpccode.CodeRiskVerifyPhoneInvalid)
+		errcode := gerror.WrapCode(mpccode.CodeRiskVerifyPhoneInvalid, mpccode.ErrArg, mpccode.ErrDetails(
+			mpccode.ErrDetail("codePhone:", s.code),
+			mpccode.ErrDetail("verifierPhoneCode:", verifierCode.PhoneCode),
+		))
+		return VerifierKind_Phone, errcode
 	}
 	return "", nil
 }
@@ -211,7 +215,11 @@ func (s *verifierMail) Verify(verifierCode *model.VerifyCode) (model.RiskKind, e
 		return "", nil
 	} else {
 		s.verified = false
-		return VerifierKind_Phone, gerror.NewCode(mpccode.CodeRiskVerifyPhoneInvalid)
+		errcode := gerror.WrapCode(mpccode.CodeRiskVerifyMailInvalid, mpccode.ErrArg, mpccode.ErrDetails(
+			mpccode.ErrDetail("codeMailCode:", s.code),
+			mpccode.ErrDetail("verifierMailCodeCode:", verifierCode.MailCode),
+		))
+		return VerifierKind_Phone, errcode
 	}
 }
 func (s *verifierMail) IsDone() bool {

@@ -52,7 +52,7 @@ func (s *sTFA) TfaUpPhone(ctx context.Context, tfaInfo *entity.Tfa, phone string
 
 	risk.AddVerifier(verifier)
 	risk.AddAfterFunc(func(ctx context.Context) error {
-		err := s.recordMail(ctx, tfaInfo.UserId, phone, true)
+		err := s.recordPhone(ctx, tfaInfo.UserId, phone, true)
 		if err != nil {
 			g.Log().Warning(ctx, "TfaUpPhone recordMail err:", "userid:", tfaInfo.UserId, "phone:", phone, "err:", err)
 			return err
