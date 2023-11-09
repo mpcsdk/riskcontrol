@@ -41,6 +41,7 @@ func (c *ControllerV1) SendSmsCode(ctx context.Context, req *v1.SendSmsCodeReq) 
 	////
 	riskKind, err := service.TFA().TfaRiskKind(ctx, tfaInfo, req.RiskSerial)
 	if err != nil {
+		g.Log().Warningf(ctx, "%+v", err)
 		return nil, gerror.NewCode(mpccode.CodeRiskSerialNotExist)
 	}
 	///
@@ -53,8 +54,8 @@ func (c *ControllerV1) SendSmsCode(ctx context.Context, req *v1.SendSmsCodeReq) 
 		}
 		err = service.DB().TfaPhoneNotExists(ctx, req.Phone)
 		if err != nil {
-			g.Log().Warning(ctx, "%+v", err)
-			return nil, gerror.NewCode(mpccode.CodeTFAMailExists)
+			g.Log().Warningf(ctx, "%+v", err)
+			return nil, gerror.NewCode(mpccode.CodeTFAPhoneExists)
 		}
 		////
 		service.TFA().TfaSetPhone(ctx, tfaInfo, req.Phone, req.RiskSerial, riskKind)

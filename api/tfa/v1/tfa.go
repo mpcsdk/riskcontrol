@@ -55,7 +55,7 @@ type VerifyCodeRes struct {
 
 type TfaRequestReq struct {
 	g.Meta   `path:"/tfaRequest" tags:"tfaRequest" method:"post" summary:"tfaRequest"`
-	CodeType string `json:"codeType" v:"in:bindPhone,bindMail,updatePhone,updateMail"`
+	CodeType string `json:"codeType" "in:bindPhone,bindMail,updatePhone,updateMail"`
 	Token    string `json:"token"`
 }
 type TfaRequestRes struct {

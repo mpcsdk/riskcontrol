@@ -20,6 +20,7 @@ func MiddlewareCORS(r *ghttp.Request) {
 func ResponseHandler(r *ghttp.Request) {
 	r.Middleware.Next()
 	// There's custom buffer content, it then exits current handler.
+	g.Log().Info(context.Background(), r.GetBodyString())
 	if r.Response.BufferLength() > 0 {
 		return
 	}
@@ -36,6 +37,7 @@ func ResponseHandler(r *ghttp.Request) {
 			code = gcode.CodeOK
 		}
 	}
+	g.Log().Info(context.Background(), res)
 	r.Response.WriteJson(ghttp.DefaultHandlerResponse{
 		Code:    code.Code(),
 		Message: code.Message(),
