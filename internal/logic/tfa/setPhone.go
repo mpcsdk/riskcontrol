@@ -34,11 +34,7 @@ func (s *sTFA) TfaBindPhone(ctx context.Context, tfaInfo *entity.Tfa, phone stri
 		}
 		return nil
 	})
-	///tfa mail if
-	if tfaInfo.Mail != "" {
-		verifier := newVerifierMail(model.RiskKind_BindPhone, tfaInfo.Mail)
-		risk.AddVerifier(verifier)
-	}
+
 	//
 	return riskSerial, nil
 }
@@ -59,11 +55,7 @@ func (s *sTFA) TfaUpPhone(ctx context.Context, tfaInfo *entity.Tfa, phone string
 		}
 		return nil
 	})
-	///tfa mail if
-	if tfaInfo.Mail != "" {
-		verifier := newVerifierMail(model.RiskKind_UpPhone, tfaInfo.Mail)
-		risk.AddVerifier(verifier)
-	}
+
 	//
 	return riskSerial, nil
 	//
