@@ -20,7 +20,6 @@ func (s *sTFA) VerifyCode(ctx context.Context, userId string, riskSerial string,
 			mpccode.ErrDetail("riskSerial", riskSerial),
 			mpccode.ErrDetail("code", code),
 			mpccode.ErrDetail("kind", k),
-			mpccode.ErrDetail("risk", risk),
 		))
 		return err
 	}
