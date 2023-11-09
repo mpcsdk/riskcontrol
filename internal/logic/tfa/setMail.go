@@ -36,7 +36,7 @@ func (s *sTFA) TfaBindMail(ctx context.Context, tfaInfo *entity.Tfa, mail string
 	})
 	///tfa phone if
 	if tfaInfo.Phone != "" {
-		verifier := newVerifierPhone(model.RiskKind_UpMail, tfaInfo.Phone)
+		verifier := newVerifierPhone(model.RiskKind_BindMail, tfaInfo.Phone)
 		risk.AddVerifier(verifier)
 	}
 

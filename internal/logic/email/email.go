@@ -6,7 +6,6 @@ import (
 	"riskcontral/internal/service"
 
 	"github.com/gogf/gf/v2/errors/gerror"
-	"github.com/gogf/gf/v2/frame/g"
 	"github.com/gogf/gf/v2/os/gcfg"
 	"github.com/gogf/gf/v2/os/gctx"
 	"github.com/mpcsdk/mpcCommon/exmail"
@@ -43,7 +42,6 @@ func (s *sMailCode) SendVerificationCode(ctx context.Context, to string) (string
 		))
 		return "", err
 	}
-	g.Log().Notice(ctx, "SendVerificationCode:", to, code)
 	return code, err
 }
 
@@ -57,7 +55,7 @@ func (s *sMailCode) SendBindingMailCode(ctx context.Context, to string) (string,
 		))
 		return "", err
 	}
-	g.Log().Notice(ctx, "SendBindingMailCode:", to, code)
+
 	return code, err
 }
 func (s *sMailCode) SendBindingCompletionMail(ctx context.Context, to string) error {
@@ -69,7 +67,6 @@ func (s *sMailCode) SendBindingCompletionMail(ctx context.Context, to string) er
 		))
 		return err
 	}
-	g.Log().Notice(ctx, "SendBindingCompletionMail:", to, resp)
 	return err
 }
 
@@ -84,7 +81,6 @@ func (s *sMailCode) SendUpMailCode(ctx context.Context, to string) (string, erro
 		))
 		return "", err
 	}
-	g.Log().Notice(ctx, "SendUpMailCode:", to, code)
 	return code, err
 }
 
@@ -97,7 +93,6 @@ func (s *sMailCode) SendUpCompletionMail(ctx context.Context, to string) error {
 		))
 		return err
 	}
-	g.Log().Notice(ctx, "SendUpCompletionMail:", to, resp)
 	return err
 }
 func new() *sMailCode {

@@ -66,7 +66,7 @@ func (c *ControllerV1) SendMailCode(ctx context.Context, req *v1.SendMailCodeReq
 	_, err = service.TFA().SendMailCode(ctx, info.UserId, req.RiskSerial)
 	if err != nil {
 		g.Log().Errorf(ctx, "%+v", err)
-		return nil, err
+		return nil, gerror.NewCode(mpccode.CodeTFASendMailFailed)
 	}
 	return nil, nil
 }

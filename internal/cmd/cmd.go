@@ -14,7 +14,6 @@ import (
 	"github.com/gogf/gf/v2/frame/g"
 	"github.com/gogf/gf/v2/net/ghttp"
 	"github.com/gogf/gf/v2/os/gcmd"
-	"github.com/mpcsdk/mpcCommon/mpccode"
 )
 
 func MiddlewareCORS(r *ghttp.Request) {
@@ -24,6 +23,7 @@ func MiddlewareCORS(r *ghttp.Request) {
 func ResponseHandler(r *ghttp.Request) {
 	r.Middleware.Next()
 	// There's custom buffer content, it then exits current handler.
+	g.Log().Info(context.Background(), r.GetBodyString())
 	if r.Response.BufferLength() > 0 {
 		return
 	}
@@ -32,10 +32,7 @@ func ResponseHandler(r *ghttp.Request) {
 		res  = r.GetHandlerResponse()
 		code = gerror.Code(err)
 	)
-	if err := r.GetError(); err != nil {
-		g.Log().Errorf(context.Background(), "%+v", err)
-		code = mpccode.CodeParamInvalid
-	}
+
 	if code == gcode.CodeNil {
 		if err != nil {
 			code = gcode.CodeInternalError
@@ -43,6 +40,7 @@ func ResponseHandler(r *ghttp.Request) {
 			code = gcode.CodeOK
 		}
 	}
+	g.Log().Info(context.Background(), res)
 	r.Response.WriteJson(ghttp.DefaultHandlerResponse{
 		Code:    code.Code(),
 		Message: code.Message(),

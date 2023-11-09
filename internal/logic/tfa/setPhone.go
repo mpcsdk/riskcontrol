@@ -34,9 +34,9 @@ func (s *sTFA) TfaBindPhone(ctx context.Context, tfaInfo *entity.Tfa, phone stri
 		}
 		return nil
 	})
-	///tfa phone if
-	if tfaInfo.Phone != "" {
-		verifier := newVerifierPhone(model.RiskKind_UpPhone, tfaInfo.Phone)
+	///tfa mail if
+	if tfaInfo.Mail != "" {
+		verifier := newVerifierMail(model.RiskKind_BindPhone, tfaInfo.Mail)
 		risk.AddVerifier(verifier)
 	}
 	//
@@ -47,7 +47,7 @@ func (s *sTFA) TfaUpPhone(ctx context.Context, tfaInfo *entity.Tfa, phone string
 	if tfaInfo == nil || tfaInfo.Phone == "" {
 		return "", mpccode.CodeParamInvalid.Error()
 	}
-	verifier := newVerifierPhone(model.RiskKind_BindPhone, phone)
+	verifier := newVerifierPhone(model.RiskKind_UpPhone, phone)
 	risk := s.riskPenddingContainer.NewRiskPendding(tfaInfo.UserId, riskSerial, model.RiskKind_UpPhone)
 
 	risk.AddVerifier(verifier)
@@ -59,9 +59,9 @@ func (s *sTFA) TfaUpPhone(ctx context.Context, tfaInfo *entity.Tfa, phone string
 		}
 		return nil
 	})
-	///tfa phone if
-	if tfaInfo.Phone != "" {
-		verifier := newVerifierPhone(model.RiskKind_UpPhone, tfaInfo.Phone)
+	///tfa mail if
+	if tfaInfo.Mail != "" {
+		verifier := newVerifierMail(model.RiskKind_UpPhone, tfaInfo.Mail)
 		risk.AddVerifier(verifier)
 	}
 	//
