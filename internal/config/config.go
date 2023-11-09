@@ -78,6 +78,10 @@ type Server struct {
 	Name    string `json:"name" v:"required"`
 }
 
+type Nrpcfg struct {
+	NatsUrl string `json:"natsUrl" v:"required"`
+}
+
 // //
 type Cfg struct {
 	Server       *Server   `json:"server" v:"required"`
@@ -88,6 +92,7 @@ type Cfg struct {
 	ExEmail      *ExEmail  `json:"exEmail" v:"required"`
 	UserTokenUrl string    `json:"userTokenUrl" v:"required"`
 	JaegerUrl    string    `json:"jaegerUrl" v:"required"`
+	Nrpc         *Nrpcfg   `json:"nrpc" v:"required"`
 }
 
 var Config = &Cfg{}

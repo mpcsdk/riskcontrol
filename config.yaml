@@ -30,6 +30,9 @@ database:
   tfa:
   - link: "pgsql:postgres:123456@tcp(127.0.0.1:10100)/tfa"
 
+nrpc:
+  natsUrl: "127.0.0.1:4222"
+  
 grpc:
   name:             "riskRpc"  # 服务名称
   address:          ":8001" # 自定义服务监听地址

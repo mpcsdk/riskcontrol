@@ -69,7 +69,7 @@ func (c *ControllerV1) SendSmsCode(ctx context.Context, req *v1.SendSmsCodeReq) 
 	_, err = service.TFA().SendPhoneCode(ctx, info.UserId, req.RiskSerial)
 	if err != nil {
 		g.Log().Errorf(ctx, "%+v", err)
-		return nil, err
+		return nil, gerror.NewCode(mpccode.CodeTFASendSmsFailed)
 	}
 	return nil, nil
 }

@@ -8,6 +8,7 @@ import (
 	_ "riskcontral/internal/logic/db"
 	_ "riskcontral/internal/logic/email"
 	_ "riskcontral/internal/logic/lengine"
+	_ "riskcontral/internal/logic/nats"
 	_ "riskcontral/internal/logic/risk"
 	_ "riskcontral/internal/logic/rpc"
 	_ "riskcontral/internal/logic/sms"

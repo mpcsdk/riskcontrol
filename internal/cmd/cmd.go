@@ -3,18 +3,14 @@ package cmd
 import (
 	"context"
 
-	"riskcontral/internal/config"
 	"riskcontral/internal/controller/risk"
 	"riskcontral/internal/controller/tfa"
 
-	"github.com/gogf/gf/contrib/registry/etcd/v2"
-	"github.com/gogf/gf/contrib/rpc/grpcx/v2"
 	"github.com/gogf/gf/v2/errors/gcode"
 	"github.com/gogf/gf/v2/errors/gerror"
 	"github.com/gogf/gf/v2/frame/g"
 	"github.com/gogf/gf/v2/net/ghttp"
 	"github.com/gogf/gf/v2/os/gcmd"
-	"github.com/mpcsdk/mpcCommon/mpccode"
 )
 
 func MiddlewareCORS(r *ghttp.Request) {
@@ -32,10 +28,7 @@ func ResponseHandler(r *ghttp.Request) {
 		res  = r.GetHandlerResponse()
 		code = gerror.Code(err)
 	)
-	if err := r.GetError(); err != nil {
-		g.Log().Errorf(context.Background(), "%+v", err)
-		code = mpccode.CodeParamInvalid
-	}
+
 	if code == gcode.CodeNil {
 		if err != nil {
 			code = gcode.CodeInternalError
@@ -62,13 +55,13 @@ var (
 			// if err != nil {
 			// 	panic(err)
 			// }
-			addr := config.Config.Etcd.Address
-			//grpc
-			grpcx.Resolver.Register(etcd.New(addr))
-			// c := grpcx.Server.NewConfig()
-			rpcs := grpcx.Server.New()
-			risk.Register(rpcs)
-			rpcs.Start()
+			// addr := config.Config.Etcd.Address
+			// //grpc
+			// grpcx.Resolver.Register(etcd.New(addr))
+			// // c := grpcx.Server.NewConfig()
+			// rpcs := grpcx.Server.New()
+			// risk.Register(rpcs)
+			// rpcs.Start()
 			// // http
 			s := g.Server()
 			s.Group("/", func(group *ghttp.RouterGroup) {
