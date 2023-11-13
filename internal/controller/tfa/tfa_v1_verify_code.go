@@ -35,7 +35,7 @@ func (c *ControllerV1) VerifyCode(ctx context.Context, req *v1.VerifyCodeReq) (r
 	err = service.TFA().VerifyCode(ctx, userInfo.UserId, req.RiskSerial, code)
 	if err != nil {
 		g.Log().Warning(ctx, "VerifyCode", req, err)
-		return nil, err
+		return nil, gerror.NewCode(mpccode.CodeRiskVerifyCodeInvalid)
 	}
 
 	// }

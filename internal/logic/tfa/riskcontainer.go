@@ -7,6 +7,7 @@ import (
 	"sync"
 	"time"
 
+	"github.com/gogf/gf/v2/frame/g"
 	"github.com/gogf/gf/v2/os/gtime"
 	"github.com/gogf/gf/v2/os/gtimer"
 )
@@ -34,6 +35,7 @@ func newRiskPenddingContainer(times int) *riskPenddingContainer {
 		defer s.lock.Unlock()
 		for key, risk := range s.riskPendding {
 			if risk.dealline.Before(gtime.Now()) {
+				g.Log().Info(s.ctx, "RiskPenddingContainer dealline:", key, risk.dealline.Local().String())
 				delete(s.riskPendding, key)
 			}
 		}

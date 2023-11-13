@@ -74,6 +74,7 @@ func (*Controller) PerformVerifyCode(ctx context.Context, req *v1.VerifyCodekReq
 	err = service.TFA().VerifyCode(ctx, info.UserId, req.RiskSerial, code)
 	if err != nil {
 		g.Log().Errorf(ctx, "%+v", err)
+		return nil,err
 	}
 	return nil, err
 }

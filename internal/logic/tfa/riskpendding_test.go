@@ -2,6 +2,7 @@ package tfa
 
 import (
 	"context"
+	"fmt"
 	"riskcontral/internal/model"
 	"testing"
 )
@@ -21,6 +22,38 @@ func Test_riskPhone(t *testing.T) {
 	risk.AddAfterFunc(nil)
 	///
 	verifier.SetCode("123")
+	////verify, failed
+	k, err := risk.VerifierCode(&model.VerifyCode{
+		PhoneCode: "123",
+	})
+	if err != nil {
+		t.Log(k)
+		t.Error(err)
+	}
+	if k, err = risk.AllDone(); err != nil {
+		t.Log(k)
+		t.Error(err)
+	}
+
+	// ///
+	k, err = risk.DoFunc(context.TODO())
+	if err != nil {
+		t.Error(k)
+		t.Error(err)
+	}
+}
+
+func Test_risk123(t *testing.T) {
+
+	risk := s.riskPenddingContainer.NewRiskPendding(userId, riskSerial, model.RiskKind_Tx)
+	verifier := newVerifierPhone(model.RiskKind_Tx, phone)
+	risk.AddBeforFunc(nil)
+	risk.AddAfterFunc(func(ctx context.Context) error {
+		fmt.Println("doafter")
+		return nil
+	})
+	///
+	verifier.SetCode("09876")
 	////verify, failed
 	k, err := risk.VerifierCode(&model.VerifyCode{
 		PhoneCode: "123",
