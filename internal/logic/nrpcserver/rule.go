@@ -10,7 +10,7 @@ import (
 	"github.com/mpcsdk/mpcCommon/mpccode"
 )
 
-func (*sNats) PerformAllAbi(ctx context.Context, req *v1.AllAbiReq) (res *v1.AllAbiRes, err error) {
+func (*sNrpcServer) RpcAllAbi(ctx context.Context, req *v1.AllAbiReq) (res *v1.AllAbiRes, err error) {
 	rst, err := service.DB().GetAbiAll(ctx)
 	if err != nil {
 		return nil, gerror.NewCode(mpccode.CodeInternalError)
@@ -25,7 +25,7 @@ func (*sNats) PerformAllAbi(ctx context.Context, req *v1.AllAbiReq) (res *v1.All
 	return res, nil
 }
 
-func (*sNats) PerformAllNftRules(ctx context.Context, req *v1.NftRulesReq) (res *v1.NftRulesRes, err error) {
+func (*sNrpcServer) RpcAllNftRules(ctx context.Context, req *v1.NftRulesReq) (res *v1.NftRulesRes, err error) {
 	rst, err := service.DB().GetNftRules(ctx)
 	if err != nil {
 		g.Log().Errorf(ctx, "%+v", err)
@@ -59,7 +59,7 @@ func (*sNats) PerformAllNftRules(ctx context.Context, req *v1.NftRulesReq) (res 
 	return res, nil
 }
 
-func (*sNats) PerformAllFtRules(ctx context.Context, req *v1.FtRulesReq) (res *v1.FtRulesRes, err error) {
+func (*sNrpcServer) RpcAllFtRules(ctx context.Context, req *v1.FtRulesReq) (res *v1.FtRulesRes, err error) {
 	rst, err := service.DB().GetFtRules(ctx)
 	if err != nil {
 		g.Log().Errorf(ctx, "%+v", err)

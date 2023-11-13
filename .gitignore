@@ -20,3 +20,4 @@ bin
 __debug_*
 *.log
 build/
+riskcontral

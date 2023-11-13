@@ -11,7 +11,7 @@ import (
 	"github.com/mpcsdk/mpcCommon/mpccode"
 )
 
-func (*sNats) PerformRiskTxs(ctx context.Context, req *v1.TxRiskReq) (res *v1.TxRiskRes, err error) {
+func (*sNrpcServer) RpcRiskTxs(ctx context.Context, req *v1.TxRiskReq) (res *v1.TxRiskRes, err error) {
 	//trace
 	ctx, span := gtrace.NewSpan(ctx, "performRiskTxs")
 	defer span.End()
@@ -21,11 +21,10 @@ func (*sNats) PerformRiskTxs(ctx context.Context, req *v1.TxRiskReq) (res *v1.Tx
 		return &v1.TxRiskRes{
 			Ok: code,
 		}, nil
-		// gerror.NewCode(mpccode.CodePerformRiskError)
+		// gerror.NewCode(mpccode.CodeRpcRiskError)
 	}
 	///: pass or forbidden
 	//
-
 	if code == mpccode.RiskCodePass {
 		return &v1.TxRiskRes{
 			Ok: code,
@@ -39,13 +38,15 @@ func (*sNats) PerformRiskTxs(ctx context.Context, req *v1.TxRiskReq) (res *v1.Tx
 	///
 	//
 	//notice:  tfatx  need verification
-	kinds, err := service.TFA().TFATx(ctx, req.UserId, serial)
+	// tfaInfo, err := service.NrpcClient().RpcTfaInfo(ctx, req.UserId)
+	// kinds, err := service.TFA().TFATx(ctx, req.UserId, serial)
+	kinds, err := service.NrpcClient().RpcTfaTx(ctx, req.UserId, serial)
 	if err != nil {
 		g.Log().Errorf(ctx, "%+v", err)
 		return nil, gerror.NewCode(mpccode.CodePerformRiskError)
 	}
 	///
-	g.Log().Notice(ctx, "PerformRiskTFA:", req.UserId, serial, kinds)
+	g.Log().Notice(ctx, "RpcRiskTFA:", req.UserId, serial)
 	return &v1.TxRiskRes{
 		Ok:         code,
 		RiskSerial: serial,

@@ -1,5 +1,5 @@
 server:
-  address:     ":8002"
+  address:     ":8003"
   workId: 1
   name: "riskcontrol"
 

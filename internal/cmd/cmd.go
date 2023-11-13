@@ -4,7 +4,6 @@ import (
 	"context"
 
 	"riskcontral/internal/controller/risk"
-	"riskcontral/internal/controller/tfa"
 
 	"github.com/gogf/gf/v2/errors/gcode"
 	"github.com/gogf/gf/v2/errors/gerror"
@@ -51,20 +50,7 @@ var (
 		Usage: "main",
 		Brief: "start http server",
 		Func: func(ctx context.Context, parser *gcmd.Parser) (err error) {
-			///
-			// etcd rpc
-			// addr, err := gcfg.Instance().Get(ctx, "etcd.address")
-			// if err != nil {
-			// 	panic(err)
-			// }
-			// addr := config.Config.Etcd.Address
-			// //grpc
-			// grpcx.Resolver.Register(etcd.New(addr))
-			// // c := grpcx.Server.NewConfig()
-			// rpcs := grpcx.Server.New()
-			// risk.Register(rpcs)
-			// rpcs.Start()
-			// // http
+
 			s := g.Server()
 			s.Group("/", func(group *ghttp.RouterGroup) {
 				group.Middleware(ghttp.MiddlewareHandlerResponse)
@@ -72,7 +58,6 @@ var (
 				group.Middleware(ResponseHandler)
 				group.Bind(
 					risk.NewV1(),
-					tfa.NewV1(),
 				)
 			})
 			s.Run()

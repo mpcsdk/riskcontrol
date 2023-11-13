@@ -7,7 +7,6 @@ package service
 
 import (
 	"context"
-	"riskcontral/internal/model/do"
 	"riskcontral/internal/model/entity"
 
 	"github.com/mpcsdk/mpcCommon/mpcmodel"
@@ -26,12 +25,6 @@ type (
 		AllRules(ctx context.Context) (map[string]string, error)
 		GetNftRules(ctx context.Context) (map[string]*mpcmodel.NftRule, error)
 		GetFtRules(ctx context.Context) (map[string]*mpcmodel.FtRule, error)
-		TfaMailNotExists(ctx context.Context, mail string) error
-		TfaPhoneNotExists(ctx context.Context, phone string) error
-		InsertTfaInfo(ctx context.Context, userId string, data *do.Tfa) error
-		// //
-		UpdateTfaInfo(ctx context.Context, userId string, data *do.Tfa) error
-		FetchTfaInfo(ctx context.Context, userId string) (*entity.Tfa, error)
 	}
 )
 

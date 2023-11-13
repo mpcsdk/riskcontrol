@@ -13,7 +13,7 @@ import (
 	"github.com/nats-io/nats.go"
 )
 
-type sNats struct {
+type sNrpcServer struct {
 	sub *nats.Subscription
 	nc  *nats.Conn
 }
@@ -25,8 +25,8 @@ func init() {
 	}
 	// defer nc.Close()
 
-	s := &sNats{}
-	h := v1.NewUserHandler(gctx.GetInitCtx(), nc, s)
+	s := &sNrpcServer{}
+	h := v1.NewRiskHandler(gctx.GetInitCtx(), nc, s)
 	sub, err := nc.QueueSubscribe(h.Subject(), "riskcontrol", h.Handler)
 	if err != nil {
 		panic(err)
@@ -35,12 +35,12 @@ func init() {
 	s.sub = sub
 	s.nc = nc
 
-	service.RegisterNats(s)
+	service.RegisterNrpcServer(s)
 }
 
-func (*sNats) PerformAlive(ctx context.Context, in *empty.Empty) (*empty.Empty, error) {
+func (*sNrpcServer) RpcAlive(ctx context.Context, in *empty.Empty) (*empty.Empty, error) {
 	//trace
-	ctx, span := gtrace.NewSpan(ctx, "PerformAlive")
+	ctx, span := gtrace.NewSpan(ctx, "RpcAlive")
 	defer span.End()
 	//
 	return &empty.Empty{}, nil

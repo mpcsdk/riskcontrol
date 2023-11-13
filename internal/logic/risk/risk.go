@@ -46,8 +46,9 @@ func (s *sRisk) RiskTxs(ctx context.Context, userId string, signTx string) (stri
 	/////
 	switch code {
 	case mpccode.RiskCodePass, mpccode.RiskCodeNeedVerification:
+		info, err := service.NrpcClient().RpcTfaInfo(ctx, userId)
 		////if pass, chech tfa forbiddent
-		info, err := service.TFA().TFAInfo(ctx, userId)
+		// info, err := service.TFA().TFAInfo(ctx, userId)
 		if err != nil || info == nil {
 			g.Log().Warning(ctx, "PerformRiskTxs:", "userId:", userId)
 			g.Log().Errorf(ctx, "%+v", err)
@@ -88,6 +89,7 @@ func (s *sRisk) RiskTxs(ctx context.Context, userId string, signTx string) (stri
 }
 
 func (s *sRisk) RiskTFA(ctx context.Context, tfaInfo *entity.Tfa, riskData *model.RiskTfa) (string, int32) {
+	// func (s *sRisk) RiskTFA(ctx context.Context, userId string, riskData *model.RiskTfa) (string, int32) {
 	if !s.userControl {
 		return "", mpccode.RiskCodePass
 	}
