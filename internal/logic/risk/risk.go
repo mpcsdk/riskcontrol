@@ -102,8 +102,10 @@ func (s *sRisk) RiskTFA(ctx context.Context, tfaInfo *entity.Tfa, riskData *mode
 	///
 	switch riskData.Type {
 	case model.Type_TfaUpdatePhone:
+
 		code, err = s.checkTfaUpPhone(ctx, tfaInfo)
 	case model.Type_TfaUpdateMail:
+
 		code, err = s.checkTfaUpMail(ctx, tfaInfo)
 	case model.Type_TfaBindPhone:
 		code, err = s.checkTfaBindPhone(ctx, tfaInfo)

@@ -12,8 +12,12 @@ import (
 func (s *sRisk) checkTfaUpPhone(ctx context.Context, tfaInfo *entity.Tfa) (int32, error) {
 	/////
 	if tfaInfo == nil {
-		g.Log().Warning(ctx, "checkTFAUpPhone userinfo not exists:", tfaInfo)
+		g.Log().Warning(ctx, "checkTFAUpPhone tfaInfo not exists:", tfaInfo)
 		return mpccode.RiskCodeNeedVerification, nil
+	}
+	if tfaInfo.Mail == "" && tfaInfo.Phone == "" {
+		g.Log().Warning(ctx, "checkTFAUpPhone tfaInfo not exists:", tfaInfo)
+		return mpccode.RiskCodeError, nil
 	}
 	if tfaInfo.PhoneUpdatedAt == nil {
 		g.Log().Notice(ctx, "checkTFAUpPhone notuptime :",
@@ -35,11 +39,16 @@ func (s *sRisk) checkTfaUpPhone(ctx context.Context, tfaInfo *entity.Tfa) (int32
 }
 
 func (s *sRisk) checkTfaUpMail(ctx context.Context, tfaInfo *entity.Tfa) (int32, error) {
-
 	if tfaInfo == nil {
 		g.Log().Warning(ctx, "checkTfaUpMail userinfo not exists:", tfaInfo)
 		return mpccode.RiskCodeNeedVerification, nil
 	}
+	if tfaInfo.Mail == "" && tfaInfo.Phone == "" {
+		g.Log().Warning(ctx, "checkTfaUpMail tfaInfo not exists:", tfaInfo)
+		return mpccode.RiskCodeError, nil
+	}
+
+	///
 	if tfaInfo.MailUpdatedAt == nil {
 		g.Log().Notice(ctx, "checkTfaUpMail notuptime :",
 			"tfaInfo:", tfaInfo,

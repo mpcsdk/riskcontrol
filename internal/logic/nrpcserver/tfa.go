@@ -12,6 +12,7 @@ func (s *sNrpcServer) RpcRiskTFA(ctx context.Context, req *v1.TFARiskReq) (res *
 	if err != nil {
 		return nil, err
 	}
+
 	riskData := &model.RiskTfa{
 		UserId: req.UserId,
 		Type:   req.Type,
