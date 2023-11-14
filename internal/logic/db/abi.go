@@ -5,7 +5,6 @@ import (
 	"riskcontral/internal/dao"
 	"riskcontral/internal/model/do"
 	"riskcontral/internal/model/entity"
-	"time"
 
 	"github.com/gogf/gf/v2/database/gdb"
 	"github.com/gogf/gf/v2/errors/gerror"
@@ -22,7 +21,7 @@ func (s *sDB) GetAbi(ctx context.Context, addr string) (string, error) {
 		Addr: addr,
 	}
 	rst, err := g.Model(dao.ContractAbi.Table()).Ctx(ctx).Cache(gdb.CacheOption{
-		Duration: time.Hour,
+		Duration: s.dbDuration,
 		Name:     dao.ContractAbi.Table() + addr,
 		Force:    false,
 	}).Where(aggdo).One()
@@ -47,7 +46,7 @@ func (s *sDB) GetAbiAll(ctx context.Context) ([]*entity.ContractAbi, error) {
 	var data []*entity.ContractAbi
 
 	rst, err := g.Model(dao.ContractAbi.Table()).Ctx(ctx).Cache(gdb.CacheOption{
-		Duration: time.Hour,
+		Duration: s.dbDuration,
 		Name:     dao.ContractAbi.Table() + "all",
 		Force:    false,
 		// }).Where("user_id", 1).One()

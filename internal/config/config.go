@@ -10,6 +10,7 @@ import (
 type Cache struct {
 	ApiInterval     int `json:"apiInterval" v:"required|min:1"`
 	SessionDuration int `json:"sessionDuration" v:"required|min:1"`
+	DBDuration      int `json:"dbDuration" v:"required|min:1"`
 }
 type Etcd struct {
 	Address       string `json:"address" v:"required"`

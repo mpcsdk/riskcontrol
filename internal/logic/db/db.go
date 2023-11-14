@@ -3,7 +3,9 @@ package db
 import (
 	"context"
 	"errors"
+	"riskcontral/internal/config"
 	"riskcontral/internal/service"
+	"time"
 
 	"github.com/gogf/gf/v2/frame/g"
 	"github.com/gogf/gf/v2/os/gcache"
@@ -12,7 +14,8 @@ import (
 
 type sDB struct {
 	// cache *gcache.Cache
-	ctx context.Context
+	ctx        context.Context
+	dbDuration time.Duration
 }
 
 func new() *sDB {
@@ -21,7 +24,8 @@ func new() *sDB {
 	// }
 	// g.Redis().Exists(gctx.GetInitCtx())
 	s := &sDB{
-		ctx: gctx.GetInitCtx(),
+		ctx:        gctx.GetInitCtx(),
+		dbDuration: time.Duration(config.Config.Cache.DBDuration) * time.Second,
 	}
 	//todo: notify
 	go s.listenNotify([]string{RuleChName, AbiChName})
