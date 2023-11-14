@@ -47,12 +47,20 @@ func (s *sRisk) RiskTxs(ctx context.Context, userId string, signTx string) (stri
 	switch code {
 	case mpccode.RiskCodePass, mpccode.RiskCodeNeedVerification:
 		info, err := service.NrpcClient().RpcTfaInfo(ctx, userId)
-		////if pass, chech tfa forbiddent
-		// info, err := service.TFA().TFAInfo(ctx, userId)
-		if err != nil || info == nil {
-			g.Log().Warning(ctx, "PerformRiskTxs:", "userId:", userId)
+		if err != nil {
+			g.Log().Warning(ctx, "RiskTxs:", "userId:", userId)
 			g.Log().Errorf(ctx, "%+v", err)
 			return "", mpccode.RiskCodeError
+		}
+		////if pass, chech tfa forbiddent
+		// info, err := service.TFA().TFAInfo(ctx, userId)
+		if info == nil {
+			if mpccode.RiskCodePass == code {
+				return riskserial, code
+			} else {
+				g.Log().Warning(ctx, "RiskTxs tfaNotExists:", "code:", code, "userId:", userId)
+				return "", mpccode.RiskCodeError
+			}
 		}
 		///
 		if info.MailUpdatedAt != nil {
