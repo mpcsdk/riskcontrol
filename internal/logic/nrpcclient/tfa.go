@@ -53,11 +53,21 @@ func (s *sNrpcClient) RpcTfaInfo(ctx context.Context, userId string) (*entity.Tf
 	}
 	///
 	return &entity.Tfa{
-		UserId:         rst.UserId,
-		Mail:           rst.Mail,
-		Phone:          rst.Phone,
-		PhoneUpdatedAt: gtime.NewFromStr(rst.UpPhoneTime),
-		MailUpdatedAt:  gtime.NewFromStr(rst.UpMailTime),
+		UserId: rst.UserId,
+		Mail:   rst.Mail,
+		Phone:  rst.Phone,
+		PhoneUpdatedAt: func() *gtime.Time {
+			if rst.UpPhoneTime == "" {
+				return nil
+			}
+			return gtime.NewFromStr(rst.UpPhoneTime)
+		}(),
+		MailUpdatedAt: func() *gtime.Time {
+			if rst.UpMailTime == "" {
+				return nil
+			}
+			return gtime.NewFromStr(rst.UpMailTime)
+		}(),
 	}, nil
 }
 func (s *sNrpcClient) RpcAlive(ctx context.Context) error {

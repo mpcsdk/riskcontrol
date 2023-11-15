@@ -54,7 +54,7 @@ func (s *sRisk) RiskTxs(ctx context.Context, userId string, signTx string) (stri
 		}
 		////if pass, chech tfa forbiddent
 		// info, err := service.TFA().TFAInfo(ctx, userId)
-		if info == nil {
+		if info == nil || (info.Mail == "" && info.Phone == "") {
 			if mpccode.RiskCodePass == code {
 				return riskserial, code
 			} else {
