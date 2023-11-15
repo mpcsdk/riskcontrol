@@ -13,6 +13,7 @@ import (
 	_ "github.com/gogf/gf/contrib/nosql/redis/v2"
 	"github.com/gogf/gf/contrib/trace/jaeger/v2"
 	"github.com/gogf/gf/v2/os/gctx"
+	"github.com/gogf/gf/v2/os/gtime"
 
 	"riskcontral/internal/cmd"
 
@@ -26,7 +27,7 @@ func main() {
 	workId := config.Config.Server.WorkId
 	rand.InitIdGen(workId)
 	//
-
+	gtime.SetTimeZone("Asia/Shanghai")
 	// ///jaeger
 	// cfg := gcfg.Instance()
 	// name := cfg.MustGet(ctx, "server.name", "mpc-signer").String()
