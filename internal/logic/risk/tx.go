@@ -2,7 +2,6 @@ package risk
 
 import (
 	"context"
-	"strings"
 
 	"github.com/gogf/gf/v2/errors/gerror"
 	"github.com/gogf/gf/v2/frame/g"
@@ -24,7 +23,7 @@ func (s *sRisk) checkTxs(ctx context.Context, signTxStr string) (int32, error) {
 	}
 
 	for _, tx := range signTx.Txs {
-		code, err := s.checkTx(ctx, signTx.Address, tx)
+		code, err := s.checkTx(ctx, signTx.Address.String(), tx)
 		if err != nil {
 			err = gerror.Wrap(err, mpccode.ErrDetails(
 				mpccode.ErrDetail("address", signTx.Address),
@@ -45,14 +44,14 @@ func (s *sRisk) checkTx(ctx context.Context, from string, riskSignTx *analzyer.S
 		return 0, nil
 	}
 	///
-	riskSignTx.Target = strings.ToLower(riskSignTx.Target)
-	if ftrule, ok := scencRule.ftruleMap[riskSignTx.Target]; ok {
+	// riskSignTx.Target = strings.ToLower(riskSignTx.Target)
+	if ftrule, ok := scencRule.ftruleMap[riskSignTx.Target.String()]; ok {
 		//ft
 		ethtx, err := scencRule.analzer.AnalzyTxDataFT(
-			riskSignTx.Target,
+			riskSignTx.Target.String(),
 			riskSignTx,
 			ftrule)
-		if err != nil {
+		if err != nil || ethtx == nil {
 			g.Log().Warning(ctx, "checkTx:", "riskSignTx:", riskSignTx)
 			g.Log().Warning(ctx, "checkTx:", "ftrule:", ftrule)
 			g.Log().Errorf(ctx, "%+v", err)
@@ -88,9 +87,9 @@ func (s *sRisk) checkTx(ctx context.Context, from string, riskSignTx *analzyer.S
 			"txcnt:", cnt.String(),
 			"threshold:", ftrule.Threshold.String())
 		return mpccode.RiskCodePass, nil
-	} else if nftrule, ok := scencRule.nftruleMap[riskSignTx.Target]; ok {
+	} else if nftrule, ok := scencRule.nftruleMap[riskSignTx.Target.String()]; ok {
 		ethtx, err := scencRule.analzer.AnalzyTxDataNFT(
-			riskSignTx.Target,
+			riskSignTx.Target.String(),
 			riskSignTx,
 			nftrule)
 		if err != nil {

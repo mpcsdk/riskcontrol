@@ -9,6 +9,7 @@ import (
 	"riskcontral/internal/service"
 	"time"
 
+	"github.com/gogf/gf/v2/encoding/gjson"
 	"github.com/gogf/gf/v2/frame/g"
 	"github.com/gogf/gf/v2/os/gctx"
 	"github.com/gogf/gf/v2/os/gtime"
@@ -269,6 +270,14 @@ func new() *sRisk {
 	s.userControl = config.Config.UserRisk.UserControl
 	s.txControl = config.Config.UserRisk.TxControl
 
+	///
+	for k, rules := range s.sceneRules {
+		g.Log().Info(ctx, "sceneNo:", k)
+		j := gjson.New(rules.nftruleMap)
+		g.Log().Info(ctx, "nftRule:", j.MustToJsonIndentString())
+		j = gjson.New(rules.ftruleMap)
+		g.Log().Info(ctx, "ftRule:", j.MustToJsonIndentString())
+	}
 	return s
 }
 
