@@ -2,11 +2,11 @@ package db
 
 import (
 	"context"
-	"errors"
 	"riskcontral/internal/config"
 	"riskcontral/internal/service"
 	"time"
 
+	_ "github.com/gogf/gf/contrib/drivers/mysql/v2"
 	"github.com/gogf/gf/v2/frame/g"
 	"github.com/gogf/gf/v2/os/gcache"
 	"github.com/gogf/gf/v2/os/gctx"
@@ -28,13 +28,13 @@ func new() *sDB {
 		dbDuration: time.Duration(config.Config.Cache.DBDuration) * time.Second,
 	}
 	//todo: notify
-	go s.listenNotify([]string{RuleChName, AbiChName})
+	// go s.listenNotify([]string{RuleChName, AbiChName})
 	return s
 }
 
-var errArg error = errors.New("arg err")
-var errEmpty error = errors.New("empty db")
-var errDataExists error = errors.New("empty data exists")
+// var errArg error = errors.New("arg err")
+// var errEmpty error = errors.New("empty db")
+// var errDataExists error = errors.New("empty data exists")
 
 // 初始化
 func init() {

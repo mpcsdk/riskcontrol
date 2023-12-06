@@ -3,54 +3,21 @@ package db
 import (
 	"context"
 	"fmt"
-	"riskcontral/internal/dao"
-	"riskcontral/internal/model/entity"
 	"riskcontral/internal/service"
 	"strings"
 
 	_ "github.com/gogf/gf/contrib/nosql/redis/v2"
 	"github.com/jackc/pgconn"
 	"github.com/jackc/pgx/v4/pgxpool"
-	"github.com/mpcsdk/mpcCommon/mpccode"
 
 	// _ "github.com/gogf/gf/contrib/drivers/mysql/v2"
 	_ "github.com/gogf/gf/contrib/drivers/pgsql/v2"
-	"github.com/gogf/gf/v2/errors/gerror"
 	"github.com/gogf/gf/v2/frame/g"
 	"github.com/gogf/gf/v2/os/gctx"
 )
 
 var RuleChName = "rule_ch"
 var AbiChName = "abi_ch"
-
-func (s *sDB) GetRules(ctx context.Context, ruleId string) (string, error) {
-	rule := &entity.Rule{}
-
-	err := dao.Rule.Ctx(ctx).Where(dao.Rule.Columns().RuleId, ruleId).Scan(rule)
-	if err != nil {
-		err = gerror.Wrap(err, mpccode.ErrDetails(
-			mpccode.ErrDetail("ruleid", ruleId),
-		))
-		return "", err
-	}
-	return rule.Rules, err
-}
-
-func (s *sDB) AllRules(ctx context.Context) (map[string]string, error) {
-	rule := []entity.Rule{}
-	err := dao.Rule.Ctx(ctx).Scan(&rule)
-	if err != nil {
-		err = gerror.Wrap(err, mpccode.ErrDetails(
-			mpccode.ErrDetail("getallrule", ""),
-		))
-		return nil, err
-	}
-	rst := map[string]string{}
-	for _, i := range rule {
-		rst[i.RuleId] = i.Rules
-	}
-	return rst, nil
-}
 
 func (s *sDB) subscription(conn *pgxpool.Conn, name string, notificationChannel chan *pgconn.Notification) {
 
@@ -72,8 +39,8 @@ func (s *sDB) subscription(conn *pgxpool.Conn, name string, notificationChannel 
 						ruleId := ops[0]
 						op := ops[1]
 						if op == "up" {
-							rules, _ := s.GetRules(s.ctx, ruleId)
-							service.LEngine().UpRules(ruleId, rules)
+							// rules, _ := s.GetRule(s.ctx, "", "")
+							service.LEngine().UpRules(ruleId, "")
 						}
 						if op == "rm" {
 							service.LEngine().UpRules(ruleId, "")

@@ -18,9 +18,10 @@ type RiskServer interface {
 	RpcAlive(ctx context.Context, req *github_com_golang_protobuf_ptypes_empty.Empty) (*github_com_golang_protobuf_ptypes_empty.Empty, error)
 	RpcRiskTxs(ctx context.Context, req *TxRiskReq) (*TxRiskRes, error)
 	RpcRiskTFA(ctx context.Context, req *TFARiskReq) (*TFARiskRes, error)
-	RpcAllAbi(ctx context.Context, req *AllAbiReq) (*AllAbiRes, error)
-	RpcAllNftRules(ctx context.Context, req *NftRulesReq) (*NftRulesRes, error)
-	RpcAllFtRules(ctx context.Context, req *FtRulesReq) (*FtRulesRes, error)
+	RpcContractAbiBriefs(ctx context.Context, req *ContractAbiBriefsReq) (*ContractAbiBriefsRes, error)
+	RpcContractAbi(ctx context.Context, req *ContractAbiReq) (*ContractAbiRes, error)
+	RpcContractRuleBriefs(ctx context.Context, req *ContractRuleBriefsReq) (*ContractRuleBriefsRes, error)
+	RpcContractRule(ctx context.Context, req *ContractRuleReq) (*ContractRuleRes, error)
 }
 
 // RiskHandler provides a NATS subscription handler that can serve a
@@ -149,66 +150,88 @@ func (h *RiskHandler) Handler(msg *nats.Msg) {
 				return innerResp, err
 			}
 		}
-	case "RpcAllAbi":
+	case "RpcContractAbiBriefs":
 		_, request.Encoding, err = nrpc.ParseSubjectTail(0, request.SubjectTail)
 		if err != nil {
-			log.Printf("RpcAllAbiHanlder: RpcAllAbi subject parsing failed: %v", err)
+			log.Printf("RpcContractAbiBriefsHanlder: RpcContractAbiBriefs subject parsing failed: %v", err)
 			break
 		}
-		var req AllAbiReq
+		var req ContractAbiBriefsReq
 		if err := nrpc.Unmarshal(request.Encoding, msg.Data, &req); err != nil {
-			log.Printf("RpcAllAbiHandler: RpcAllAbi request unmarshal failed: %v", err)
+			log.Printf("RpcContractAbiBriefsHandler: RpcContractAbiBriefs request unmarshal failed: %v", err)
 			immediateError = &nrpc.Error{
 				Type: nrpc.Error_CLIENT,
 				Message: "bad request received: " + err.Error(),
 			}
 		} else {
 			request.Handler = func(ctx context.Context)(proto.Message, error){
-				innerResp, err := h.server.RpcAllAbi(ctx, &req)
+				innerResp, err := h.server.RpcContractAbiBriefs(ctx, &req)
 				if err != nil {
 					return nil, err
 				}
 				return innerResp, err
 			}
 		}
-	case "RpcAllNftRules":
+	case "RpcContractAbi":
 		_, request.Encoding, err = nrpc.ParseSubjectTail(0, request.SubjectTail)
 		if err != nil {
-			log.Printf("RpcAllNftRulesHanlder: RpcAllNftRules subject parsing failed: %v", err)
+			log.Printf("RpcContractAbiHanlder: RpcContractAbi subject parsing failed: %v", err)
 			break
 		}
-		var req NftRulesReq
+		var req ContractAbiReq
 		if err := nrpc.Unmarshal(request.Encoding, msg.Data, &req); err != nil {
-			log.Printf("RpcAllNftRulesHandler: RpcAllNftRules request unmarshal failed: %v", err)
+			log.Printf("RpcContractAbiHandler: RpcContractAbi request unmarshal failed: %v", err)
 			immediateError = &nrpc.Error{
 				Type: nrpc.Error_CLIENT,
 				Message: "bad request received: " + err.Error(),
 			}
 		} else {
 			request.Handler = func(ctx context.Context)(proto.Message, error){
-				innerResp, err := h.server.RpcAllNftRules(ctx, &req)
+				innerResp, err := h.server.RpcContractAbi(ctx, &req)
 				if err != nil {
 					return nil, err
 				}
 				return innerResp, err
 			}
 		}
-	case "RpcAllFtRules":
+	case "RpcContractRuleBriefs":
 		_, request.Encoding, err = nrpc.ParseSubjectTail(0, request.SubjectTail)
 		if err != nil {
-			log.Printf("RpcAllFtRulesHanlder: RpcAllFtRules subject parsing failed: %v", err)
+			log.Printf("RpcContractRuleBriefsHanlder: RpcContractRuleBriefs subject parsing failed: %v", err)
 			break
 		}
-		var req FtRulesReq
+		var req ContractRuleBriefsReq
 		if err := nrpc.Unmarshal(request.Encoding, msg.Data, &req); err != nil {
-			log.Printf("RpcAllFtRulesHandler: RpcAllFtRules request unmarshal failed: %v", err)
+			log.Printf("RpcContractRuleBriefsHandler: RpcContractRuleBriefs request unmarshal failed: %v", err)
 			immediateError = &nrpc.Error{
 				Type: nrpc.Error_CLIENT,
 				Message: "bad request received: " + err.Error(),
 			}
 		} else {
 			request.Handler = func(ctx context.Context)(proto.Message, error){
-				innerResp, err := h.server.RpcAllFtRules(ctx, &req)
+				innerResp, err := h.server.RpcContractRuleBriefs(ctx, &req)
+				if err != nil {
+					return nil, err
+				}
+				return innerResp, err
+			}
+		}
+	case "RpcContractRule":
+		_, request.Encoding, err = nrpc.ParseSubjectTail(0, request.SubjectTail)
+		if err != nil {
+			log.Printf("RpcContractRuleHanlder: RpcContractRule subject parsing failed: %v", err)
+			break
+		}
+		var req ContractRuleReq
+		if err := nrpc.Unmarshal(request.Encoding, msg.Data, &req); err != nil {
+			log.Printf("RpcContractRuleHandler: RpcContractRule request unmarshal failed: %v", err)
+			immediateError = &nrpc.Error{
+				Type: nrpc.Error_CLIENT,
+				Message: "bad request received: " + err.Error(),
+			}
+		} else {
+			request.Handler = func(ctx context.Context)(proto.Message, error){
+				innerResp, err := h.server.RpcContractRule(ctx, &req)
 				if err != nil {
 					return nil, err
 				}
@@ -297,12 +320,12 @@ func (c *RiskClient) RpcRiskTFA(req *TFARiskReq) (*TFARiskRes, error) {
 	return &resp, nil
 }
 
-func (c *RiskClient) RpcAllAbi(req *AllAbiReq) (*AllAbiRes, error) {
+func (c *RiskClient) RpcContractAbiBriefs(req *ContractAbiBriefsReq) (*ContractAbiBriefsRes, error) {
 
-	subject := c.Subject + "." + "RpcAllAbi"
+	subject := c.Subject + "." + "RpcContractAbiBriefs"
 
 	// call
-	var resp = AllAbiRes{}
+	var resp = ContractAbiBriefsRes{}
 	if err := nrpc.Call(req, &resp, c.nc, subject, c.Encoding, c.Timeout); err != nil {
 		return nil, err
 	}
@@ -310,12 +333,12 @@ func (c *RiskClient) RpcAllAbi(req *AllAbiReq) (*AllAbiRes, error) {
 	return &resp, nil
 }
 
-func (c *RiskClient) RpcAllNftRules(req *NftRulesReq) (*NftRulesRes, error) {
+func (c *RiskClient) RpcContractAbi(req *ContractAbiReq) (*ContractAbiRes, error) {
 
-	subject := c.Subject + "." + "RpcAllNftRules"
+	subject := c.Subject + "." + "RpcContractAbi"
 
 	// call
-	var resp = NftRulesRes{}
+	var resp = ContractAbiRes{}
 	if err := nrpc.Call(req, &resp, c.nc, subject, c.Encoding, c.Timeout); err != nil {
 		return nil, err
 	}
@@ -323,12 +346,25 @@ func (c *RiskClient) RpcAllNftRules(req *NftRulesReq) (*NftRulesRes, error) {
 	return &resp, nil
 }
 
-func (c *RiskClient) RpcAllFtRules(req *FtRulesReq) (*FtRulesRes, error) {
+func (c *RiskClient) RpcContractRuleBriefs(req *ContractRuleBriefsReq) (*ContractRuleBriefsRes, error) {
 
-	subject := c.Subject + "." + "RpcAllFtRules"
+	subject := c.Subject + "." + "RpcContractRuleBriefs"
 
 	// call
-	var resp = FtRulesRes{}
+	var resp = ContractRuleBriefsRes{}
+	if err := nrpc.Call(req, &resp, c.nc, subject, c.Encoding, c.Timeout); err != nil {
+		return nil, err
+	}
+
+	return &resp, nil
+}
+
+func (c *RiskClient) RpcContractRule(req *ContractRuleReq) (*ContractRuleRes, error) {
+
+	subject := c.Subject + "." + "RpcContractRule"
+
+	// call
+	var resp = ContractRuleRes{}
 	if err := nrpc.Call(req, &resp, c.nc, subject, c.Encoding, c.Timeout); err != nil {
 		return nil, err
 	}

@@ -7,7 +7,6 @@ import (
 	"riskcontral/internal/service"
 
 	"github.com/bilibili/gengine/engine"
-	"github.com/gogf/gf/v2/os/gctx"
 )
 
 type sLEngine struct {
@@ -49,11 +48,11 @@ func (s *sLEngine) Exec(ruleId string, param map[string]interface{}) (bool, erro
 	}
 }
 func (s *sLEngine) List(ctx context.Context, ruleId string) map[string]string {
-	r, err := service.DB().GetRules(ctx, ruleId)
-	fmt.Println(err)
+	// r, err := service.DB().GetRules(ctx, ruleId)
+	// fmt.Println(err)
 
 	return map[string]string{
-		"rules": r,
+		"rules": "rules",
 	}
 }
 
@@ -76,13 +75,13 @@ func new() *sLEngine {
 	e := &sLEngine{
 		RuleEnginePool: make(map[string]*engine.GenginePool),
 	}
-	rs, err := service.DB().AllRules(gctx.GetInitCtx())
-	if err != nil {
-		panic(err)
-	}
-	for name, rule := range rs {
-		e.newPool(name, rule)
-	}
+	// rs, err := service.DB().AllRules(gctx.GetInitCtx())
+	// if err != nil {
+	// 	panic(err)
+	// }
+	// for name, rule := range rs {
+	// 	e.newPool(name, rule)
+	// }
 	return e
 }
 

@@ -27,6 +27,7 @@ type TfaColumns struct {
 	Mail           string //
 	PhoneUpdatedAt string //
 	MailUpdatedAt  string //
+	TokenData      string //
 }
 
 // tfaColumns holds the columns for table tfa.
@@ -38,6 +39,7 @@ var tfaColumns = TfaColumns{
 	Mail:           "mail",
 	PhoneUpdatedAt: "phone_updated_at",
 	MailUpdatedAt:  "mail_updated_at",
+	TokenData:      "token_data",
 }
 
 // NewTfaDao creates and returns a new DAO object for table data access.

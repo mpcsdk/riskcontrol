@@ -9,12 +9,15 @@ import (
 	"context"
 	"riskcontral/internal/model"
 	"riskcontral/internal/model/entity"
+
+	"github.com/mpcsdk/mpcCommon/mq"
 )
 
 type (
 	IRisk interface {
 		RiskTxs(ctx context.Context, userId string, signTx string) (string, int32)
 		RiskTFA(ctx context.Context, tfaInfo *entity.Tfa, riskData *model.RiskTfa) (string, int32)
+		Notify(ctx context.Context, kind mq.RiskCtrlKind, notice *mq.ContractNotice)
 	}
 )
 

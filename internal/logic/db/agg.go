@@ -64,7 +64,7 @@ func (s *sDB) GetAggFT(ctx context.Context, from, contract, methodName string) (
 		return nil, err
 	}
 	if rst.IsEmpty() {
-		err = gerror.Wrap(errEmpty, mpccode.ErrDetails(
+		err = gerror.Wrap(mpccode.ErrEmpty, mpccode.ErrDetails(
 			mpccode.ErrDetail("do", aggdo),
 		))
 		return nil, err
@@ -86,7 +86,7 @@ func (s *sDB) GetAggNFT(ctx context.Context, from, contract, methodName string) 
 		return 0, err
 	}
 	if cnt == 0 {
-		return 0, errEmpty
+		return 0, mpccode.ErrEmpty
 	}
 	////
 	return cnt, err

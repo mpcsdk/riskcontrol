@@ -14,10 +14,13 @@ import (
 
 type (
 	INrpcServer interface {
+		RpcContractAbiBriefs(ctx context.Context, req *v1.ContractAbiBriefsReq) (res *v1.ContractAbiBriefsRes, err error)
+		RpcContractAbi(ctx context.Context, req *v1.ContractAbiReq) (res *v1.ContractAbiRes, err error)
+		NatsPub()
+		// /
+		RpcContractRuleBriefs(ctx context.Context, req *v1.ContractRuleBriefsReq) (res *v1.ContractRuleBriefsRes, err error)
+		RpcContractRule(ctx context.Context, req *v1.ContractRuleReq) (res *v1.ContractRuleRes, err error)
 		RpcAlive(ctx context.Context, in *empty.Empty) (*empty.Empty, error)
-		RpcAllAbi(ctx context.Context, req *v1.AllAbiReq) (res *v1.AllAbiRes, err error)
-		RpcAllNftRules(ctx context.Context, req *v1.NftRulesReq) (res *v1.NftRulesRes, err error)
-		RpcAllFtRules(ctx context.Context, req *v1.FtRulesReq) (res *v1.FtRulesRes, err error)
 		RpcRiskTFA(ctx context.Context, req *v1.TFARiskReq) (res *v1.TFARiskRes, err error)
 		RpcRiskTxs(ctx context.Context, req *v1.TxRiskReq) (res *v1.TxRiskRes, err error)
 	}

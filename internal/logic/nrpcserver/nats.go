@@ -14,6 +14,7 @@ import (
 )
 
 type sNrpcServer struct {
+	ctx context.Context
 	sub *nats.Subscription
 	nc  *nats.Conn
 }
@@ -34,7 +35,10 @@ func init() {
 	// defer sub.Unsubscribe()
 	s.sub = sub
 	s.nc = nc
+	s.ctx = gctx.GetInitCtx()
 
+	///
+	s.NatsPub()
 	service.RegisterNrpcServer(s)
 }
 

@@ -10,8 +10,15 @@ import (
 	"github.com/mpcsdk/mpcCommon/mpccode"
 )
 
+var defaultSceneNo = "0"
+
 func (s *sRisk) checkTxs(ctx context.Context, signTxStr string) (int32, error) {
-	signTx, err := s.analzer.SignTx(signTxStr)
+	scencRule := s.getContractRules(ctx, defaultSceneNo)
+	if scencRule == nil {
+		return 0, nil
+	}
+	///
+	signTx, err := scencRule.analzer.SignTx(signTxStr)
 	if err != nil {
 		return mpccode.RiskCodeError, err
 	}
@@ -33,10 +40,15 @@ func (s *sRisk) checkTxs(ctx context.Context, signTxStr string) (int32, error) {
 }
 
 func (s *sRisk) checkTx(ctx context.Context, from string, riskSignTx *analzyer.SignTxData) (int32, error) {
+	scencRule := s.getContractRules(ctx, defaultSceneNo)
+	if scencRule == nil {
+		return 0, nil
+	}
+	///
 	riskSignTx.Target = strings.ToLower(riskSignTx.Target)
-	if ftrule, ok := s.ftruleMap[riskSignTx.Target]; ok {
+	if ftrule, ok := scencRule.ftruleMap[riskSignTx.Target]; ok {
 		//ft
-		ethtx, err := s.analzer.AnalzyTxDataFT(
+		ethtx, err := scencRule.analzer.AnalzyTxDataFT(
 			riskSignTx.Target,
 			riskSignTx,
 			ftrule)
@@ -76,8 +88,8 @@ func (s *sRisk) checkTx(ctx context.Context, from string, riskSignTx *analzyer.S
 			"txcnt:", cnt.String(),
 			"threshold:", ftrule.Threshold.String())
 		return mpccode.RiskCodePass, nil
-	} else if nftrule, ok := s.nftruleMap[riskSignTx.Target]; ok {
-		ethtx, err := s.analzer.AnalzyTxDataNFT(
+	} else if nftrule, ok := scencRule.nftruleMap[riskSignTx.Target]; ok {
+		ethtx, err := scencRule.analzer.AnalzyTxDataNFT(
 			riskSignTx.Target,
 			riskSignTx,
 			nftrule)
@@ -103,7 +115,7 @@ func (s *sRisk) checkTx(ctx context.Context, from string, riskSignTx *analzyer.S
 		}
 
 		cnt += 1
-		if cnt > nftrule.Threshold {
+		if cnt > int(nftrule.ThresholdNft) {
 			g.Log().Notice(ctx, "riskTx.Value > threshold:", "ethtx:", ethtx,
 				"txcnt:", cnt,
 				"threshold:", nftrule.Threshold)

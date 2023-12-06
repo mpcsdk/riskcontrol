@@ -2,6 +2,7 @@ package risk
 
 import (
 	"context"
+	"fmt"
 	"riskcontral/internal/config"
 	"riskcontral/internal/model"
 	"riskcontral/internal/model/entity"
@@ -9,17 +10,23 @@ import (
 	"time"
 
 	"github.com/gogf/gf/v2/frame/g"
+	"github.com/gogf/gf/v2/os/gctx"
 	"github.com/gogf/gf/v2/os/gtime"
 	"github.com/mpcsdk/mpcCommon/ethtx/analzyer"
 	"github.com/mpcsdk/mpcCommon/mpccode"
 	"github.com/mpcsdk/mpcCommon/mpcmodel"
+	"github.com/mpcsdk/mpcCommon/mq"
 	"github.com/mpcsdk/mpcCommon/rand"
 )
 
-type sRisk struct {
+type contractRule struct {
+	ftruleMap  map[string]*mpcmodel.ContractRule
+	nftruleMap map[string]*mpcmodel.ContractRule
 	analzer    *analzyer.Analzyer
-	ftruleMap  map[string]*mpcmodel.FtRule
-	nftruleMap map[string]*mpcmodel.NftRule
+}
+
+type sRisk struct {
+	sceneRules map[string]*contractRule
 	////
 	userControl bool
 	txControl   bool
@@ -136,25 +143,122 @@ func (s *sRisk) RiskTFA(ctx context.Context, tfaInfo *entity.Tfa, riskData *mode
 // ///
 var BeforH24 time.Duration
 
+func (s *sRisk) Notify(ctx context.Context, kind mq.RiskCtrlKind, notice *mq.ContractNotice) {
+	if !notice.IsValid() {
+		g.Log().Error(ctx, "!IsValid", notice)
+		return
+	}
+	if kind == mq.RiskCtrlKind_ContractRule {
+		//RiskCtrlKind_ContractRule
+		if _, ok := s.sceneRules[notice.SceneNo]; !ok {
+			abi, err := service.DB().GetContractAbi(ctx, notice.SceneNo, notice.ContractAddress)
+			if err != nil {
+				g.Log().Error(ctx, notice, err)
+			}
+			///
+			s.sceneRules[notice.SceneNo] = &contractRule{
+				nftruleMap: map[string]*mpcmodel.ContractRule{},
+				ftruleMap:  map[string]*mpcmodel.ContractRule{},
+				analzer:    analzyer.NewAnalzer(),
+			}
+			err = s.sceneRules[notice.SceneNo].analzer.AddAbi(abi.ContractAddress, abi.AbiContent)
+			if err != nil {
+				g.Log().Error(ctx, notice, err)
+				return
+			}
+		}
+		rule, err := service.DB().GetContractRule(ctx, notice.SceneNo, notice.ContractAddress)
+		if err != nil {
+			g.Log().Error(ctx, notice, err)
+		}
+		if rule.ContractKind == "ft" {
+			s.sceneRules[rule.SceneNo].ftruleMap[rule.ContractAddress] = model.ContractRuleEntity2Model(rule)
+		} else if rule.ContractKind == "nft" {
+			s.sceneRules[rule.SceneNo].nftruleMap[rule.ContractAddress] = model.ContractRuleEntity2Model(rule)
+		} else {
+			g.Log().Error(ctx, notice, err)
+		}
+		//
+	} else {
+		abi, err := service.DB().GetContractAbi(ctx, notice.SceneNo, notice.ContractAddress)
+		if err != nil {
+			g.Log().Error(ctx, notice, err)
+		}
+		//RiskCtrlKind_ContractAbi
+		if _, ok := s.sceneRules[notice.SceneNo]; !ok {
+			s.sceneRules[notice.SceneNo] = &contractRule{
+				nftruleMap: map[string]*mpcmodel.ContractRule{},
+				ftruleMap:  map[string]*mpcmodel.ContractRule{},
+				analzer:    analzyer.NewAnalzer(),
+			}
+		}
+		err = s.sceneRules[notice.SceneNo].analzer.AddAbi(abi.ContractAddress, abi.AbiContent)
+		if err != nil {
+			g.Log().Error(ctx, notice, err)
+			return
+		}
+	}
+	//
+}
+
+// /
+func (s *sRisk) getContractRules(ctx context.Context, sceneNo string) *contractRule {
+	return s.sceneRules[sceneNo]
+}
+
+// /
 func new() *sRisk {
 	///
+	ctx := gctx.GetInitCtx()
 	s := &sRisk{
-		analzer:    analzyer.NewAnalzer(),
-		ftruleMap:  map[string]*mpcmodel.FtRule{},
-		nftruleMap: map[string]*mpcmodel.NftRule{},
+		// analzer:    analzyer.NewAnalzer(),
+		sceneRules: map[string]*contractRule{},
+		// ftruleMap:  map[string]*mpcmodel.ContractRule{},
+		// nftruleMap: map[string]*mpcmodel.ContractRule{},
 	}
 	///
-	s.ftruleMap, _ = service.DB().GetFtRules(context.TODO())
-	s.nftruleMap, _ = service.DB().GetNftRules(context.TODO())
-	///
-	abis, err := service.DB().GetAbiAll(context.Background())
+	briefs, err := service.DB().GetContractRuleBriefs(ctx, "", "")
 	if err != nil {
 		panic(err)
 	}
-	for _, a := range abis {
-		s.analzer.AddAbi(a.Addr, a.Abi)
+	//
+	for _, b := range briefs {
+		rule, err := service.DB().GetContractRule(ctx, b.SceneNo, b.ContractAddress)
+		if err != nil {
+			panic(err)
+		}
+
+		if _, ok := s.sceneRules[rule.SceneNo]; !ok {
+			s.sceneRules[rule.SceneNo] = &contractRule{
+				ftruleMap:  map[string]*mpcmodel.ContractRule{},
+				nftruleMap: map[string]*mpcmodel.ContractRule{},
+				analzer:    analzyer.NewAnalzer(),
+			}
+
+		}
+		if rule.ContractKind == "ft" {
+			s.sceneRules[rule.SceneNo].ftruleMap[rule.ContractAddress] = model.ContractRuleEntity2Model(rule)
+		} else if rule.ContractKind == "nft" {
+			s.sceneRules[rule.SceneNo].nftruleMap[rule.ContractAddress] = model.ContractRuleEntity2Model(rule)
+		} else {
+			panic(rule)
+		}
+		//
+		abi, err := service.DB().GetContractAbi(ctx, rule.SceneNo, rule.ContractAddress)
+		if err != nil {
+			panic(err)
+		}
+		if abi.AbiContent == "" {
+			panic(fmt.Sprint("abi.AbiContent is empty:", rule.SceneNo, rule.ContractAddress))
+		}
+		err = s.sceneRules[rule.SceneNo].analzer.AddAbi(abi.ContractAddress, abi.AbiContent)
+		if err != nil {
+			panic(err)
+		}
 	}
-	////
+	///
+	///
+	// ////
 
 	val := config.Config.UserRisk.ForbiddenTime
 	// BeforH24, err = gtime.ParseDuration("-24h")
