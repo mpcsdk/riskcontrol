@@ -7,6 +7,7 @@ package service
 
 import (
 	"context"
+	"riskcontral/internal/model/do"
 	"riskcontral/internal/model/entity"
 )
 
@@ -23,6 +24,13 @@ type (
 		GetContractRuleBriefs(ctx context.Context, SceneNo string, kind string) ([]*entity.Contractrule, error)
 		// /
 		GetContractRule(ctx context.Context, SceneNo string, address string) (*entity.Contractrule, error)
+		TfaMailNotExists(ctx context.Context, mail string) error
+		TfaPhoneNotExists(ctx context.Context, phone string) error
+		InsertTfaInfo(ctx context.Context, userId string, data *do.Tfa) error
+		// //
+		UpdateTfaInfo(ctx context.Context, userId string, data *do.Tfa) error
+		ExistsTfaInfo(ctx context.Context, userId string) (bool, error)
+		FetchTfaInfo(ctx context.Context, userId string) (*entity.Tfa, error)
 	}
 )
 

@@ -25,7 +25,7 @@ func new() *sDB {
 	// g.Redis().Exists(gctx.GetInitCtx())
 	s := &sDB{
 		ctx:        gctx.GetInitCtx(),
-		dbDuration: time.Duration(config.Config.Cache.DBDuration) * time.Second,
+		dbDuration: time.Duration(config.Config.Cache.DBCacheDuration) * time.Second,
 	}
 	//todo: notify
 	// go s.listenNotify([]string{RuleChName, AbiChName})

@@ -54,15 +54,15 @@ func (s *sRisk) RiskTxs(ctx context.Context, userId string, signTx string) (stri
 	/////
 	switch code {
 	case mpccode.RiskCodePass, mpccode.RiskCodeNeedVerification:
-		info, err := service.NrpcClient().RpcTfaInfo(ctx, userId)
-		if err != nil {
+		tfaInfo, err := service.DB().FetchTfaInfo(ctx, userId)
+		if err != nil || tfaInfo == nil {
 			g.Log().Warning(ctx, "RiskTxs:", "userId:", userId)
 			g.Log().Errorf(ctx, "%+v", err)
 			return "", mpccode.RiskCodeError
 		}
 		////if pass, chech tfa forbiddent
 		// info, err := service.TFA().TFAInfo(ctx, userId)
-		if info == nil || (info.Mail == "" && info.Phone == "") {
+		if tfaInfo == nil || (tfaInfo.Mail == "" && tfaInfo.Phone == "") {
 			if mpccode.RiskCodePass == code {
 				return riskserial, code
 			} else {
@@ -71,20 +71,20 @@ func (s *sRisk) RiskTxs(ctx context.Context, userId string, signTx string) (stri
 			}
 		}
 		///
-		if info.MailUpdatedAt != nil {
+		if tfaInfo.MailUpdatedAt != nil {
 			befor24h := gtime.Now().Add(BeforH24)
-			befor := info.MailUpdatedAt.Before(befor24h)
-			g.Log().Notice(ctx, "PerformRiskTxs:", "info.MailUpdatedAt:", info.MailUpdatedAt.String(), "befor24h:", befor24h.String(), "befor:", befor)
+			befor := tfaInfo.MailUpdatedAt.Before(befor24h)
+			g.Log().Notice(ctx, "PerformRiskTxs:", "info.MailUpdatedAt:", tfaInfo.MailUpdatedAt.String(), "befor24h:", befor24h.String(), "befor:", befor)
 			if !befor {
 				return "", mpccode.RiskCodeForbidden
 			}
 		}
 		///
-		if info.PhoneUpdatedAt != nil {
+		if tfaInfo.PhoneUpdatedAt != nil {
 			befor24h := gtime.Now().Add(BeforH24)
-			befor := info.PhoneUpdatedAt.Before(befor24h)
+			befor := tfaInfo.PhoneUpdatedAt.Before(befor24h)
 			// befor := info.PhoneUpdatedAt.Before(befor24h.Time())
-			g.Log().Notice(ctx, "PerformRiskTxs:", "info.PhoneUpdatedAt:", info.PhoneUpdatedAt.String(), "befor24h:", befor24h.String(), "befor:", befor)
+			g.Log().Notice(ctx, "PerformRiskTxs:", "info.PhoneUpdatedAt:", tfaInfo.PhoneUpdatedAt.String(), "befor24h:", befor24h.String(), "befor:", befor)
 			if !befor {
 				return "", mpccode.RiskCodeForbidden
 				///, nil

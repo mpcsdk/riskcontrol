@@ -5,14 +5,19 @@
 package risk
 
 import (
+	"context"
 	"riskcontral/api/risk"
 	v1 "riskcontral/api/risk/v1"
-	"context"
+	nats "riskcontral/internal/controller/nrpcserver"
 )
-type ControllerV1 struct{}
+type ControllerV1 struct{
+	s *nats.NrpcServer
+}
 
 func NewV1() risk.IRiskV1 {
-	return &ControllerV1{}
+	return &ControllerV1{
+		s: nats.Instance(),
+	}
 }
 
 func (*ControllerV1) ExecRisk(ctx context.Context, req *v1.ExecRiskReq) (res *v1.ExecRiskRes, err error) {

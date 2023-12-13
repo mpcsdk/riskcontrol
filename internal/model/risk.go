@@ -1,7 +1,7 @@
 package model
 
 import (
-	v1 "riskcontral/api/risk/nrpc/v1"
+	"riskcontral/api/risk/nrpc"
 	"riskcontral/internal/model/entity"
 	"strings"
 
@@ -20,7 +20,15 @@ const (
 	Type_TfaUpdateMail  string = "updateMail"
 )
 
+type RiskPenndingKey string
+
+func RiskPenddingKey(userId, riskSerial string) RiskPenndingKey {
+
+	return RiskPenndingKey("riskPendding:" + userId + ":" + riskSerial)
+}
+
 type RiskKind string
+type VerifyKind string
 
 const (
 	RiskKind_Nil       = "RiskKind_Nil"
@@ -42,6 +50,18 @@ type RiskTfa struct {
 	///
 	Mail  string `json:"mail"`
 	Phone string `json:"phone"`
+}
+type IVerifier interface {
+	Verify(verifierCode *VerifyCode) (RiskKind, error)
+	SetCode(string)
+	RiskKind() RiskKind
+	VerifyKind() VerifyKind
+	IsDone() bool
+	///
+	SendVerificationCode() (string, error)
+	SendCompletion() error
+	//
+	Destination() string
 }
 
 func ContractRuleEntity2Model(e *entity.Contractrule) *mpcmodel.ContractRule {
@@ -71,8 +91,8 @@ func ContractRuleEntity2Model(e *entity.Contractrule) *mpcmodel.ContractRule {
 		}(),
 	}
 }
-func ContractRuleEntity2Rpc(e *entity.Contractrule) *v1.ContractRuleRes {
-	return &v1.ContractRuleRes{
+func ContractRuleEntity2Rpc(e *entity.Contractrule) *nrpc.ContractRuleRes {
+	return &nrpc.ContractRuleRes{
 		Contract:         e.ContractAddress,
 		Name:             e.ContractName,
 		Kind:             e.ContractKind,

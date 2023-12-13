@@ -8,9 +8,15 @@ import (
 )
 
 type Cache struct {
-	ApiInterval     int `json:"apiInterval" v:"required|min:1"`
-	SessionDuration int `json:"sessionDuration" v:"required|min:1"`
-	DBDuration      int `json:"dbDuration" v:"required|min:1"`
+	ApiInterval              int `json:"apiInterval" v:"required|min:1"`
+	SessionDuration          int `json:"sessionDuration" v:"required|min:1"`
+	DBCacheDuration          int `json:"dbCacheDuration" v:"required|min:1"`
+	VerificationCodeDuration int `json:"VerificationCodeDuration" v:"required|min:1"`
+	LimitSendInterval        int `json:"limitSendInterval" v:"required|min:1"`
+	LimitSendPhoneCount      int `json:"limitSendPhoneCount" v:"required|min:1"`
+	LimitSendPhoneDuration   int `json:"limitSendPhoneDuration" v:"required|min:1"`
+	LimitSendMailCount       int `json:"limitSendMailCount" v:"required|min:1"`
+	LimitSendMailDuration    int `json:"limitSendMailDuration" v:"required|min:1"`
 }
 type Etcd struct {
 	Address       string `json:"address" v:"required"`
@@ -28,6 +34,7 @@ type SmsHuawei struct {
 	ApplicationKey    string `json:"applicationKey" v:"required"`
 	ApplicationSecret string `json:"applicationSecret" v:"required"`
 	Sender            string `json:"sender" v:"required"`
+	SenderCompletion  string `json:"senderCompletion" v:"required"`
 	Signature         string `json:"signature" v:"required"`
 
 	VerificationTemplateId        string `json:"verificationTemplateId" v:"required"`
@@ -88,7 +95,6 @@ type Cfg struct {
 	Server       *Server   `json:"server" v:"required"`
 	Cache        *Cache    `json:"cache" v:"required"`
 	UserRisk     *UserRisk `json:"userRisk" v:"required"`
-	Etcd         *Etcd     `json:"etcd" v:"required"`
 	Sms          *Sms      `json:"sms" v:"required"`
 	ExEmail      *ExEmail  `json:"exEmail" v:"required"`
 	UserTokenUrl string    `json:"userTokenUrl" v:"required"`

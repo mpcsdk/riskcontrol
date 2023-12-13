@@ -2,7 +2,7 @@ package nats
 
 import (
 	"context"
-	v1 "riskcontral/api/risk/nrpc/v1"
+	"riskcontral/api/risk/nrpc"
 	"riskcontral/internal/service"
 
 	"github.com/gogf/gf/v2/errors/gerror"
@@ -11,14 +11,14 @@ import (
 	"github.com/mpcsdk/mpcCommon/mpccode"
 )
 
-func (*sNrpcServer) RpcRiskTxs(ctx context.Context, req *v1.TxRiskReq) (res *v1.TxRiskRes, err error) {
+func (*NrpcServer) RpcRiskTxs(ctx context.Context, req *nrpc.TxRiskReq) (res *nrpc.TxRiskRes, err error) {
 	//trace
 	ctx, span := gtrace.NewSpan(ctx, "performRiskTxs")
 	defer span.End()
 	///
 	serial, code := service.Risk().RiskTxs(ctx, req.UserId, req.SignTxData)
 	if code == mpccode.RiskCodeError {
-		return &v1.TxRiskRes{
+		return &nrpc.TxRiskRes{
 			Ok: code,
 		}, nil
 		// gerror.NewCode(mpccode.CodeRpcRiskError)
@@ -26,28 +26,32 @@ func (*sNrpcServer) RpcRiskTxs(ctx context.Context, req *v1.TxRiskReq) (res *v1.
 	///: pass or forbidden
 	//
 	if code == mpccode.RiskCodePass {
-		return &v1.TxRiskRes{
+		return &nrpc.TxRiskRes{
 			Ok: code,
 		}, nil
 	}
 	if code == mpccode.RiskCodeForbidden {
-		return &v1.TxRiskRes{
+		return &nrpc.TxRiskRes{
 			Ok: code,
 		}, nil
 	}
 	///
 	//
 	//notice:  tfatx  need verification
-	// tfaInfo, err := service.NrpcClient().RpcTfaInfo(ctx, req.UserId)
+	tfaInfo, err := service.DB().FetchTfaInfo(ctx, req.UserId)
+	if err != nil || tfaInfo == nil {
+		g.Log().Warning(ctx, "SendSmsCode:", req, err)
+		return nil, gerror.NewCode(mpccode.CodeTFANotExist)
+	}
 	// kinds, err := service.TFA().TFATx(ctx, req.UserId, serial)
-	kinds, err := service.NrpcClient().RpcTfaTx(ctx, req.UserId, serial)
+	kinds, err := service.TFA().TFATx(ctx, tfaInfo, serial)
 	if err != nil {
 		g.Log().Errorf(ctx, "%+v", err)
 		return nil, gerror.NewCode(mpccode.CodePerformRiskError)
 	}
 	///
 	g.Log().Notice(ctx, "RpcRiskTFA:", req.UserId, serial)
-	return &v1.TxRiskRes{
+	return &nrpc.TxRiskRes{
 		Ok:         code,
 		RiskSerial: serial,
 		//todo:

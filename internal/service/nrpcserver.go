@@ -7,22 +7,22 @@ package service
 
 import (
 	"context"
-	v1 "riskcontral/api/risk/nrpc/v1"
+	"riskcontral/api/risk/nrpc"
 
 	"github.com/golang/protobuf/ptypes/empty"
 )
 
 type (
 	INrpcServer interface {
-		RpcContractAbiBriefs(ctx context.Context, req *v1.ContractAbiBriefsReq) (res *v1.ContractAbiBriefsRes, err error)
-		RpcContractAbi(ctx context.Context, req *v1.ContractAbiReq) (res *v1.ContractAbiRes, err error)
+		RpcContractAbiBriefs(ctx context.Context, req *nrpc.ContractAbiBriefsReq) (res *nrpc.ContractAbiBriefsRes, err error)
+		RpcContractAbi(ctx context.Context, req *nrpc.ContractAbiReq) (res *nrpc.ContractAbiRes, err error)
 		NatsPub()
 		// /
-		RpcContractRuleBriefs(ctx context.Context, req *v1.ContractRuleBriefsReq) (res *v1.ContractRuleBriefsRes, err error)
-		RpcContractRule(ctx context.Context, req *v1.ContractRuleReq) (res *v1.ContractRuleRes, err error)
+		RpcContractRuleBriefs(ctx context.Context, req *nrpc.ContractRuleBriefsReq) (res *nrpc.ContractRuleBriefsRes, err error)
+		RpcContractRule(ctx context.Context, req *nrpc.ContractRuleReq) (res *nrpc.ContractRuleRes, err error)
 		RpcAlive(ctx context.Context, in *empty.Empty) (*empty.Empty, error)
-		RpcRiskTFA(ctx context.Context, req *v1.TFARiskReq) (res *v1.TFARiskRes, err error)
-		RpcRiskTxs(ctx context.Context, req *v1.TxRiskReq) (res *v1.TxRiskRes, err error)
+		RpcRiskTFA(ctx context.Context, req *nrpc.TFARiskReq) (res *nrpc.TFARiskRes, err error)
+		RpcRiskTxs(ctx context.Context, req *nrpc.TxRiskReq) (res *nrpc.TxRiskRes, err error)
 	}
 )
 

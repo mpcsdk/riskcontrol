@@ -3,7 +3,7 @@ package nats
 import (
 	"context"
 	"encoding/json"
-	v1 "riskcontral/api/risk/nrpc/v1"
+	"riskcontral/api/risk/nrpc"
 	"riskcontral/internal/model"
 	"riskcontral/internal/service"
 
@@ -15,7 +15,7 @@ import (
 	"github.com/nats-io/nats.go"
 )
 
-func (s *sNrpcServer) NatsPub() {
+func (s *NrpcServer) NatsPub() {
 
 	ch := make(chan *nats.Msg, 64)
 	sub, err := s.nc.ChanSubscribe(mq.RiskCtrlSubsject, ch)
@@ -45,16 +45,16 @@ func (s *sNrpcServer) NatsPub() {
 }
 
 // /
-func (*sNrpcServer) RpcContractRuleBriefs(ctx context.Context, req *v1.ContractRuleBriefsReq) (res *v1.ContractRuleBriefsRes, err error) {
+func (*NrpcServer) RpcContractRuleBriefs(ctx context.Context, req *nrpc.ContractRuleBriefsReq) (res *nrpc.ContractRuleBriefsRes, err error) {
 	briefs, err := service.DB().GetContractRuleBriefs(ctx, req.SceneNo, req.Address)
 	if err != nil {
 		return nil, gerror.NewCode(mpccode.CodeInternalError)
 	}
-	res = &v1.ContractRuleBriefsRes{
-		Briefs: map[string]*v1.ContractRuleBriefs{},
+	res = &nrpc.ContractRuleBriefsRes{
+		Briefs: map[string]*nrpc.ContractRuleBriefs{},
 	}
 	for _, b := range briefs {
-		res.Briefs[b.ContractAddress] = &v1.ContractRuleBriefs{
+		res.Briefs[b.ContractAddress] = &nrpc.ContractRuleBriefs{
 			SceneNo: b.SceneNo,
 			Address: b.ContractAddress,
 			Name:    b.ContractName,
@@ -64,7 +64,7 @@ func (*sNrpcServer) RpcContractRuleBriefs(ctx context.Context, req *v1.ContractR
 	return res, nil
 }
 
-func (*sNrpcServer) RpcContractRule(ctx context.Context, req *v1.ContractRuleReq) (res *v1.ContractRuleRes, err error) {
+func (*NrpcServer) RpcContractRule(ctx context.Context, req *nrpc.ContractRuleReq) (res *nrpc.ContractRuleRes, err error) {
 	rule, err := service.DB().GetContractRule(ctx, req.SceneNo, req.Address)
 	if err != nil {
 		g.Log().Errorf(ctx, "%+v", err)

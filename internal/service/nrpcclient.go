@@ -5,17 +5,9 @@
 
 package service
 
-import (
-	"context"
-	"riskcontral/internal/model/entity"
-)
-
 type (
 	INrpcClient interface {
 		Flush()
-		RpcTfaTx(ctx context.Context, userId string, riskSerial string) ([]string, error)
-		RpcTfaInfo(ctx context.Context, userId string) (*entity.Tfa, error)
-		RpcAlive(ctx context.Context) error
 	}
 )
 

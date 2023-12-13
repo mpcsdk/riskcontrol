@@ -4,6 +4,7 @@ import (
 	"context"
 
 	"riskcontral/internal/controller/risk"
+	"riskcontral/internal/controller/tfa"
 
 	"github.com/gogf/gf/v2/errors/gcode"
 	"github.com/gogf/gf/v2/errors/gerror"
@@ -58,8 +59,14 @@ var (
 				group.Middleware(ResponseHandler)
 				group.Bind(
 					risk.NewV1(),
+					tfa.NewV1(),
 				)
+				// group.Group("/tfa", func(group *ghttp.RouterGroup) {
+				// 	group.Bind(
+				// 	)
+				// })
 			})
+
 			s.Run()
 			return nil
 		},
