@@ -5,7 +5,7 @@ import (
 	"riskcontral/internal/config"
 	"riskcontral/internal/service"
 
-	"github.com/gogf/gf/v2/errors/gerror"
+	"github.com/gogf/gf/v2/frame/g"
 	"github.com/gogf/gf/v2/os/gcache"
 	"github.com/mpcsdk/mpcCommon/mpccode"
 	"github.com/mpcsdk/mpcCommon/userInfoGeter"
@@ -20,7 +20,7 @@ type sUserInfo struct {
 
 func (s *sUserInfo) GetUserInfo(ctx context.Context, userToken string) (userInfo *userInfoGeter.UserInfo, err error) {
 	if userToken == "" {
-		return nil, mpccode.ErrArg
+		return nil, mpccode.CodeParamInvalid()
 	}
 	///
 	// 用户信息示例
@@ -35,17 +35,16 @@ func (s *sUserInfo) GetUserInfo(ctx context.Context, userToken string) (userInfo
 		info := &userInfoGeter.UserInfo{}
 		err = v.Struct(info)
 		if err != nil {
-			return nil, err
+			g.Log().Error(ctx, "GetUserInfo:", "toekn:", userToken, "err:", err)
+			return nil, mpccode.CodeInternalError()
 		}
 		return info, nil
 	}
 	///
 	info, err := s.userGeter.GetUserInfo(ctx, userToken)
 	if err != nil {
-		err = gerror.Wrap(err, mpccode.ErrDetails(
-			mpccode.ErrDetail("userToken", userToken),
-		))
-		return info, err
+		g.Log().Error(ctx, "GetUserInfo:", "toekn:", userToken, "err:", err)
+		return info, mpccode.CodeInternalError()
 	}
 	s.c.Set(ctx, userToken, info, 0)
 	return info, err

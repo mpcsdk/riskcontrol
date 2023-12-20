@@ -4,9 +4,7 @@ import (
 	"context"
 	"riskcontral/internal/config"
 
-	"github.com/gogf/gf/v2/errors/gerror"
 	"github.com/gogf/gf/v2/frame/g"
-	"github.com/mpcsdk/mpcCommon/mpccode"
 	"github.com/mpcsdk/mpcCommon/rand"
 	"github.com/mpcsdk/mpcCommon/sms"
 )
@@ -23,10 +21,7 @@ func (s *tenc) SendVerificationCode(ctx context.Context, to string) (string, err
 	_, resp, err := s.tenc.SendSms(to, s.cfg.Tenc.VerificationTemplateId, code)
 
 	if err != nil {
-		err = gerror.Wrap(err, mpccode.ErrDetails(
-			mpccode.ErrDetail("sendmailto", to),
-			mpccode.ErrDetail("sendmail resp", resp),
-		))
+		g.Log().Error(ctx, "SendVerificationCode:", "to:", to, "resp:", resp, "err:", err)
 		return "", err
 	}
 	g.Log().Notice(ctx, "SendVerificationCode:", to, code, resp)
@@ -37,10 +32,7 @@ func (s *tenc) SendBindingPhoneCode(ctx context.Context, to string) (string, err
 	code := rand.RandomDigits(6)
 	_, resp, err := s.tenc.SendSms(to, s.cfg.Tenc.BindingVerificationTemplateId, code)
 	if err != nil {
-		err = gerror.Wrap(err, mpccode.ErrDetails(
-			mpccode.ErrDetail("SendBindingPhoneCode", to),
-			mpccode.ErrDetail("SendBindingPhoneCode resp", resp),
-		))
+		g.Log().Error(ctx, "SendBindingPhoneCode:", "to:", to, "resp:", resp, "err:", err)
 		return "", err
 	}
 	g.Log().Notice(ctx, "SendBindingPhoneCode:", to, code, resp)
@@ -50,10 +42,7 @@ func (s *tenc) SendBindingCompletionPhone(ctx context.Context, to string) error 
 	_, resp, err := s.tenc.SendSms(to, s.cfg.Tenc.BindingCompletionTemplateId, "")
 
 	if err != nil {
-		err = gerror.Wrap(err, mpccode.ErrDetails(
-			mpccode.ErrDetail("SendBindingCompletionPhone", to),
-			mpccode.ErrDetail("SendBindingCompletionPhone resp", resp),
-		))
+		g.Log().Error(ctx, "SendBindingCompletionPhone:", "to:", to, "resp:", resp, "err:", err)
 		return err
 	}
 	g.Log().Notice(ctx, "SendBindingCompletionPhone:", to, resp)
@@ -65,10 +54,7 @@ func (s *tenc) SendUpPhoneCode(ctx context.Context, to string) (string, error) {
 	code := rand.RandomDigits(6)
 	_, resp, err := s.tenc.SendSms(to, s.cfg.Tenc.UpVerificationTemplateId, code)
 	if err != nil {
-		err = gerror.Wrap(err, mpccode.ErrDetails(
-			mpccode.ErrDetail("SendUpPhoneCode", to),
-			mpccode.ErrDetail("SendUpPhoneCode resp", resp),
-		))
+		g.Log().Error(ctx, "SendUpPhoneCode:", "to:", to, "resp:", resp, "err:", err)
 		return "", err
 	}
 	g.Log().Notice(ctx, "SendUpPhoneCode:", to, code, resp)
@@ -78,10 +64,7 @@ func (s *tenc) SendUpPhoneCode(ctx context.Context, to string) (string, error) {
 func (s *tenc) SendUpCompletionPhone(ctx context.Context, to string) error {
 	_, resp, err := s.tenc.SendSms(to, s.cfg.Tenc.UpVerificationTemplateId, "")
 	if err != nil {
-		err = gerror.Wrap(err, mpccode.ErrDetails(
-			mpccode.ErrDetail("SendUpCompletionPhone", to),
-			mpccode.ErrDetail("SendUpCompletionPhone resp", resp),
-		))
+		g.Log().Error(ctx, "SendUpCompletionPhone:", "to:", to, "resp:", resp, "err:", err)
 		return err
 	}
 	g.Log().Notice(ctx, "SendUpCompletionPhone:", to, resp)

@@ -7,36 +7,38 @@ import (
 	"riskcontral/internal/model/entity"
 
 	"github.com/gogf/gf/v2/database/gdb"
-	"github.com/gogf/gf/v2/errors/gerror"
+	"github.com/gogf/gf/v2/frame/g"
 	"github.com/mpcsdk/mpcCommon/mpccode"
 )
 
 ///
 ///
 
-func (s *sDB) TfaMailNotExists(ctx context.Context, mail string) error {
+func (s *sDB) TfaMailNotExists(ctx context.Context, mail string) (bool, error) {
 	rst, err := dao.Tfa.Ctx(ctx).Where(do.Tfa{
 		Mail: mail,
 	}).Count()
 	if err != nil {
-		return err
+		g.Log().Error(ctx, "TfaMailNotExists:", "mail", mail, "err", err)
+		return false, mpccode.CodeInternalError()
 	}
 	if rst > 0 {
-		return mpccode.ErrDataExists
+		return false, nil
 	}
-	return nil
+	return true, nil
 }
-func (s *sDB) TfaPhoneNotExists(ctx context.Context, phone string) error {
+func (s *sDB) TfaPhoneNotExists(ctx context.Context, phone string) (bool, error) {
 	rst, err := dao.Tfa.Ctx(ctx).Where(do.Tfa{
 		Phone: phone,
 	}).CountColumn(dao.Tfa.Columns().Phone)
 	if err != nil {
-		return err
+		g.Log().Error(ctx, "TfaPhoneNotExists:", "phone", phone, "err", err)
+		return false, mpccode.CodeInternalError()
 	}
 	if rst > 0 {
-		return mpccode.ErrDataExists
+		return false, nil
 	}
-	return nil
+	return true, nil
 }
 func (s *sDB) InsertTfaInfo(ctx context.Context, userId string, data *do.Tfa) error {
 	cnt, err := dao.Tfa.Ctx(ctx).Where(do.Tfa{
@@ -44,7 +46,8 @@ func (s *sDB) InsertTfaInfo(ctx context.Context, userId string, data *do.Tfa) er
 	}).CountColumn(dao.Tfa.Columns().UserId)
 
 	if err != nil {
-		return err
+		g.Log().Error(ctx, "InsertTfaInfo:", "userId", userId, "data:", data, "err", err)
+		return mpccode.CodeInternalError()
 	}
 	if cnt != 0 {
 		return nil
@@ -55,8 +58,12 @@ func (s *sDB) InsertTfaInfo(ctx context.Context, userId string, data *do.Tfa) er
 		Name:     dao.Tfa.Table() + userId,
 		Force:    false,
 	}).Data(data).Insert()
+	if err != nil {
+		g.Log().Error(ctx, "InsertTfaInfo:", "userId", userId, "data:", data, "err", err)
+		return mpccode.CodeInternalError()
+	}
 
-	return err
+	return nil
 }
 
 // //
@@ -68,19 +75,24 @@ func (s *sDB) UpdateTfaInfo(ctx context.Context, userId string, data *do.Tfa) er
 	}).Data(data).Where(do.Tfa{
 		UserId: data.UserId,
 	}).Update()
-	return err
+	if err != nil {
+		g.Log().Error(ctx, "UpdateTfaInfo:", "userId", userId, "data:", data, "err", err)
+		return mpccode.CodeInternalError()
+	}
+	return nil
 }
 
 func (s *sDB) ExistsTfaInfo(ctx context.Context, userId string) (bool, error) {
 	if userId == "" {
-		return false, mpccode.ErrArg
+		return false, mpccode.CodeParamInvalid()
 	}
 	cnt, err := dao.Tfa.Ctx(ctx).Where(do.Tfa{
 		UserId: userId,
 	}).CountColumn(dao.Tfa.Columns().UserId)
 
 	if err != nil {
-		return false, err
+		g.Log().Error(ctx, "ExistsTfaInfo:", "userId", userId, "err", err)
+		return false, mpccode.CodeInternalError()
 	}
 	if cnt != 0 {
 		return true, nil
@@ -90,7 +102,7 @@ func (s *sDB) ExistsTfaInfo(ctx context.Context, userId string) (bool, error) {
 
 func (s *sDB) FetchTfaInfo(ctx context.Context, userId string) (*entity.Tfa, error) {
 	if userId == "" {
-		return nil, mpccode.ErrArg
+		return nil, mpccode.CodeParamInvalid()
 	}
 
 	aggdo := &do.Tfa{
@@ -104,18 +116,16 @@ func (s *sDB) FetchTfaInfo(ctx context.Context, userId string) (*entity.Tfa, err
 		Force:    false,
 	}).Where(aggdo).One()
 	if err != nil {
-		err = gerror.Wrap(err, mpccode.ErrDetails(
-			mpccode.ErrDetail("aggdo", aggdo),
-		))
-		return nil, err
+		g.Log().Error(ctx, "ExistsTfaInfo:", "userId", userId, "agg:", aggdo, "err", err)
+		return nil, mpccode.CodeInternalError()
 	}
 	if rst.IsEmpty() {
 		return nil, nil
 	}
 	err = rst.Struct(&data)
 	if err != nil {
-		return nil, err
+		return nil, mpccode.CodeInternalError()
 	}
 
-	return data, err
+	return data, nil
 }

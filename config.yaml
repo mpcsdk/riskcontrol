@@ -16,7 +16,6 @@ cache:
   apiInterval: 1
   sessionDuration: 10000
   verificationCodeDuration : 600
-  limitSendInterval: 1
   dbCacheDuration: 100
   limitSendPhoneCount: 10
   limitSendPhoneDuration: 600

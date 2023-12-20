@@ -7,7 +7,7 @@ import (
 	"riskcontral/internal/model"
 	"riskcontral/internal/service"
 
-	"github.com/gogf/gf/v2/errors/gerror"
+	"github.com/gogf/gf/v2/frame/g"
 	"github.com/gogf/gf/v2/os/gctx"
 	"github.com/mpcsdk/mpcCommon/mpccode"
 )
@@ -76,7 +76,7 @@ func (s *emptyVerifier) RiskKind() model.RiskKind {
 
 func (s *emptyVerifier) SetCode(code string) {
 }
-func (s *emptyVerifier) Verify(verifierCode *model.VerifyCode) (model.RiskKind, error) {
+func (s *emptyVerifier) Verify(ctx context.Context, verifierCode *model.VerifyCode) (model.RiskKind, error) {
 	return "", nil
 }
 
@@ -143,19 +143,15 @@ func (s *verifierPhone) IsDone() bool {
 func (s *verifierPhone) SetCode(code string) {
 	s.code = code
 }
-func (s *verifierPhone) Verify(verifierCode *model.VerifyCode) (model.RiskKind, error) {
+func (s *verifierPhone) Verify(ctx context.Context, verifierCode *model.VerifyCode) (model.RiskKind, error) {
 	if s.code == verifierCode.PhoneCode && verifierCode.PhoneCode != "" {
 		s.verified = true
 		return "", nil
 	} else {
 		s.verified = false
-		errcode := gerror.Wrap(gerror.NewCode(mpccode.CodeRiskVerifyPhoneInvalid), mpccode.ErrDetails(
-			mpccode.ErrDetail("codePhone:", s.code),
-			mpccode.ErrDetail("verifierPhoneCode:", verifierCode.PhoneCode),
-		))
-		return model.VerifierKind_Phone, errcode
+		g.Log().Warning(ctx, "verifierPhone:", "codePhone:", s.code, "verifierPhoneCode:", verifierCode.PhoneCode)
+		return model.VerifierKind_Phone, mpccode.CodeRiskVerifyPhoneInvalid()
 	}
-	return "", nil
 }
 
 type verifierMail struct {
@@ -205,18 +201,15 @@ func (s *verifierMail) SendVerificationCode() (string, error) {
 	}
 	return "", nil
 }
-func (s *verifierMail) Verify(verifierCode *model.VerifyCode) (model.RiskKind, error) {
+func (s *verifierMail) Verify(ctx context.Context, verifierCode *model.VerifyCode) (model.RiskKind, error) {
 	if s.code == verifierCode.MailCode && verifierCode.MailCode != "" {
 		s.verified = true
 
 		return "", nil
 	} else {
 		s.verified = false
-		errcode := gerror.Wrap(gerror.NewCode(mpccode.CodeRiskVerifyMailInvalid), mpccode.ErrDetails(
-			mpccode.ErrDetail("codeMailCode:", s.code),
-			mpccode.ErrDetail("verifierMailCodeCode:", verifierCode.MailCode),
-		))
-		return model.VerifierKind_Phone, errcode
+		g.Log().Warning(ctx, "verifierMail:", "codeMail:", s.code, "verifierMailCode:", verifierCode.MailCode)
+		return model.VerifierKind_Phone, mpccode.CodeRiskVerifyMailInvalid()
 	}
 }
 func (s *verifierMail) IsDone() bool {

@@ -2,34 +2,23 @@ package nats
 
 import (
 	"context"
-	"encoding/json"
 	"time"
 
-	"github.com/gogf/gf/v2/errors/gerror"
+	"github.com/gogf/gf/v2/frame/g"
 	"github.com/gogf/gf/v2/os/gtime"
 	"github.com/mpcsdk/mpcCommon/mpccode"
 )
 
-func (s *NrpcServer) counter(ctx context.Context, tokenId string, method string) error {
+func (s *NrpcServer) apiLimit(ctx context.Context, tokenId string, method string) error {
 	key := tokenId + method + "counter"
-	if v, err := s.cache.Get(ctx, key); err != nil || !v.IsEmpty() {
-		return gerror.NewCode(mpccode.CodeApiLimit)
+	if v, err := s.cache.Get(ctx, key); err != nil {
+		g.Log().Warning(ctx, "counter:", "tokenId:", tokenId, "method", method, "err", err)
+		return mpccode.CodeApiLimit()
+	} else if !v.IsEmpty() {
+		g.Log().Info(ctx, "counter:", "tokenId:", tokenId, "method", method)
+		return mpccode.CodeApiLimit()
 	} else {
 		s.cache.Set(ctx, key, 1, apiInterval)
-		return nil
-	}
-}
-func (s *NrpcServer) limitSendVerification(ctx context.Context, tokenId string, method string) error {
-	key := tokenId + method + "limitSendVerification"
-	if v, err := s.cache.Get(ctx, key); err != nil || !v.IsEmpty() {
-		_, err = json.Marshal(func() {})
-		err = gerror.Wrap(err,
-			mpccode.ErrDetails(mpccode.ErrDetail("key", key),
-				mpccode.ErrDetail("method", method)),
-		)
-		return err
-	} else {
-		s.cache.Set(ctx, key, 1, limitSendInterval)
 		return nil
 	}
 }
@@ -48,20 +37,31 @@ func (s *NrpcServer) delTimeOut(dts []*gtime.Time, limitDuration time.Duration) 
 	return dts[:i]
 }
 
-func (s *NrpcServer) limitSendPhone(ctx context.Context, tokenId string, phone string) error {
+// func (s *NrpcServer) limitSendMailDuration(ctx context.Context, tokenId string, method string) error {
+// 	key := tokenId + method + "limitSendMailDuration"
+// 	if v, err := s.cache.Get(ctx, key); err != nil {
+// 		g.Log().Warning(ctx, "limitSendMailDuration:", "tokenId:", tokenId, "method", method, "err", err)
+// 		return mpccode.CodeLimitSendMailCode()
+// 	} else if !v.IsEmpty() {
+// 		g.Log().Info(ctx, "limitSendMailDuration:", "tokenId:", tokenId, "method", method)
+// 		return mpccode.CodeLimitSendMailCode()
+// 	} else {
+// 		s.cache.Set(ctx, key, 1, limitSendInterval)
+// 		return nil
+// 	}
+// }
+
+func (s *NrpcServer) limitSendPhoneCnt(ctx context.Context, tokenId string, phone string) error {
 	key := phone + "limitSendPhone"
 	sendtimes := []*gtime.Time{}
 	if v, err := s.cache.Get(ctx, key); err != nil {
-		err = gerror.Wrap(err,
-			mpccode.ErrDetails(mpccode.ErrDetail("key", key)),
-		)
-		return err
+		g.Log().Warning(ctx, "limitSendPhone:", "tokenId:", tokenId, "phone", phone, "err", err)
+		return mpccode.CodeLimitSendMailCode()
 	} else if !v.IsEmpty() {
 		err := v.Structs(&sendtimes)
 		if err != nil {
-			return gerror.Wrap(err,
-				mpccode.ErrDetails(mpccode.ErrDetail("key", key)),
-			)
+			g.Log().Warning(ctx, "limitSendPhone:", "tokenId:", tokenId, "phone", phone, "err", err)
+			return mpccode.CodeLimitSendMailCode()
 		}
 		////
 		if len(sendtimes) >= limitSendPhoneDurationCnt {
@@ -69,7 +69,8 @@ func (s *NrpcServer) limitSendPhone(ctx context.Context, tokenId string, phone s
 		}
 
 		if len(sendtimes) >= limitSendPhoneDurationCnt {
-			return mpccode.CodeLimitSendPhoneCode.Error()
+			g.Log().Info(ctx, "limitSendPhone:", "tokenId:", tokenId, "phone", phone)
+			return mpccode.CodeLimitSendPhoneCode()
 		}
 		sendtimes = append(sendtimes, gtime.Now())
 		s.cache.Set(ctx, key, sendtimes, 0)
@@ -80,20 +81,17 @@ func (s *NrpcServer) limitSendPhone(ctx context.Context, tokenId string, phone s
 		return nil
 	}
 }
-func (s *NrpcServer) limitSendMail(ctx context.Context, tokenId string, mail string) error {
+func (s *NrpcServer) limitSendMailCnt(ctx context.Context, tokenId string, mail string) error {
 	key := mail + "limitSendMail"
 	sendtimes := []*gtime.Time{}
 	if v, err := s.cache.Get(ctx, key); err != nil {
-		err = gerror.Wrap(err,
-			mpccode.ErrDetails(mpccode.ErrDetail("key", key)),
-		)
-		return err
+		g.Log().Warning(ctx, "limitSendMailCnt:", "tokenId:", tokenId, "mail", mail, "err", err)
+		return mpccode.CodeLimitSendMailCode()
 	} else if !v.IsEmpty() {
 		err := v.Structs(&sendtimes)
 		if err != nil {
-			return gerror.Wrap(err,
-				mpccode.ErrDetails(mpccode.ErrDetail("key", key)),
-			)
+			g.Log().Warning(ctx, "limitSendMailCnt:", "tokenId:", tokenId, "mail", mail, "err", err)
+			return mpccode.CodeLimitSendMailCode()
 		}
 		////
 		if len(sendtimes) >= limitSendMailDurationCnt {
@@ -101,7 +99,8 @@ func (s *NrpcServer) limitSendMail(ctx context.Context, tokenId string, mail str
 		}
 
 		if len(sendtimes) >= limitSendMailDurationCnt {
-			return err
+			g.Log().Info(ctx, "limitSendMailCnt:", "tokenId:", tokenId, "mail", mail)
+			return mpccode.CodeLimitSendPhoneCode()
 		}
 		sendtimes = append(sendtimes, gtime.Now())
 		s.cache.Set(ctx, key, sendtimes, 0)

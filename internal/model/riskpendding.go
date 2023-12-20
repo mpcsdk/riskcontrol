@@ -3,7 +3,6 @@ package model
 import (
 	"context"
 
-	"github.com/gogf/gf/v2/errors/gerror"
 	"github.com/gogf/gf/v2/frame/g"
 	"github.com/gogf/gf/v2/os/gtime"
 	"github.com/mpcsdk/mpcCommon/mpccode"
@@ -57,9 +56,9 @@ func (s *RiskVerifyPendding) AddVerifier(verifier IVerifier) {
 	s.verifier[verifier.VerifyKind()] = verifier
 }
 
-func (s *RiskVerifyPendding) VerifierCode(code *VerifyCode) (VerifyKind, error) {
+func (s *RiskVerifyPendding) VerifierCode(ctx context.Context, code *VerifyCode) (VerifyKind, error) {
 	for k, v := range s.verifier {
-		if _, err := v.Verify(code); err != nil {
+		if _, err := v.Verify(ctx, code); err != nil {
 			return k, err
 		}
 	}
@@ -72,10 +71,8 @@ func (s *RiskVerifyPendding) DoFunc(ctx context.Context) (VerifyKind, error) {
 		return k, err
 	} else {
 		s.DoBefor(ctx)
-		if k, err := s.DoAfter(ctx); err != nil {
-			err = gerror.Wrap(err, mpccode.ErrDetails(
-				mpccode.ErrDetail("k", k),
-			))
+		if _, err := s.DoAfter(ctx); err != nil {
+
 			return "", err
 		}
 		////notice: completion info
@@ -100,14 +97,15 @@ func (s *RiskVerifyPendding) DoBefor(ctx context.Context) (string, error) {
 func (s *RiskVerifyPendding) DoAfter(ctx context.Context) (string, error) {
 	for _, verifer := range s.verifier {
 		if !verifer.IsDone() {
-			return string(verifer.VerifyKind()), gerror.NewCode(mpccode.CodeRiskVerifyCodeInvalid)
+			return string(verifer.VerifyKind()), mpccode.CodeRiskVerifyCodeInvalid()
 		}
 	}
 	//done
 	for _, task := range s.riskAfterFunc {
 		err := task(ctx)
 		if err != nil {
-			return "", err
+			g.Log().Warning(ctx, "DoAfter:", "err:", err)
+			return "", mpccode.CodeInternalError()
 		}
 	}
 	return "", nil

@@ -3,7 +3,6 @@ package tfa
 import (
 	"context"
 
-	"github.com/gogf/gf/v2/errors/gerror"
 	"github.com/gogf/gf/v2/frame/g"
 	"github.com/mpcsdk/mpcCommon/mpccode"
 
@@ -14,16 +13,14 @@ import (
 
 func (c *ControllerV1) TfaInfo(ctx context.Context, req *v1.TfaInfoReq) (res *v1.TfaInfoRes, err error) {
 	//
-	///
+	g.Log().Notice(ctx, "TfaInfo:", "req:", req)
+
 	userInfo, err := service.UserInfo().GetUserInfo(ctx, req.Token)
 	if err != nil {
-		g.Log().Warning(ctx, "TFAInfo userinfo:", req)
-		g.Log().Errorf(ctx, "%+v", err)
-		return nil, gerror.NewCode(mpccode.CodeTFANotExist)
+		return nil, mpccode.CodeTFANotExist()
 	}
 	if userInfo.UserId == "" {
-		g.Log().Warning(ctx, "TFAInfo no userId:", "req:", req, "userInfo:", userInfo)
-		return nil, gerror.NewCode(mpccode.CodeTFANotExist)
+		return nil, mpccode.CodeTFANotExist()
 	}
 	///
 

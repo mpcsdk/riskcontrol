@@ -5,27 +5,10 @@ import (
 	"riskcontral/internal/model/do"
 	"riskcontral/internal/service"
 
+	"github.com/gogf/gf/v2/frame/g"
 	"github.com/gogf/gf/v2/os/gtime"
+	"github.com/mpcsdk/mpcCommon/mpccode"
 )
-
-// func (s *sTFA) createTFA(ctx context.Context, userId string, mail, phone string) error {
-
-// 	e := do.Tfa{
-// 		UserId:    userId,
-// 		CreatedAt: gtime.Now(),
-// 	}
-// 	// if mail != "" {
-// 	// 	e.Mail = mail
-// 	// 	// e.MailUpdatedAt = gtime.Now()
-// 	// }
-// 	// if phone != "" {
-// 	// 	e.Phone = phone
-// 	// 	// e.PhoneUpdatedAt = gtime.Now()
-// 	// }
-// 	err := service.DB().InsertTfaInfo(ctx, userId, &e)
-
-// 	return err
-// }
 
 func (s *sTFA) recordPhone(ctx context.Context, userId, phone string, phoneExists bool) error {
 	if !phoneExists {
@@ -33,13 +16,21 @@ func (s *sTFA) recordPhone(ctx context.Context, userId, phone string, phoneExist
 			UserId: userId,
 			Phone:  phone,
 		})
-		return err
+		if err != nil {
+			g.Log().Warning(ctx, "recordPhone:", "userId:", userId, "phone:", phone, "err:", err)
+			return mpccode.CodeInternalError()
+		}
+		return nil
 	} else {
 		err := service.DB().UpdateTfaInfo(ctx, userId, &do.Tfa{
 			UserId:         userId,
 			Phone:          phone,
 			PhoneUpdatedAt: gtime.Now(),
 		})
+		if err != nil {
+			g.Log().Warning(ctx, "recordPhone:", "userId:", userId, "phone:", phone, "err:", err)
+			return mpccode.CodeInternalError()
+		}
 		return err
 	}
 
@@ -51,7 +42,10 @@ func (s *sTFA) recordMail(ctx context.Context, userId, mail string, upMail bool)
 			UserId: userId,
 			Mail:   mail,
 		})
-
+		if err != nil {
+			g.Log().Warning(ctx, "recordPhone:", "userId:", userId, "mail:", mail, "err:", err)
+			return mpccode.CodeInternalError()
+		}
 		return err
 	} else {
 		err := service.DB().UpdateTfaInfo(ctx, userId, &do.Tfa{
@@ -59,7 +53,10 @@ func (s *sTFA) recordMail(ctx context.Context, userId, mail string, upMail bool)
 			Mail:          mail,
 			MailUpdatedAt: gtime.Now(),
 		})
-
+		if err != nil {
+			g.Log().Warning(ctx, "recordPhone:", "userId:", userId, "mail:", mail, "err:", err)
+			return mpccode.CodeInternalError()
+		}
 		return err
 	}
 }

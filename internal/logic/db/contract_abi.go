@@ -4,6 +4,9 @@ import (
 	"context"
 	"riskcontral/internal/dao"
 	"riskcontral/internal/model/entity"
+
+	"github.com/gogf/gf/v2/frame/g"
+	"github.com/mpcsdk/mpcCommon/mpccode"
 )
 
 func (s *sDB) GetContractAbiBriefs(ctx context.Context, SceneNo string, kind string) ([]*entity.Contractabi, error) {
@@ -21,11 +24,16 @@ func (s *sDB) GetContractAbiBriefs(ctx context.Context, SceneNo string, kind str
 	}
 	rst, err := model.All()
 	if err != nil {
-		return nil, err
+		g.Log().Error(ctx, "GetContractAbiBriefs:", "sceneNo", SceneNo, "kind", kind, "err", err)
+		return nil, mpccode.CodeInternalError()
 	}
 	///
 	rule := []*entity.Contractabi{}
-	rst.Structs(&rule)
+	err = rst.Structs(&rule)
+	if err != nil {
+		g.Log().Error(ctx, "GetContractAbiBriefs:", "sceneNo", SceneNo, "kind", kind, "err", err)
+		return nil, mpccode.CodeInternalError()
+	}
 	return rule, nil
 }
 
@@ -35,10 +43,15 @@ func (s *sDB) GetContractAbi(ctx context.Context, SceneNo string, address string
 		Where(dao.Contractabi.Columns().SceneNo, SceneNo).
 		Where(dao.Contractabi.Columns().ContractAddress, address).One()
 	if err != nil {
-		return nil, err
+		g.Log().Error(ctx, "GetContractAbi:", "sceneNo", SceneNo, "address", address, "err", err)
+		return nil, mpccode.CodeInternalError()
 	}
 	// /
 	rule := &entity.Contractabi{}
-	rst.Struct(&rule)
+	err = rst.Struct(&rule)
+	if err != nil {
+		g.Log().Error(ctx, "GetContractAbi:", "sceneNo", SceneNo, "address", address, "err", err)
+		return nil, mpccode.CodeInternalError()
+	}
 	return rule, nil
 }

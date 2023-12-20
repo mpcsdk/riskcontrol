@@ -22,9 +22,10 @@ func Test_riskPhone(t *testing.T) {
 	///
 	verifier.SetCode("123")
 	////verify, failed
-	k, err := risk.VerifierCode(&model.VerifyCode{
-		PhoneCode: "123",
-	})
+	k, err := risk.VerifierCode(context.Background(),
+		&model.VerifyCode{
+			PhoneCode: "123",
+		})
 	if err != nil {
 		t.Log(k)
 		t.Error(err)

@@ -6,47 +6,43 @@ import (
 	"riskcontral/internal/model/do"
 	"riskcontral/internal/model/entity"
 
-	"github.com/gogf/gf/v2/errors/gerror"
+	"github.com/gogf/gf/v2/frame/g"
 	"github.com/mpcsdk/mpcCommon/mpccode"
 )
 
 // /
-func (s *sDB) UpAggFT(ctx context.Context, ft *entity.AggFt24H) error {
-	aggdo := &do.AggFt24H{
-		From:       ft.From,
-		Contract:   ft.Contract,
-		MethodName: ft.MethodName,
-	}
-	dao.AggFt24H.Ctx(ctx).Delete(aggdo)
-	///
-	_, err := dao.AggFt24H.Ctx(ctx).Insert(ft)
-	if err != nil {
-		err = gerror.Wrap(err, mpccode.ErrDetails(
-			mpccode.ErrDetail("do", aggdo),
-		))
-		return err
-	}
+// func (s *sDB) UpAggFT(ctx context.Context, ft *entity.AggFt24H) error {
+// 	aggdo := &do.AggFt24H{
+// 		From:       ft.From,
+// 		Contract:   ft.Contract,
+// 		MethodName: ft.MethodName,
+// 	}
+// 	dao.AggFt24H.Ctx(ctx).Delete(aggdo)
+// 	///
+// 	_, err := dao.AggFt24H.Ctx(ctx).Insert(ft)
+// 	if err != nil {
+// 		g.Log().Error(ctx, "UpAggFT:", "ft:", ft, "err:", err)
+// 		return mpccode.CodeInternalError()
+// 	}
 
-	return nil
-}
-func (s *sDB) UpAggNFT(ctx context.Context, nft *entity.AggNft24H) error {
-	aggdo := &do.AggNft24H{
-		From:       nft.From,
-		Contract:   nft.Contract,
-		MethodName: nft.MethodName,
-	}
-	dao.AggNft24H.Ctx(ctx).Delete(aggdo)
-	///
-	_, err := dao.AggNft24H.Ctx(ctx).Insert(nft)
-	if err != nil {
-		err = gerror.Wrap(err, mpccode.ErrDetails(
-			mpccode.ErrDetail("do", aggdo),
-		))
-		return err
-	}
+// 	return nil
+// }
+// func (s *sDB) UpAggNFT(ctx context.Context, nft *entity.AggNft24H) error {
+// 	aggdo := &do.AggNft24H{
+// 		From:       nft.From,
+// 		Contract:   nft.Contract,
+// 		MethodName: nft.MethodName,
+// 	}
+// 	dao.AggNft24H.Ctx(ctx).Delete(aggdo)
+// 	///
+// 	_, err := dao.AggNft24H.Ctx(ctx).Insert(nft)
+// 	if err != nil {
+// 		g.Log().Error(ctx, "UpAggNFT:", "nft:", nft, "err:", err)
+// 		return mpccode.CodeInternalError()
+// 	}
 
-	return nil
-}
+// 	return nil
+// }
 
 func (s *sDB) GetAggFT(ctx context.Context, from, contract, methodName string) (*entity.AggFt24H, error) {
 	aggdo := &do.AggFt24H{
@@ -58,22 +54,25 @@ func (s *sDB) GetAggFT(ctx context.Context, from, contract, methodName string) (
 		Where(aggdo).
 		One()
 	if err != nil {
-		err = gerror.Wrap(err, mpccode.ErrDetails(
-			mpccode.ErrDetail("do", aggdo),
-		))
-		return nil, err
+		g.Log().Error(ctx, "GetAggFT:", "from:", from,
+			"contract:", contract, "methodName:", methodName, "err:", err)
+		return nil, mpccode.CodeInternalError()
 	}
 	if rst.IsEmpty() {
-		err = gerror.Wrap(mpccode.ErrEmpty, mpccode.ErrDetails(
-			mpccode.ErrDetail("do", aggdo),
-		))
-		return nil, err
+		return nil, nil
 	}
 	////
 	var data *entity.AggFt24H = nil
 	err = rst.Struct(&data)
-	return data, err
+	if err != nil {
+		g.Log().Error(ctx, "GetAggFT:", "from:", from,
+			"contract:", contract, "methodName:", methodName, "data:", data, "err:", err)
+		return nil, mpccode.CodeInternalError()
+	}
+	return data, nil
 }
+
+// /
 func (s *sDB) GetAggNFT(ctx context.Context, from, contract, methodName string) (int, error) {
 	cnt, err := dao.AggNft24H.Ctx(ctx).
 		Where(do.AggNft24H{
@@ -83,11 +82,13 @@ func (s *sDB) GetAggNFT(ctx context.Context, from, contract, methodName string) 
 		}).
 		Count()
 	if err != nil {
-		return 0, err
+		g.Log().Error(ctx, "GetAggNFT:", "from:", from,
+			"contract:", contract, "methodName:", methodName, "err:", err)
+		return 0, mpccode.CodeInternalError()
 	}
 	if cnt == 0 {
-		return 0, mpccode.ErrEmpty
+		return 0, nil
 	}
 	////
-	return cnt, err
+	return cnt, nil
 }

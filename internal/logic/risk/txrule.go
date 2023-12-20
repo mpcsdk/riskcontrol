@@ -7,7 +7,6 @@ import (
 	"riskcontral/internal/model/do"
 	"riskcontral/internal/model/entity"
 
-	"github.com/gogf/gf/v2/errors/gerror"
 	"github.com/gogf/gf/v2/frame/g"
 	"github.com/mpcsdk/mpcCommon/mpccode"
 )
@@ -32,10 +31,11 @@ func rule_nftcnt(ctx context.Context, address string, contract string, method st
 		One()
 	g.Log().Debug(ctx, "AggNft24H:", address, contract, method, rst)
 	if err != nil {
-		err = gerror.Wrap(err, mpccode.ErrDetails(
-			mpccode.ErrDetail("aggdo", aggdo),
-		))
-		return 0, err
+		g.Log().Warning(
+			ctx, "AggNft24H:", address, contract, method,
+			"err:", err,
+		)
+		return 0, mpccode.CodeInternalError()
 	}
 	var data *entity.AggNft24H
 	err = rst.Struct(&data)

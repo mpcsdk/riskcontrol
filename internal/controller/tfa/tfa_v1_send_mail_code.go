@@ -3,7 +3,6 @@ package tfa
 import (
 	"context"
 
-	"github.com/gogf/gf/v2/errors/gerror"
 	"github.com/gogf/gf/v2/frame/g"
 	"github.com/mpcsdk/mpcCommon/mpccode"
 
@@ -14,11 +13,11 @@ import (
 
 func (c *ControllerV1) SendMailCode(ctx context.Context, req *v1.SendMailCodeReq) (res *v1.SendMailCodeRes, err error) {
 
+	g.Log().Notice(ctx, "SendMailCode:", "req:", req)
 	//
 	info, err := service.UserInfo().GetUserInfo(ctx, req.Token)
 	if err != nil || info == nil {
-		g.Log().Errorf(ctx, "%+v", err)
-		return nil, gerror.NewCode(mpccode.CodeTokenInvalid)
+		return nil, mpccode.CodeTokenInvalid()
 	}
 	////
 	_, err = c.nrpc.RpcSendMailCode(ctx, &nrpc.SendMailCodeReq{

@@ -4,9 +4,7 @@ import (
 	"context"
 	"riskcontral/internal/config"
 
-	"github.com/gogf/gf/v2/errors/gerror"
 	"github.com/gogf/gf/v2/frame/g"
-	"github.com/mpcsdk/mpcCommon/mpccode"
 	"github.com/mpcsdk/mpcCommon/rand"
 	"github.com/mpcsdk/mpcCommon/sms"
 )
@@ -22,17 +20,11 @@ func (s *huawei) SendVerificationCode(ctx context.Context, to string) (string, e
 	code := rand.RandomDigits(6)
 	ok, resp, err := s.huawei.SendSms(to, s.cfg.Huawei.VerificationTemplateId, code)
 	if !ok {
-		err = gerror.Wrap(mpccode.ErrArg, mpccode.ErrDetails(
-			mpccode.ErrDetail("SendVerificationCode", to),
-			mpccode.ErrDetail("SendVerificationCode resp", resp),
-		))
+		g.Log().Error(ctx, "SendVerificationCode:", "to:", to, "resp:", resp, "err:", err)
 		return "", err
 	}
 	if err != nil {
-		err = gerror.Wrap(err, mpccode.ErrDetails(
-			mpccode.ErrDetail("SendVerificationCode", to),
-			mpccode.ErrDetail("SendVerificationCode resp", resp),
-		))
+		g.Log().Error(ctx, "SendVerificationCode:", "to:", to, "resp:", resp, "err:", err)
 		return "", err
 	}
 	g.Log().Notice(ctx, "SendVerificationCode:", to, code, resp)
@@ -43,10 +35,7 @@ func (s *huawei) SendBindingPhoneCode(ctx context.Context, to string) (string, e
 	code := rand.RandomDigits(6)
 	_, resp, err := s.huawei.SendSms(to, s.cfg.Huawei.BindingVerificationTemplateId, code)
 	if err != nil {
-		err = gerror.Wrap(err, mpccode.ErrDetails(
-			mpccode.ErrDetail("SendBindingPhoneCode", to),
-			mpccode.ErrDetail("SendBindingPhoneCode resp", resp),
-		))
+		g.Log().Error(ctx, "SendBindingPhoneCode:", "to:", to, "resp:", resp, "err:", err)
 		return "", err
 	}
 	g.Log().Notice(ctx, "SendBindingPhoneCode:", to, code, resp)
@@ -55,10 +44,7 @@ func (s *huawei) SendBindingPhoneCode(ctx context.Context, to string) (string, e
 func (s *huawei) SendBindingCompletionPhone(ctx context.Context, to string) error {
 	_, resp, err := s.huawei.SendSms(to, s.cfg.Huawei.BindingCompletionTemplateId, "")
 	if err != nil {
-		err = gerror.Wrap(err, mpccode.ErrDetails(
-			mpccode.ErrDetail("SendBindingCompletionPhone", to),
-			mpccode.ErrDetail("SendBindingCompletionPhone resp", resp),
-		))
+		g.Log().Error(ctx, "SendBindingCompletionPhone:", "to:", to, "resp:", resp, "err:", err)
 		return err
 	}
 	g.Log().Notice(ctx, "SendBindingCompletionPhone:", to, resp)
@@ -70,10 +56,7 @@ func (s *huawei) SendUpPhoneCode(ctx context.Context, to string) (string, error)
 	code := rand.RandomDigits(6)
 	_, resp, err := s.huawei.SendSms(to, s.cfg.Huawei.UpVerificationTemplateId, code)
 	if err != nil {
-		err = gerror.Wrap(err, mpccode.ErrDetails(
-			mpccode.ErrDetail("SendUpPhoneCode", to),
-			mpccode.ErrDetail("SendUpPhoneCode resp", resp),
-		))
+		g.Log().Error(ctx, "SendUpPhoneCode:", "to:", to, "resp:", resp, "err:", err)
 		return "", err
 	}
 	g.Log().Notice(ctx, "SendUpPhoneCode:", to, code, resp)
@@ -83,10 +66,7 @@ func (s *huawei) SendUpPhoneCode(ctx context.Context, to string) (string, error)
 func (s *huawei) SendUpCompletionPhone(ctx context.Context, to string) error {
 	_, resp, err := s.huawei.SendSms(to, s.cfg.Huawei.UpCompletionTemplateId, "")
 	if err != nil {
-		err = gerror.Wrap(err, mpccode.ErrDetails(
-			mpccode.ErrDetail("SendUpCompletionPhone", to),
-			mpccode.ErrDetail("SendUpCompletionPhone resp", resp),
-		))
+		g.Log().Error(ctx, "SendUpCompletionPhone:", "to:", to, "resp:", resp, "err:", err)
 		return err
 	}
 	g.Log().Notice(ctx, "SendUpCompletionPhone:", to, resp)

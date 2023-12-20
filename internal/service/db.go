@@ -13,10 +13,8 @@ import (
 
 type (
 	IDB interface {
-		// /
-		UpAggFT(ctx context.Context, ft *entity.AggFt24H) error
-		UpAggNFT(ctx context.Context, nft *entity.AggNft24H) error
 		GetAggFT(ctx context.Context, from, contract, methodName string) (*entity.AggFt24H, error)
+		// /
 		GetAggNFT(ctx context.Context, from, contract, methodName string) (int, error)
 		GetContractAbiBriefs(ctx context.Context, SceneNo string, kind string) ([]*entity.Contractabi, error)
 		// /
@@ -24,8 +22,8 @@ type (
 		GetContractRuleBriefs(ctx context.Context, SceneNo string, kind string) ([]*entity.Contractrule, error)
 		// /
 		GetContractRule(ctx context.Context, SceneNo string, address string) (*entity.Contractrule, error)
-		TfaMailNotExists(ctx context.Context, mail string) error
-		TfaPhoneNotExists(ctx context.Context, phone string) error
+		TfaMailNotExists(ctx context.Context, mail string) (bool, error)
+		TfaPhoneNotExists(ctx context.Context, phone string) (bool, error)
 		InsertTfaInfo(ctx context.Context, userId string, data *do.Tfa) error
 		// //
 		UpdateTfaInfo(ctx context.Context, userId string, data *do.Tfa) error

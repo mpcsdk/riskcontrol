@@ -4,7 +4,6 @@ import (
 	"context"
 	"riskcontral/internal/model"
 
-	"github.com/gogf/gf/v2/errors/gerror"
 	"github.com/gogf/gf/v2/frame/g"
 	"github.com/mpcsdk/mpcCommon/mpccode"
 )
@@ -13,19 +12,15 @@ import (
 func (s *sTFA) SendPhoneCode(ctx context.Context, userId string, riskSerial string) (string, error) {
 	risk := s.riskPenddingContainer.GetRiskVerify(userId, riskSerial)
 	if risk == nil {
-		return "", mpccode.CodeRiskSerialNotExist.Error()
+		return "", mpccode.CodeRiskSerialNotExist()
 	}
 
 	v := risk.Verifier(model.VerifierKind_Phone)
 	if v == nil {
-		return "", mpccode.CodeRiskSerialNotExist.Error()
+		return "", mpccode.CodeRiskSerialNotExist()
 	}
 	code, err := v.SendVerificationCode()
 	if err != nil {
-		err = gerror.Wrap(err, mpccode.ErrDetails(
-			mpccode.ErrDetail("userId", userId),
-			mpccode.ErrDetail("riskSerial", riskSerial),
-		))
 		return string(model.VerifierKind_Phone), err
 	}
 	////
@@ -40,19 +35,16 @@ func (s *sTFA) SendPhoneCode(ctx context.Context, userId string, riskSerial stri
 func (s *sTFA) SendMailCode(ctx context.Context, userId string, riskSerial string) (string, error) {
 	risk := s.riskPenddingContainer.GetRiskVerify(userId, riskSerial)
 	if risk == nil {
-		return "", mpccode.CodeRiskSerialNotExist.Error()
+		return "", mpccode.CodeRiskSerialNotExist()
 	}
 
 	v := risk.Verifier(model.VerifierKind_Mail)
 	if v == nil {
-		return "", mpccode.CodeRiskSerialNotExist.Error()
+		return "", mpccode.CodeRiskSerialNotExist()
 	}
 	code, err := v.SendVerificationCode()
 	if err != nil {
-		err = gerror.Wrap(err, mpccode.ErrDetails(
-			mpccode.ErrDetail("userId", userId),
-			mpccode.ErrDetail("riskSerial", riskSerial),
-		))
+
 		return string(model.VerifierKind_Mail), err
 	}
 	////

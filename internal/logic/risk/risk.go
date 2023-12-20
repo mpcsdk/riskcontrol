@@ -47,17 +47,14 @@ func (s *sRisk) RiskTxs(ctx context.Context, userId string, signTx string) (stri
 	///
 	code, err := s.checkTxs(ctx, signTx)
 	if err != nil {
-		g.Log().Warning(ctx, "PerformRiskTxs:", "userId:", userId)
-		g.Log().Errorf(ctx, "%+v", err)
-		return riskserial, code
+		return riskserial, mpccode.RiskCodeError
 	}
 	/////
 	switch code {
 	case mpccode.RiskCodePass, mpccode.RiskCodeNeedVerification:
 		tfaInfo, err := service.DB().FetchTfaInfo(ctx, userId)
 		if err != nil || tfaInfo == nil {
-			g.Log().Warning(ctx, "RiskTxs:", "userId:", userId)
-			g.Log().Errorf(ctx, "%+v", err)
+			g.Log().Warning(ctx, "RiskTxs:", "userId:", userId, "err:", err)
 			return "", mpccode.RiskCodeError
 		}
 		////if pass, chech tfa forbiddent

@@ -7,7 +7,7 @@ import (
 	"riskcontral/internal/model/entity"
 	"riskcontral/internal/service"
 
-	"github.com/gogf/gf/v2/errors/gerror"
+	"github.com/gogf/gf/v2/frame/g"
 	"github.com/gogf/gf/v2/os/gctx"
 	"github.com/mpcsdk/mpcCommon/mpccode"
 )
@@ -50,11 +50,8 @@ func init() {
 func (s *sTFA) TfaRiskKind(ctx context.Context, tfaInfo *entity.Tfa, riskSerial string) (model.RiskKind, error) {
 	risk := s.riskPenddingContainer.GetRiskVerify(tfaInfo.UserId, riskSerial)
 	if risk == nil {
-		err := gerror.Wrap(mpccode.ErrArg, mpccode.ErrDetails(
-			mpccode.ErrDetail("tfaInfo", tfaInfo),
-			mpccode.ErrDetail("riskSerial", riskSerial),
-		))
-		return "", err
+		g.Log().Warning(ctx, "TfaRiskKind:", "tfaInfo:", tfaInfo, "riskSerial:", riskSerial)
+		return "", mpccode.CodeParamInvalid()
 	}
 	return risk.RiskKind, nil
 }
@@ -111,8 +108,7 @@ func (s *sTFA) TfaRiskTidy(ctx context.Context, tfaInfo *entity.Tfa, riskSerial 
 func (s *sTFA) TFATx(ctx context.Context, tfaInfo *entity.Tfa, riskSerial string) ([]string, error) {
 
 	if tfaInfo.Mail == "" && tfaInfo.Phone == "" {
-
-		return nil, gerror.NewCode(mpccode.CodeTFANotExist)
+		return nil, mpccode.CodeTFANotExist()
 	}
 
 	//

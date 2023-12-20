@@ -5,7 +5,6 @@ import (
 	"riskcontral/internal/model"
 	"riskcontral/internal/model/entity"
 
-	"github.com/gogf/gf/v2/frame/g"
 	"github.com/mpcsdk/mpcCommon/mpccode"
 )
 
@@ -20,7 +19,7 @@ func (s *sTFA) TfaSetMail(ctx context.Context, tfaInfo *entity.Tfa, mail string,
 // //
 func (s *sTFA) TfaBindMail(ctx context.Context, tfaInfo *entity.Tfa, mail string, riskSerial string) (string, error) {
 	if tfaInfo == nil || tfaInfo.Mail != "" {
-		return "", mpccode.CodeParamInvalid.Error()
+		return "", mpccode.CodeParamInvalid()
 	}
 	verifier := newVerifierMail(model.RiskKind_BindMail, mail)
 	risk := s.riskPenddingContainer.NewRiskPendding(tfaInfo.UserId, riskSerial, model.RiskKind_UpMail)
@@ -28,11 +27,7 @@ func (s *sTFA) TfaBindMail(ctx context.Context, tfaInfo *entity.Tfa, mail string
 	risk.AddVerifier(verifier)
 	risk.AddAfterFunc(func(ctx context.Context) error {
 		err := s.recordMail(ctx, tfaInfo.UserId, mail, false)
-		if err != nil {
-			g.Log().Warning(ctx, "TfaBindMail recordMail err:", "userid:", tfaInfo.UserId, "mail:", mail, "err:", err)
-			return err
-		}
-		return nil
+		return err
 	})
 
 	return riskSerial, nil
@@ -40,7 +35,7 @@ func (s *sTFA) TfaBindMail(ctx context.Context, tfaInfo *entity.Tfa, mail string
 
 func (s *sTFA) TfaUpMail(ctx context.Context, tfaInfo *entity.Tfa, mail string, riskSerial string) (string, error) {
 	if tfaInfo == nil || tfaInfo.Mail == "" {
-		return "", mpccode.CodeParamInvalid.Error()
+		return "", mpccode.CodeParamInvalid()
 	}
 	verifier := newVerifierMail(model.RiskKind_UpMail, mail)
 	risk := s.riskPenddingContainer.NewRiskPendding(tfaInfo.UserId, riskSerial, model.RiskKind_UpMail)
@@ -48,11 +43,7 @@ func (s *sTFA) TfaUpMail(ctx context.Context, tfaInfo *entity.Tfa, mail string, 
 	risk.AddVerifier(verifier)
 	risk.AddAfterFunc(func(ctx context.Context) error {
 		err := s.recordMail(ctx, tfaInfo.UserId, mail, true)
-		if err != nil {
-			g.Log().Warning(ctx, "TfaUpMail recordMail err:", "userid:", tfaInfo.UserId, "mail:", mail, "err:", err)
-			return err
-		}
-		return nil
+		return err
 	})
 
 	//

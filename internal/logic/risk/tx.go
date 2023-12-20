@@ -3,7 +3,6 @@ package risk
 import (
 	"context"
 
-	"github.com/gogf/gf/v2/errors/gerror"
 	"github.com/gogf/gf/v2/frame/g"
 	"github.com/mpcsdk/mpcCommon/ethtx/analzyer"
 	"github.com/mpcsdk/mpcCommon/mpccode"
@@ -19,16 +18,13 @@ func (s *sRisk) checkTxs(ctx context.Context, signTxStr string) (int32, error) {
 	///
 	signTx, err := scencRule.analzer.SignTx(signTxStr)
 	if err != nil {
-		return mpccode.RiskCodeError, err
+		g.Log().Warning(ctx, "checkTxs:", "signTxStr:", signTxStr, "err:", err)
+		return mpccode.RiskCodeError, mpccode.CodePerformRiskError()
 	}
 
 	for _, tx := range signTx.Txs {
 		code, err := s.checkTx(ctx, signTx.Address.String(), tx)
 		if err != nil {
-			err = gerror.Wrap(err, mpccode.ErrDetails(
-				mpccode.ErrDetail("address", signTx.Address),
-				mpccode.ErrDetail("tx", tx),
-			))
 			return mpccode.RiskCodeError, err
 		}
 		if code != mpccode.RiskCodePass {
@@ -41,7 +37,7 @@ func (s *sRisk) checkTxs(ctx context.Context, signTxStr string) (int32, error) {
 func (s *sRisk) checkTx(ctx context.Context, from string, riskSignTx *analzyer.SignTxData) (int32, error) {
 	scencRule := s.getContractRules(ctx, defaultSceneNo)
 	if scencRule == nil {
-		return 0, nil
+		return mpccode.RiskCodePass, nil
 	}
 	///
 	// riskSignTx.Target = strings.ToLower(riskSignTx.Target)
@@ -51,11 +47,13 @@ func (s *sRisk) checkTx(ctx context.Context, from string, riskSignTx *analzyer.S
 			riskSignTx.Target.String(),
 			riskSignTx,
 			ftrule)
-		if err != nil || ethtx == nil {
-			g.Log().Warning(ctx, "checkTx:", "riskSignTx:", riskSignTx)
-			g.Log().Warning(ctx, "checkTx:", "ftrule:", ftrule)
-			g.Log().Errorf(ctx, "%+v", err)
-			return mpccode.RiskCodeNeedVerification, nil
+		if err != nil {
+			g.Log().Warning(ctx, "checkTx:", "riskSignTx:", riskSignTx, "err:", err)
+			return mpccode.RiskCodeError, mpccode.CodePerformRiskError()
+		}
+		if ethtx == nil {
+			g.Log().Warning(ctx, "checkTx ethtx is nil:", "riskSignTx:", riskSignTx)
+			return mpccode.RiskCodeNoRiskControl, nil
 		}
 		if ethtx.MethodName != ftrule.MethodName {
 			g.Log().Warning(ctx, "checkTx:", "methodName unmath:", ethtx.MethodName, ftrule.MethodName)
@@ -68,12 +66,10 @@ func (s *sRisk) checkTx(ctx context.Context, from string, riskSignTx *analzyer.S
 		///
 		cnt, err := rule_ftcnt(ctx, from, ftrule.Contract, ftrule.MethodName)
 		if err != nil {
-			err = gerror.Wrap(err, mpccode.ErrDetails(
-				mpccode.ErrDetail("from", from),
-				mpccode.ErrDetail("contract", ftrule.Contract),
-				mpccode.ErrDetail("methodName", ftrule.MethodName),
-			))
-			return mpccode.RiskCodeError, err
+			g.Log().Warning(ctx, "checkTx:", "from:", from,
+				"contract:", ftrule.Contract,
+				"methodName:", ftrule.MethodName, "err:", err)
+			return mpccode.RiskCodeError, mpccode.CodePerformRiskError()
 		}
 
 		cnt = cnt.Add(cnt, ethtx.Value)
@@ -93,10 +89,12 @@ func (s *sRisk) checkTx(ctx context.Context, from string, riskSignTx *analzyer.S
 			riskSignTx,
 			nftrule)
 		if err != nil {
-			g.Log().Warning(ctx, "checkTx:", "riskSignTx:", riskSignTx)
-			g.Log().Warning(ctx, "checkTx:", "nftrule:", nftrule)
-			g.Log().Errorf(ctx, "%+v", err)
-			return mpccode.RiskCodeNeedVerification, nil
+			g.Log().Warning(ctx, "checkTx:", "riskSignTx:", riskSignTx, "err:", err)
+			return mpccode.RiskCodeError, mpccode.CodePerformRiskError()
+		}
+		if ethtx == nil {
+			g.Log().Warning(ctx, "checkTx ethtx is nil:", "riskSignTx:", riskSignTx)
+			return mpccode.RiskCodeNoRiskControl, nil
 		}
 		if ethtx.MethodName != nftrule.MethodName {
 			g.Log().Warning(ctx, "checkTx:", "methodName unmath:", ethtx.MethodName, nftrule.MethodName)
@@ -105,12 +103,10 @@ func (s *sRisk) checkTx(ctx context.Context, from string, riskSignTx *analzyer.S
 		//nft
 		cnt, err := rule_nftcnt(ctx, from, nftrule.Contract, nftrule.MethodName)
 		if err != nil {
-			err = gerror.Wrap(err, mpccode.ErrDetails(
-				mpccode.ErrDetail("from", from),
-				mpccode.ErrDetail("contract", nftrule.Contract),
-				mpccode.ErrDetail("methodName", nftrule.MethodName),
-			))
-			return mpccode.RiskCodeError, err
+			g.Log().Warning(ctx, "checkTx:", "from:", from,
+				"contract:", ftrule.Contract,
+				"methodName:", ftrule.MethodName, "err:", err)
+			return mpccode.RiskCodeError, mpccode.CodePerformRiskError()
 		}
 
 		cnt += 1

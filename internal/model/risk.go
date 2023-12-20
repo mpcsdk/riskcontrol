@@ -1,6 +1,7 @@
 package model
 
 import (
+	"context"
 	"riskcontral/api/risk/nrpc"
 	"riskcontral/internal/model/entity"
 	"strings"
@@ -52,7 +53,7 @@ type RiskTfa struct {
 	Phone string `json:"phone"`
 }
 type IVerifier interface {
-	Verify(verifierCode *VerifyCode) (RiskKind, error)
+	Verify(ctx context.Context, verifierCode *VerifyCode) (RiskKind, error)
 	SetCode(string)
 	RiskKind() RiskKind
 	VerifyKind() VerifyKind

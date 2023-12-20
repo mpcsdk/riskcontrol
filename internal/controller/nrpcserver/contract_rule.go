@@ -7,7 +7,6 @@ import (
 	"riskcontral/internal/model"
 	"riskcontral/internal/service"
 
-	"github.com/gogf/gf/v2/errors/gerror"
 	"github.com/gogf/gf/v2/frame/g"
 	"github.com/gogf/gf/v2/util/gconv"
 	"github.com/mpcsdk/mpcCommon/mpccode"
@@ -46,9 +45,11 @@ func (s *NrpcServer) NatsPub() {
 
 // /
 func (*NrpcServer) RpcContractRuleBriefs(ctx context.Context, req *nrpc.ContractRuleBriefsReq) (res *nrpc.ContractRuleBriefsRes, err error) {
+	g.Log().Notice(ctx, "RpcContractRuleBriefs:", "req:", req)
+
 	briefs, err := service.DB().GetContractRuleBriefs(ctx, req.SceneNo, req.Address)
 	if err != nil {
-		return nil, gerror.NewCode(mpccode.CodeInternalError)
+		return nil, mpccode.CodeInternalError()
 	}
 	res = &nrpc.ContractRuleBriefsRes{
 		Briefs: map[string]*nrpc.ContractRuleBriefs{},
@@ -65,10 +66,11 @@ func (*NrpcServer) RpcContractRuleBriefs(ctx context.Context, req *nrpc.Contract
 }
 
 func (*NrpcServer) RpcContractRule(ctx context.Context, req *nrpc.ContractRuleReq) (res *nrpc.ContractRuleRes, err error) {
+
+	g.Log().Notice(ctx, "RpcContractRule:", "req:", req)
 	rule, err := service.DB().GetContractRule(ctx, req.SceneNo, req.Address)
 	if err != nil {
-		g.Log().Errorf(ctx, "%+v", err)
-		return nil, gerror.NewCode(mpccode.CodeInternalError)
+		return nil, mpccode.CodeInternalError()
 	}
 	res = model.ContractRuleEntity2Rpc(rule)
 	return res, nil

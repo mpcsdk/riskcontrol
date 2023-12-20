@@ -13,6 +13,20 @@ import (
 	"github.com/gogf/gf/v2/os/gcmd"
 )
 
+func MiddlewareErrorHandler(r *ghttp.Request) {
+	r.Middleware.Next()
+	if err := r.GetError(); err != nil {
+		g.Log().Error(r.Context(), err)
+		r.Response.ClearBuffer()
+
+		code := gcode.CodeInternalError
+		r.Response.WriteJson(ghttp.DefaultHandlerResponse{
+			Code:    code.Code(),
+			Message: code.Message(),
+			Data:    nil,
+		})
+	}
+}
 func MiddlewareCORS(r *ghttp.Request) {
 	r.Response.CORSDefault()
 	r.Middleware.Next()
@@ -25,18 +39,13 @@ func ResponseHandler(r *ghttp.Request) {
 		return
 	}
 	var (
-		err  = r.GetError()
-		res  = r.GetHandlerResponse()
+		err = r.GetError()
+		res = r.GetHandlerResponse()
+		// code = mpccode.Code(err)
 		code = gerror.Code(err)
 	)
-
-	if code == gcode.CodeNil {
-		if err != nil {
-			code = gcode.CodeInternalError
-		} else {
-			code = gcode.CodeOK
-		}
-	}
+	r.SetError(nil)
+	// }
 	g.Log().Info(context.Background(), res)
 	r.Response.WriteJson(ghttp.DefaultHandlerResponse{
 		Code:    code.Code(),
@@ -53,6 +62,7 @@ var (
 		Func: func(ctx context.Context, parser *gcmd.Parser) (err error) {
 
 			s := g.Server()
+			s.Use(MiddlewareErrorHandler)
 			s.Group("/", func(group *ghttp.RouterGroup) {
 				group.Middleware(ghttp.MiddlewareHandlerResponse)
 				group.Middleware(MiddlewareCORS)

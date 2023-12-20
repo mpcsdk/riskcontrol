@@ -13,92 +13,79 @@ import (
 )
 
 func (s *NrpcServer) RpcSendMailCode(ctx context.Context, req *nrpc.SendMailCodeReq) (res *nrpc.SendMailCodeRes, err error) {
+	g.Log().Notice(ctx, "RpcSendMailCode:", "req:", req)
 	//limit
-	if err := s.counter(ctx, req.UserId, "SendMailCode"); err != nil {
-		g.Log().Warningf(ctx, "%+v", err)
+	if err := s.apiLimit(ctx, req.UserId, "SendMailCode"); err != nil {
 		return nil, err
 	}
-	if err := s.limitSendVerification(ctx, req.UserId, "SendMailCode"); err != nil {
-		g.Log().Warningf(ctx, "%+v", err)
-		return nil, gerror.NewCode(mpccode.CodeLimitSendMailCode)
-	}
+	// if err := s.limitSendMailDuration(ctx, req.UserId, "SendMailCode"); err != nil {
+	// 	return nil, mpccode.CodeLimitSendMailCode()
+	// }
 	//trace
 	ctx, span := gtrace.NewSpan(ctx, "SendMailCode")
 	defer span.End()
 	///
-	//
-	// info, err := service.UserInfo().GetUserInfo(ctx, req.Token)
-	// if err != nil || info == nil {
-	// 	g.Log().Warningf(ctx, "%+v", err)
-	// 	return nil, gerror.NewCode(mpccode.CodeTokenInvalid)
-	// }
 	tfaInfo, err := service.DB().FetchTfaInfo(ctx, req.UserId)
 	if err != nil || tfaInfo == nil {
-		g.Log().Warning(ctx, "SendMailCode:", req, err)
-		return nil, gerror.NewCode(mpccode.CodeTFANotExist)
+		return nil, mpccode.CodeTFANotExist()
 	}
 	////
 	risk := service.TFA().GetRiskVerify(ctx, req.UserId, req.RiskSerial)
 	if risk == nil {
-		return nil, gerror.NewCode(mpccode.CodeRiskSerialNotExist)
+		return nil, mpccode.CodeRiskSerialNotExist()
 	}
 	///
 	////
 	switch risk.RiskKind {
 	case model.RiskKind_BindMail, model.RiskKind_UpMail:
 		if req.Mail == "" {
-			return nil, gerror.NewCode(mpccode.CodeParamInvalid)
+			return nil, mpccode.CodeParamInvalid()
 		}
-		err = service.DB().TfaMailNotExists(ctx, req.Mail)
-		if err != nil {
-			g.Log().Warningf(ctx, "%+v", err)
-			return nil, gerror.NewCode(mpccode.CodeTFAMailExists)
+		notexists, err := service.DB().TfaMailNotExists(ctx, req.Mail)
+		if err != nil || !notexists {
+			return nil, mpccode.CodeTFAMailExists()
 		}
 		////
 		service.TFA().TfaSetMail(ctx, tfaInfo, req.Mail, req.RiskSerial, risk.RiskKind)
 		///
 	case model.RiskKind_BindPhone, model.RiskKind_UpPhone:
 	default:
-		return nil, gerror.NewCode(mpccode.CodeRiskSerialNotExist)
+		return nil, mpccode.CodeRiskSerialNotExist()
 	}
-	/// limit send cnt
-	// risk := service.TFA().GetRiskVerify(ctx, info.UserId, req.RiskSerial)
-	// if risk == nil {
-	// 	return nil, gerror.NewCode(mpccode.CodeRiskSerialNotExist)
-	// }
+
 	v := risk.Verifier(model.VerifierKind_Mail)
 	if v == nil {
-		return nil, gerror.NewCode(mpccode.CodeRiskSerialNotExist)
+		return nil, mpccode.CodeRiskSerialNotExist()
 	}
-	if err := s.limitSendMail(ctx, req.UserId, v.Destination()); err != nil {
-		g.Log().Warningf(ctx, "%+v", err)
-		return nil, gerror.NewCode(mpccode.CodeLimitSendMailCode)
+	if err := s.limitSendMailCnt(ctx, req.UserId, v.Destination()); err != nil {
+		return nil, mpccode.CodeLimitSendMailCode()
 	}
 	///
 	_, err = service.TFA().SendMailCode(ctx, req.UserId, req.RiskSerial)
 
 	if err != nil {
-		if gerror.Cause(err).Error() == mpccode.CodeLimitSendMailCode.Error().Error() {
+		if gerror.Cause(err).Error() == mpccode.CodeLimitSendMailCode().Error() {
 			g.Log().Warningf(ctx, "%+v", err)
-			return nil, gerror.NewCode(mpccode.CodeLimitSendMailCode)
+			return nil, mpccode.CodeLimitSendMailCode()
 		}
 		g.Log().Warningf(ctx, "%+v", err)
-		return nil, gerror.NewCode(mpccode.CodeTFASendMailFailed)
+		return nil, mpccode.CodeTFASendMailFailed()
 	}
 	return nil, nil
 }
 
 func (s *NrpcServer) RpcSendPhoneCode(ctx context.Context, req *nrpc.SendPhoneCodeReq) (res *nrpc.SendPhoneCodeRes, err error) {
+	g.Log().Notice(ctx, "RpcSendPhoneCode:", "req:", req)
 
 	//limit
-	if err := s.counter(ctx, req.UserId, "SendSmsCode"); err != nil {
+	if err := s.apiLimit(ctx, req.UserId, "SendSmsCode"); err != nil {
 		g.Log().Errorf(ctx, "%+v", err)
 		return nil, err
 	}
-	if err := s.limitSendVerification(ctx, req.UserId, "SendSmsCode"); err != nil {
-		g.Log().Errorf(ctx, "%+v", err)
-		return nil, gerror.NewCode(mpccode.CodeLimitSendMailCode)
-	}
+	// if err := s.limitSendVerification(ctx, req.UserId, "SendSmsCode"); err != nil {
+	// 	g.Log().Errorf(ctx, "%+v", err)
+	// 	return nil, mpccode.CodeLimitSendMailCode()
+	// }
 
 	//trace
 	ctx, span := gtrace.NewSpan(ctx, "SendSmsCode")
@@ -106,55 +93,51 @@ func (s *NrpcServer) RpcSendPhoneCode(ctx context.Context, req *nrpc.SendPhoneCo
 	///
 	tfaInfo, err := service.DB().FetchTfaInfo(ctx, req.UserId)
 	if err != nil || tfaInfo == nil {
-		g.Log().Warning(ctx, "SendSmsCode:", req, err)
-		return nil, gerror.NewCode(mpccode.CodeTFANotExist)
+		return nil, mpccode.CodeTFANotExist()
 	}
 	///
 	risk := service.TFA().GetRiskVerify(ctx, req.UserId, req.RiskSerial)
 	if risk == nil {
-		return nil, gerror.NewCode(mpccode.CodeRiskSerialNotExist)
+		return nil, mpccode.CodeRiskSerialNotExist()
 	}
 	///
 	////
 	switch risk.RiskKind {
 	case model.RiskKind_BindPhone, model.RiskKind_UpPhone:
 		if req.Phone == "" {
-			return nil, gerror.NewCode(mpccode.CodeParamInvalid)
+			return nil, mpccode.CodeParamInvalid()
 		}
-		err = service.DB().TfaPhoneNotExists(ctx, req.Phone)
-		if err != nil {
-			g.Log().Warningf(ctx, "%+v", err)
-			return nil, gerror.NewCode(mpccode.CodeTFAPhoneExists)
+		notexists, err := service.DB().TfaPhoneNotExists(ctx, req.Phone)
+		if err != nil || !notexists {
+			return nil, mpccode.CodeTFAPhoneExists()
 		}
 		////
 		service.TFA().TfaSetPhone(ctx, tfaInfo, req.Phone, req.RiskSerial, risk.RiskKind)
 		///
 	case model.RiskKind_BindMail, model.RiskKind_UpMail:
 	default:
-		return nil, gerror.NewCode(mpccode.CodeRiskSerialNotExist)
+		return nil, mpccode.CodeRiskSerialNotExist()
 	}
 
 	v := risk.Verifier(model.VerifierKind_Phone)
 	if v == nil {
-		return nil, gerror.NewCode(mpccode.CodeRiskSerialNotExist)
+		return nil, mpccode.CodeRiskSerialNotExist()
 	}
-	if err := s.limitSendPhone(ctx, req.UserId, v.Destination()); err != nil {
-		g.Log().Errorf(ctx, "%+v", err)
-		return nil, gerror.NewCode(mpccode.CodeLimitSendPhoneCode)
+	if err := s.limitSendPhoneCnt(ctx, req.UserId, v.Destination()); err != nil {
+		return nil, mpccode.CodeLimitSendPhoneCode()
 	}
 	///
 	_, err = service.TFA().SendPhoneCode(ctx, req.UserId, req.RiskSerial)
 	if err != nil {
-		g.Log().Errorf(ctx, "%+v", err)
-		return nil, gerror.NewCode(mpccode.CodeTFASendSmsFailed)
+		return nil, mpccode.CodeTFASendSmsFailed()
 	}
 	if err != nil {
-		if gerror.Cause(err).Error() == mpccode.CodeLimitSendPhoneCode.Error().Error() {
+		if gerror.Cause(err).Error() == mpccode.CodeLimitSendPhoneCode().Error() {
 			g.Log().Warningf(ctx, "%+v", err)
-			return nil, gerror.NewCode(mpccode.CodeLimitSendPhoneCode)
+			return nil, mpccode.CodeLimitSendPhoneCode()
 		}
 		g.Log().Warningf(ctx, "%+v", err)
-		return nil, gerror.NewCode(mpccode.CodeTFASendSmsFailed)
+		return nil, mpccode.CodeTFASendSmsFailed()
 	}
 	return nil, nil
 }

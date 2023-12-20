@@ -12,10 +12,11 @@ import (
 
 func (s *NrpcServer) RpcVerifyCode(ctx context.Context, req *nrpc.VerifyCodeReq) (res *nrpc.VerifyCodeRes, err error) {
 
+	g.Log().Notice(ctx, "RpcVerifyCode:", "req:", req)
 	//trace
 	ctx, span := gtrace.NewSpan(ctx, "VerifyCode")
 	defer span.End()
-	if err := s.counter(ctx, req.UserId, "VerifyCode"); err != nil {
+	if err := s.apiLimit(ctx, req.UserId, "VerifyCode"); err != nil {
 		return nil, err
 	}
 	// ///
