@@ -2,7 +2,7 @@ package nats
 
 import (
 	"context"
-	"riskcontral/api/risk/nrpc"
+	"riskcontral/api/riskserver"
 	"riskcontral/internal/service"
 
 	"github.com/gogf/gf/v2/frame/g"
@@ -10,7 +10,7 @@ import (
 	"github.com/mpcsdk/mpcCommon/mpccode"
 )
 
-func (*NrpcServer) RpcTfaInfo(ctx context.Context, req *nrpc.TfaInfoReq) (res *nrpc.TfaInfoRes, err error) {
+func (*NrpcServer) RpcTfaInfo(ctx context.Context, req *riskserver.TfaInfoReq) (res *riskserver.TfaInfoRes, err error) {
 	g.Log().Notice(ctx, "RpcTfaInfo:", "req:", req)
 
 	//trace
@@ -28,7 +28,7 @@ func (*NrpcServer) RpcTfaInfo(ctx context.Context, req *nrpc.TfaInfoReq) (res *n
 	if tfaInfo == nil {
 		return nil, nil
 	}
-	res = &nrpc.TfaInfoRes{
+	res = &riskserver.TfaInfoRes{
 		UserId: tfaInfo.UserId,
 		Phone:  tfaInfo.Phone,
 		UpPhoneTime: func() string {

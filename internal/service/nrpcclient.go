@@ -5,9 +5,15 @@
 
 package service
 
+import (
+	"context"
+	"riskcontral/api/riskctrl"
+)
+
 type (
 	INrpcClient interface {
 		Flush()
+		RiskTxs(ctx context.Context, req *riskctrl.TxRiskReq) (res *riskctrl.TxRiskRes, err error)
 	}
 )
 

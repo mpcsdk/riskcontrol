@@ -2,7 +2,7 @@ package nats
 
 import (
 	"context"
-	"riskcontral/api/risk/nrpc"
+	"riskcontral/api/riskserver"
 	"riskcontral/internal/config"
 	"sync"
 	"time"
@@ -61,7 +61,7 @@ func new() *NrpcServer {
 	}
 	s.cache.SetAdapter(redisCache)
 	///
-	h := nrpc.NewRiskHandler(gctx.GetInitCtx(), nc, s)
+	h := riskserver.NewRiskServerHandler(gctx.GetInitCtx(), nc, s)
 	sub, err := nc.QueueSubscribe(h.Subject(), "riskcontrol", h.Handler)
 	if err != nil {
 		panic(err)
@@ -72,8 +72,7 @@ func new() *NrpcServer {
 	s.ctx = gctx.GetInitCtx()
 
 	///
-	s.NatsPub()
-	// service.RegisterNrpcServer(s)
+	// s.NatsPub()
 	return s
 }
 

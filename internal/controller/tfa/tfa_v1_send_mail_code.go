@@ -6,7 +6,7 @@ import (
 	"github.com/gogf/gf/v2/frame/g"
 	"github.com/mpcsdk/mpcCommon/mpccode"
 
-	"riskcontral/api/risk/nrpc"
+	"riskcontral/api/riskserver"
 	v1 "riskcontral/api/tfa/v1"
 	"riskcontral/internal/service"
 )
@@ -20,7 +20,7 @@ func (c *ControllerV1) SendMailCode(ctx context.Context, req *v1.SendMailCodeReq
 		return nil, mpccode.CodeTokenInvalid()
 	}
 	////
-	_, err = c.nrpc.RpcSendMailCode(ctx, &nrpc.SendMailCodeReq{
+	_, err = c.nrpc.RpcSendMailCode(ctx, &riskserver.SendMailCodeReq{
 		Mail:       req.Mail,
 		RiskSerial: req.RiskSerial,
 		UserId:     info.UserId,

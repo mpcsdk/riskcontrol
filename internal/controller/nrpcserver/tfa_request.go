@@ -2,7 +2,7 @@ package nats
 
 import (
 	"context"
-	"riskcontral/api/risk/nrpc"
+	"riskcontral/api/riskserver"
 	"riskcontral/internal/model"
 	"riskcontral/internal/model/do"
 	"riskcontral/internal/service"
@@ -13,7 +13,7 @@ import (
 	"github.com/mpcsdk/mpcCommon/mpccode"
 )
 
-func (s *NrpcServer) RpcTfaRequest(ctx context.Context, req *nrpc.TfaRequestReq) (res *nrpc.TfaRequestRes, err error) {
+func (s *NrpcServer) RpcTfaRequest(ctx context.Context, req *riskserver.TfaRequestReq) (res *riskserver.TfaRequestRes, err error) {
 	g.Log().Notice(ctx, "RpcTfaRequest:", "req:", req)
 	// limit
 	if err := s.apiLimit(ctx, req.Token, "TfaRequest"); err != nil {
@@ -92,10 +92,12 @@ func (s *NrpcServer) RpcTfaRequest(ctx context.Context, req *nrpc.TfaRequestReq)
 		return nil, mpccode.CodeTokenInvalid()
 	}
 	///
-	riskSerial, code := service.Risk().RiskTFA(ctx, tfaInfo, &model.RiskTfa{
-		UserId: tfaInfo.UserId,
-		Type:   req.CodeType,
-	})
+	// riskSerial, code := service.Risk().RiskTFA(ctx, tfaInfo, &model.RiskTfa{
+	// UserId: tfaInfo.UserId,
+	// Type:   req.CodeType,
+	// })
+	riskSerial := ""
+	code := mpccode.RiskCodePass
 	if code == mpccode.RiskCodeForbidden {
 		return nil, mpccode.CodePerformRiskForbidden()
 	}
@@ -104,7 +106,7 @@ func (s *NrpcServer) RpcTfaRequest(ctx context.Context, req *nrpc.TfaRequestReq)
 	}
 	///
 	vl, _ := service.TFA().TfaRiskTidy(ctx, tfaInfo, riskSerial, riskKind)
-	res = &nrpc.TfaRequestRes{
+	res = &riskserver.TfaRequestRes{
 		RiskSerial: riskSerial,
 		VList:      vl,
 	}

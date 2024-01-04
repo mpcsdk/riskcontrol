@@ -2,7 +2,7 @@ package nats
 
 import (
 	"context"
-	"riskcontral/api/risk/nrpc"
+	"riskcontral/api/riskserver"
 	"riskcontral/internal/model"
 	"riskcontral/internal/service"
 
@@ -10,7 +10,7 @@ import (
 	"github.com/gogf/gf/v2/net/gtrace"
 )
 
-func (s *NrpcServer) RpcVerifyCode(ctx context.Context, req *nrpc.VerifyCodeReq) (res *nrpc.VerifyCodeRes, err error) {
+func (s *NrpcServer) RpcVerifyCode(ctx context.Context, req *riskserver.VerifyCodeReq) (res *riskserver.VerifyCodeRes, err error) {
 
 	g.Log().Notice(ctx, "RpcVerifyCode:", "req:", req)
 	//trace

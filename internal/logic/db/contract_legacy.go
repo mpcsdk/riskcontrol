@@ -3,7 +3,6 @@ package db
 import (
 	"context"
 	"fmt"
-	"riskcontral/internal/service"
 	"strings"
 
 	_ "github.com/gogf/gf/contrib/nosql/redis/v2"
@@ -26,33 +25,33 @@ func (s *sDB) subscription(conn *pgxpool.Conn, name string, notificationChannel 
 	if err != nil {
 		panic(err)
 	}
-	go func() {
-		for {
-			select {
-			case notification := <-notificationChannel:
-				//todo: up rules, ctx.done
-				switch notification.Channel {
-				case RuleChName:
-					load := notification.Payload
-					ops := strings.Split(load, ",")
-					if len(ops) == 2 {
-						ruleId := ops[0]
-						op := ops[1]
-						if op == "up" {
-							// rules, _ := s.GetRule(s.ctx, "", "")
-							service.LEngine().UpRules(ruleId, "")
-						}
-						if op == "rm" {
-							service.LEngine().UpRules(ruleId, "")
-						}
-					}
-				case AbiChName:
-				}
+	// go func() {
+	// 	for {
+	// 		select {
+	// 		case notification := <-notificationChannel:
+	// 			//todo: up rules, ctx.done
+	// 			switch notification.Channel {
+	// 			case RuleChName:
+	// 				load := notification.Payload
+	// 				ops := strings.Split(load, ",")
+	// 				if len(ops) == 2 {
+	// 					ruleId := ops[0]
+	// 					op := ops[1]
+	// 					if op == "up" {
+	// 						// rules, _ := s.GetRule(s.ctx, "", "")
+	// 						service.LEngine().UpRules(ruleId, "")
+	// 					}
+	// 					if op == "rm" {
+	// 						service.LEngine().UpRules(ruleId, "")
+	// 					}
+	// 				}
+	// 			case AbiChName:
+	// 			}
 
-				g.Log().Notice(context.TODO(), "Received notification:", notification)
-			}
-		}
-	}()
+	// 			g.Log().Notice(context.TODO(), "Received notification:", notification)
+	// 		}
+	// 	}
+	// }()
 }
 
 func (s *sDB) listenNotify(subNames []string) {

@@ -2,13 +2,12 @@ package tfa
 
 import (
 	"context"
+	"riskcontral/api/riskserver"
+	v1 "riskcontral/api/tfa/v1"
+	"riskcontral/internal/service"
 
 	"github.com/gogf/gf/v2/frame/g"
 	"github.com/mpcsdk/mpcCommon/mpccode"
-
-	"riskcontral/api/risk/nrpc"
-	v1 "riskcontral/api/tfa/v1"
-	"riskcontral/internal/service"
 )
 
 func (c *ControllerV1) VerifyCode(ctx context.Context, req *v1.VerifyCodeReq) (res *v1.VerifyCodeRes, err error) {
@@ -20,7 +19,7 @@ func (c *ControllerV1) VerifyCode(ctx context.Context, req *v1.VerifyCodeReq) (r
 	}
 
 	///
-	_, err = c.nrpc.RpcVerifyCode(ctx, &nrpc.VerifyCodeReq{
+	_, err = c.nrpc.RpcVerifyCode(ctx, &riskserver.VerifyCodeReq{
 		UserId:     userInfo.UserId,
 		RiskSerial: req.RiskSerial,
 		MailCode:   req.MailCode,

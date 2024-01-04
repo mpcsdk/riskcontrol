@@ -2,7 +2,7 @@ package model
 
 import (
 	"context"
-	"riskcontral/api/risk/nrpc"
+	"riskcontral/api/riskserver"
 	"riskcontral/internal/model/entity"
 	"strings"
 
@@ -92,8 +92,8 @@ func ContractRuleEntity2Model(e *entity.Contractrule) *mpcmodel.ContractRule {
 		}(),
 	}
 }
-func ContractRuleEntity2Rpc(e *entity.Contractrule) *nrpc.ContractRuleRes {
-	return &nrpc.ContractRuleRes{
+func ContractRuleEntity2Rpc(e *entity.Contractrule) *riskserver.ContractRuleRes {
+	return &riskserver.ContractRuleRes{
 		Contract:         e.ContractAddress,
 		Name:             e.ContractName,
 		Kind:             e.ContractKind,

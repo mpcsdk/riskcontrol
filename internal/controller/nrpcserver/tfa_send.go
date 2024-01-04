@@ -2,7 +2,7 @@ package nats
 
 import (
 	"context"
-	"riskcontral/api/risk/nrpc"
+	"riskcontral/api/riskserver"
 	"riskcontral/internal/model"
 	"riskcontral/internal/service"
 
@@ -12,7 +12,7 @@ import (
 	"github.com/mpcsdk/mpcCommon/mpccode"
 )
 
-func (s *NrpcServer) RpcSendMailCode(ctx context.Context, req *nrpc.SendMailCodeReq) (res *nrpc.SendMailCodeRes, err error) {
+func (s *NrpcServer) RpcSendMailCode(ctx context.Context, req *riskserver.SendMailCodeReq) (res *riskserver.SendMailCodeRes, err error) {
 	g.Log().Notice(ctx, "RpcSendMailCode:", "req:", req)
 	//limit
 	if err := s.apiLimit(ctx, req.UserId, "SendMailCode"); err != nil {
@@ -74,7 +74,7 @@ func (s *NrpcServer) RpcSendMailCode(ctx context.Context, req *nrpc.SendMailCode
 	return nil, nil
 }
 
-func (s *NrpcServer) RpcSendPhoneCode(ctx context.Context, req *nrpc.SendPhoneCodeReq) (res *nrpc.SendPhoneCodeRes, err error) {
+func (s *NrpcServer) RpcSendPhoneCode(ctx context.Context, req *riskserver.SendPhoneCodeReq) (res *riskserver.SendPhoneCodeRes, err error) {
 	g.Log().Notice(ctx, "RpcSendPhoneCode:", "req:", req)
 
 	//limit

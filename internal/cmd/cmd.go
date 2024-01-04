@@ -3,7 +3,7 @@ package cmd
 import (
 	"context"
 
-	"riskcontral/internal/controller/risk"
+	"riskcontral/internal/controller/riskserver"
 	"riskcontral/internal/controller/tfa"
 
 	"github.com/gogf/gf/v2/errors/gcode"
@@ -68,7 +68,7 @@ var (
 				group.Middleware(MiddlewareCORS)
 				group.Middleware(ResponseHandler)
 				group.Bind(
-					risk.NewV1(),
+					riskserver.NewV1(),
 					tfa.NewV1(),
 				)
 				// group.Group("/tfa", func(group *ghttp.RouterGroup) {

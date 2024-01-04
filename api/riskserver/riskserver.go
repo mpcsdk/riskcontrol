@@ -2,16 +2,16 @@
 // Code generated and maintained by GoFrame CLI tool. DO NOT EDIT. 
 // =================================================================================
 
-package risk
+package riskserver
 
 import (
 	"context"
 	
-	"riskcontral/api/risk/v1"
+	"riskcontral/api/riskserver/v1"
 )
 
-type IRiskV1 interface {
-	ExecRisk(ctx context.Context, req *v1.ExecRiskReq) (res *v1.ExecRiskRes, err error)
+type IRiskserverV1 interface {
+	RiskTxs(ctx context.Context, req *v1.RiskTxsReq) (res *v1.RiskTxsRes, err error)
 }
 
 

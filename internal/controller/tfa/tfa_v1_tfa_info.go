@@ -6,7 +6,7 @@ import (
 	"github.com/gogf/gf/v2/frame/g"
 	"github.com/mpcsdk/mpcCommon/mpccode"
 
-	"riskcontral/api/risk/nrpc"
+	"riskcontral/api/riskserver"
 	v1 "riskcontral/api/tfa/v1"
 	"riskcontral/internal/service"
 )
@@ -24,7 +24,7 @@ func (c *ControllerV1) TfaInfo(ctx context.Context, req *v1.TfaInfoReq) (res *v1
 	}
 	///
 
-	tfaInfo, err := c.nrpc.RpcTfaInfo(ctx, &nrpc.TfaInfoReq{
+	tfaInfo, err := c.nrpc.RpcTfaInfo(ctx, &riskserver.TfaInfoReq{
 		UserId: userInfo.UserId,
 	})
 	if err != nil {
