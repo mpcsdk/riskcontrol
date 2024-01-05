@@ -14,6 +14,10 @@ import (
 type (
 	ITFA interface {
 		GetRiskVerify(ctx context.Context, userId, riskSerial string) (risk *model.RiskVerifyPendding)
+		RiskTfaRequest(ctx context.Context, tfaInfo *entity.Tfa, riskData *model.RiskTfa) (int32, error)
+		// /
+		RiskTfaTidy(ctx context.Context, tfaInfo *entity.Tfa, riskKind model.RiskKind) (string, []string, error)
+		RiskTxTidy(ctx context.Context, tfaInfo *entity.Tfa) (string, []string, error)
 		// /
 		SendPhoneCode(ctx context.Context, userId string, riskSerial string) (string, error)
 		SendMailCode(ctx context.Context, userId string, riskSerial string) (string, error)
@@ -26,8 +30,6 @@ type (
 		TfaBindPhone(ctx context.Context, tfaInfo *entity.Tfa, phone string, riskSerial string) (string, error)
 		TfaUpPhone(ctx context.Context, tfaInfo *entity.Tfa, phone string, riskSerial string) (string, error)
 		TfaRiskKind(ctx context.Context, tfaInfo *entity.Tfa, riskSerial string) (model.RiskKind, error)
-		TfaRiskTidy(ctx context.Context, tfaInfo *entity.Tfa, riskSerial string, riskKind model.RiskKind) ([]string, error)
-		TFATx(ctx context.Context, tfaInfo *entity.Tfa, riskSerial string) ([]string, error)
 		VerifyCode(ctx context.Context, userId string, riskSerial string, code *model.VerifyCode) error
 	}
 )

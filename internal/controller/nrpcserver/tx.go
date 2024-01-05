@@ -9,7 +9,6 @@ import (
 	"github.com/gogf/gf/v2/frame/g"
 	"github.com/gogf/gf/v2/net/gtrace"
 	"github.com/mpcsdk/mpcCommon/mpccode"
-	"github.com/mpcsdk/mpcCommon/rand"
 )
 
 func (*NrpcServer) RpcRiskTxs(ctx context.Context, req *riskserver.TxRiskReq) (*riskserver.TxRiskRes, error) {
@@ -26,15 +25,12 @@ func (*NrpcServer) RpcRiskTxs(ctx context.Context, req *riskserver.TxRiskReq) (*
 		g.Log().Warning(ctx, "RpcRiskTxs:", "req:", req, "err:", err)
 		return nil, mpccode.CodeInternalError()
 	}
-	riskserial := rand.GenNewSid()
 	///
 	if res.Ok == mpccode.RiskCodeError {
 		return &riskserver.TxRiskRes{
 			Ok: res.Ok,
 		}, mpccode.CodeInternalError()
-		// gerror.NewCode(mpccode.CodeRpcRiskError)
 	}
-	///: pass or forbidden
 	//
 	if res.Ok == mpccode.RiskCodePass {
 		return &riskserver.TxRiskRes{
@@ -53,8 +49,7 @@ func (*NrpcServer) RpcRiskTxs(ctx context.Context, req *riskserver.TxRiskReq) (*
 	if err != nil || tfaInfo == nil {
 		return nil, mpccode.CodeTFANotExist()
 	}
-	// kinds, err := service.TFA().TFATx(ctx, req.UserId, serial)
-	kinds, err := service.TFA().TFATx(ctx, tfaInfo, riskserial)
+	riskserial, kinds, err := service.TFA().RiskTxTidy(ctx, tfaInfo)
 	if err != nil {
 		return nil, mpccode.CodePerformRiskError()
 	}
@@ -63,7 +58,6 @@ func (*NrpcServer) RpcRiskTxs(ctx context.Context, req *riskserver.TxRiskReq) (*
 	return &riskserver.TxRiskRes{
 		Ok:         res.Ok,
 		RiskSerial: riskserial,
-		//todo:
-		RiskKind: kinds,
+		RiskKind:   kinds,
 	}, err
 }

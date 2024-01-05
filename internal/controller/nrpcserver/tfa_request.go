@@ -13,7 +13,7 @@ import (
 	"github.com/mpcsdk/mpcCommon/mpccode"
 )
 
-func (s *NrpcServer) RpcTfaRequest(ctx context.Context, req *riskserver.TfaRequestReq) (res *riskserver.TfaRequestRes, err error) {
+func (s *NrpcServer) RpcTfaRequest(ctx context.Context, req *riskserver.TfaRequestReq) (*riskserver.TfaRequestRes, error) {
 	g.Log().Notice(ctx, "RpcTfaRequest:", "req:", req)
 	// limit
 	if err := s.apiLimit(ctx, req.Token, "TfaRequest"); err != nil {
@@ -30,18 +30,16 @@ func (s *NrpcServer) RpcTfaRequest(ctx context.Context, req *riskserver.TfaReque
 		return nil, mpccode.CodeTokenInvalid()
 	}
 	///
-	// tfaInfo, err := service.TFA().TFAInfo(ctx, info.UserId)
 	tfaInfo, err := service.DB().FetchTfaInfo(ctx, info.UserId)
 	if err != nil {
 		return nil, mpccode.CodeTokenInvalid()
 	}
 	///
 	///
-	var riskKind model.RiskKind = model.RiskKind_Nil
+	riskKind := model.CodeType2RiskKind(req.CodeType)
 	//
-	switch req.CodeType {
-	case model.Type_TfaBindPhone:
-		riskKind = model.RiskKind_BindPhone
+	switch riskKind {
+	case model.RiskKind_BindPhone:
 		if tfaInfo != nil && tfaInfo.Phone != "" {
 			return nil, mpccode.CodeTFAExist()
 		}
@@ -56,8 +54,7 @@ func (s *NrpcServer) RpcTfaRequest(ctx context.Context, req *riskserver.TfaReque
 			}
 		}
 		///
-	case model.Type_TfaBindMail:
-		riskKind = model.RiskKind_BindMail
+	case model.RiskKind_BindMail:
 		if tfaInfo != nil && tfaInfo.Mail != "" {
 			return nil, mpccode.CodeTFAExist()
 		}
@@ -72,13 +69,11 @@ func (s *NrpcServer) RpcTfaRequest(ctx context.Context, req *riskserver.TfaReque
 			}
 		}
 		////
-	case model.Type_TfaUpdatePhone:
-		riskKind = model.RiskKind_UpPhone
+	case model.RiskKind_UpPhone:
 		if tfaInfo == nil || tfaInfo.Phone == "" {
 			return nil, mpccode.CodeTFANotExist()
 		}
-	case model.Type_TfaUpdateMail:
-		riskKind = model.RiskKind_UpMail
+	case model.RiskKind_UpMail:
 		if tfaInfo == nil || tfaInfo.Mail == "" {
 			return nil, mpccode.CodeTFANotExist()
 		}
@@ -92,12 +87,19 @@ func (s *NrpcServer) RpcTfaRequest(ctx context.Context, req *riskserver.TfaReque
 		return nil, mpccode.CodeTokenInvalid()
 	}
 	///
-	// riskSerial, code := service.Risk().RiskTFA(ctx, tfaInfo, &model.RiskTfa{
-	// UserId: tfaInfo.UserId,
-	// Type:   req.CodeType,
+	// res, err := service.NrpcClient().RiskTfaRequest(ctx, &riskctrl.TfaRiskReq{
+	// 	Token:    req.Token,
+	// 	CodeType: req.CodeType,
 	// })
-	riskSerial := ""
-	code := mpccode.RiskCodePass
+	code, err := service.TFA().RiskTfaRequest(ctx, tfaInfo, &model.RiskTfa{
+		RiskKind: riskKind,
+	})
+	if err != nil {
+		g.Log().Warning(ctx, "RpcRiskTxs:", "req:", req, "err:", err)
+		return nil, mpccode.CodeInternalError()
+	}
+	///
+
 	if code == mpccode.RiskCodeForbidden {
 		return nil, mpccode.CodePerformRiskForbidden()
 	}
@@ -105,11 +107,10 @@ func (s *NrpcServer) RpcTfaRequest(ctx context.Context, req *riskserver.TfaReque
 		return nil, mpccode.CodePerformRiskError()
 	}
 	///
-	vl, _ := service.TFA().TfaRiskTidy(ctx, tfaInfo, riskSerial, riskKind)
-	res = &riskserver.TfaRequestRes{
+	riskSerial, vl, _ := service.TFA().RiskTfaTidy(ctx, tfaInfo, riskKind)
+	return &riskserver.TfaRequestRes{
 		RiskSerial: riskSerial,
 		VList:      vl,
-	}
-	return res, nil
+	}, nil
 	///
 }

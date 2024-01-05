@@ -15,11 +15,26 @@ const (
 )
 const (
 	///
-	Type_TfaBindPhone   string = "bindPhone"
-	Type_TfaBindMail    string = "bindMail"
-	Type_TfaUpdatePhone string = "updatePhone"
-	Type_TfaUpdateMail  string = "updateMail"
+	CodeType_TfaBindPhone   string = "bindPhone"
+	CodeType_TfaBindMail    string = "bindMail"
+	CodeType_TfaUpdatePhone string = "updatePhone"
+	CodeType_TfaUpdateMail  string = "updateMail"
 )
+
+func CodeType2RiskKind(codeType string) RiskKind {
+	switch codeType {
+	case CodeType_TfaBindPhone:
+		return RiskKind_BindPhone
+	case CodeType_TfaBindMail:
+		return RiskKind_BindMail
+	case CodeType_TfaUpdatePhone:
+		return RiskKind_UpPhone
+	case CodeType_TfaUpdateMail:
+		return RiskKind_UpMail
+	default:
+		return RiskKind_Nil
+	}
+}
 
 type RiskPenndingKey string
 
@@ -45,9 +60,9 @@ type RiskStat struct {
 	Type string
 }
 type RiskTfa struct {
-	UserId    string `json:"userId"`
-	UserToken string `json:"token"`
-	Type      string `json:"type"`
+	UserId    string   `json:"userId"`
+	UserToken string   `json:"token"`
+	RiskKind  RiskKind `json:"type"`
 	///
 	Mail  string `json:"mail"`
 	Phone string `json:"phone"`

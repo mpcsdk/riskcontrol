@@ -45,7 +45,13 @@ func ResponseHandler(r *ghttp.Request) {
 		code = gerror.Code(err)
 	)
 	r.SetError(nil)
-	// }
+	if code == gcode.CodeNil {
+		if err != nil {
+			code = gcode.CodeInternalError
+		} else {
+			code = gcode.CodeOK
+		}
+	}
 	g.Log().Info(context.Background(), res)
 	r.Response.WriteJson(ghttp.DefaultHandlerResponse{
 		Code:    code.Code(),

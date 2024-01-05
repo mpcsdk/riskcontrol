@@ -11,6 +11,8 @@ type RiskTxsReq struct {
 	SignTx string `json:"signTx"`
 }
 type RiskTxsRes struct {
-	Code int    `json:"code"`
-	Msg  string `json"msg"`
+	RiskSerial string   `json:"riskSerial"`
+	VList      []string `json:"vl"`
+	Code       int      `json"code"`
+	Msg        string   `json"msg"`
 }

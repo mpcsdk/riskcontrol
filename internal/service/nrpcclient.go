@@ -14,6 +14,7 @@ type (
 	INrpcClient interface {
 		Flush()
 		RiskTxs(ctx context.Context, req *riskctrl.TxRiskReq) (res *riskctrl.TxRiskRes, err error)
+		RiskTfaRequest(ctx context.Context, req *riskctrl.TfaRiskReq) (res *riskctrl.TfaRiskRes, err error)
 	}
 )
 
