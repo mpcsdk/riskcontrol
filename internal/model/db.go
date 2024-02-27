@@ -1,45 +1,64 @@
 package model
 
-// type NftRule struct {
-// 	Contract string `json:"contract"`
-// 	Name     string `json:"name"`
+import (
+	"riskcontral/api/riskctrl"
+	"riskcontral/internal/model/entity"
+	"strings"
 
-// 	MethodName         string `json:"methodName"`
-// 	MethodSig          string `json:"methodSig"`
-// 	MethodFromField    string `json:"methodFromField"`
-// 	MethodToField      string `json:"methodToField"`
-// 	MethodTokenIdField string `json:"methodTokenIdField"`
+	"github.com/mpcsdk/mpcCommon/mpcmodel"
+)
 
-// 	EventName         string `json:"eventName"`
-// 	EventSig          string `json:"eventSig"`
-// 	EventTopic        string `json:"eventTopic"`
-// 	EventFromField    string `json:"eventFromField"`
-// 	EventToField      string `json:"eventToField"`
-// 	EventTokenIdField string `json:"eventTokenIdField"`
+func ContractRuleEntity2Model(e *entity.Contractrule) *mpcmodel.ContractRule {
+	return &mpcmodel.ContractRule{
+		Contract:         e.ContractAddress,
+		Name:             e.ContractName,
+		Kind:             e.ContractKind,
+		MethodName:       e.MethodName,
+		MethodSig:        e.MethodSignature,
+		MethodFromField:  e.MethodFromField,
+		MethodToField:    e.MethodToField,
+		MethodValueField: e.MethodValueField,
 
-// 	///
-// 	SkipToAddr []string `json:"skipToAddr"`
-// 	Threshold  int      `json:"threshold"`
-// }
+		EventName:       e.EventName,
+		EventSig:        e.EventSignature,
+		EventTopic:      e.EventTopic,
+		EventFromField:  e.EventFromField,
+		EventToField:    e.EventToField,
+		EventValueField: e.EventValueField,
+		WhiteAddrList:   strings.Split(e.WhiteAddrList, ","),
+		Threshold:       e.Threshold.BigInt(),
+		ThresholdNft: func() int64 {
+			if e.ContractKind == "nft" {
+				return e.Threshold.IntPart()
+			}
+			return 0
+		}(),
+	}
+}
+func ContractRuleEntity2Rpc(e *entity.Contractrule) *riskctrl.ContractRuleRes {
+	return &riskctrl.ContractRuleRes{
+		Contract:         e.ContractAddress,
+		Name:             e.ContractName,
+		Kind:             e.ContractKind,
+		MethodName:       e.MethodName,
+		MethodSig:        e.MethodSignature,
+		MethodFromField:  e.MethodFromField,
+		MethodToField:    e.MethodToField,
+		MethodValueField: e.MethodValueField,
 
-// type FtRule struct {
-// 	Contract string `json:"contract"`
-// 	Name     string `json:"name"`
-
-// 	MethodName       string `json:"methodName"`
-// 	MethodSig        string `json:"methodSig"`
-// 	MethodFromField  string `json:"methodFromField"`
-// 	MethodToField    string `json:"methodToField"`
-// 	MethodValueField string `json:"methodValueField"`
-
-// 	EventName       string `json:"eventName"`
-// 	EventSig        string `json:"eventSig"`
-// 	EventTopic      string `json:"eventTopic"`
-// 	EventFromField  string `json:"eventFromField"`
-// 	EventToField    string `json:"eventToField"`
-// 	EventValueField string `json:"eventValueField"`
-
-// 	SkipToAddr []string `json:"skipToAddr"`
-// 	Threshold  *big.Int `json:"threshold"`
-// 	///
-// }
+		EventName:       e.EventName,
+		EventSig:        e.EventSignature,
+		EventTopic:      e.EventTopic,
+		EventFromField:  e.EventFromField,
+		EventToField:    e.EventToField,
+		EventValueField: e.EventValueField,
+		WhiteAddrList: func() []string {
+			trimStr := strings.TrimSpace(e.WhiteAddrList)
+			if len(trimStr) > 0 {
+				return strings.Split(trimStr, ",")
+			}
+			return nil
+		}(),
+		ThresholdBigintBytes: e.Threshold.BigInt().Bytes(),
+	}
+}

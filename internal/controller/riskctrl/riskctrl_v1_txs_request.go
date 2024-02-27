@@ -1,48 +1,50 @@
-package nrpcserver
+package riskctrl
 
 import (
 	"context"
-	"riskcontral/api/riskctrl"
+
+	v1 "riskcontral/api/riskctrl/v1"
 	"riskcontral/api/riskengine"
 	"riskcontral/internal/service"
 
-	"github.com/gogf/gf/v2/errors/gerror"
 	"github.com/gogf/gf/v2/frame/g"
 	"github.com/gogf/gf/v2/net/gtrace"
 	"github.com/mpcsdk/mpcCommon/mpccode"
 )
 
-func (*NrpcServer) RpcTxsRequest(ctx context.Context, req *riskctrl.TxRequestReq) (*riskctrl.TxRequestRes, error) {
-	g.Log().Notice(ctx, "RpcRiskTxs:", "req:", req)
+func (c *ControllerV1) TxsRequest(ctx context.Context, req *v1.TxsRequestReq) (*v1.TxsRequestRes, error) {
+	g.Log().Notice(ctx, "TxsRequest:", "req:", req)
+	//limit
+	// if err := c.apiLimit(ctx, req.Token, "TxsRequest"); err != nil {
+	// 	return nil, err
+	// }
 	//trace
 	ctx, span := gtrace.NewSpan(ctx, "performRiskTxs")
 	defer span.End()
 	///
 	res, err := service.NrpcClient().RiskTxs(ctx, &riskengine.TxRiskReq{
 		UserId: req.UserId,
-		SignTx: req.SignTxData,
+		SignTx: req.SignTx,
 	})
 	if err != nil {
 		g.Log().Warning(ctx, "RpcRiskTxs:", "req:", req, "err:", err)
-		return nil, gerror.Wrap(mpccode.CodeInternalError(), mpccode.ErrDetails(
-			mpccode.ErrDetail("engineErr", err.Error()),
-		))
+		return nil, mpccode.CodeInternalError()
 	}
 	///
 	if res.Ok == mpccode.RiskCodeError {
-		return &riskctrl.TxRequestRes{
-			Ok: res.Ok,
+		return &v1.TxsRequestRes{
+			Code: res.Ok,
 		}, mpccode.CodeInternalError()
 	}
 	//
 	if res.Ok == mpccode.RiskCodePass {
-		return &riskctrl.TxRequestRes{
-			Ok: res.Ok,
+		return &v1.TxsRequestRes{
+			Code: res.Ok,
 		}, nil
 	}
 	if res.Ok == mpccode.RiskCodeForbidden {
-		return &riskctrl.TxRequestRes{
-			Ok: res.Ok,
+		return &v1.TxsRequestRes{
+			Code: res.Ok,
 		}, nil
 	}
 	///
@@ -58,9 +60,10 @@ func (*NrpcServer) RpcTxsRequest(ctx context.Context, req *riskctrl.TxRequestReq
 	}
 	///
 	g.Log().Notice(ctx, "RpcRiskTFA:", req.UserId, riskserial)
-	return &riskctrl.TxRequestRes{
-		Ok:         res.Ok,
+	return &v1.TxsRequestRes{
+		Code:       res.Ok,
 		RiskSerial: riskserial,
-		RiskKind:   kinds,
+		VList:      kinds,
+		Msg:        res.Msg,
 	}, err
 }

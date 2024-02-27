@@ -1,4 +1,4 @@
-package nats
+package tfa
 
 import (
 	"context"
@@ -9,21 +9,13 @@ import (
 	"github.com/mpcsdk/mpcCommon/mpccode"
 )
 
-func (s *NrpcServer) apiLimit(ctx context.Context, tokenId string, method string) error {
-	key := tokenId + method + "counter"
-	if v, err := s.cache.Get(ctx, key); err != nil {
-		g.Log().Warning(ctx, "counter:", "tokenId:", tokenId, "method", method, "err", err)
-		return mpccode.CodeApiLimit()
-	} else if !v.IsEmpty() {
-		g.Log().Info(ctx, "counter:", "tokenId:", tokenId, "method", method)
-		return mpccode.CodeApiLimit()
-	} else {
-		s.cache.Set(ctx, key, 1, apiInterval)
-		return nil
-	}
-}
+// var limitSendInterval = time.Second * 60
+var limitSendPhoneDurationCnt = 50
+var limitSendPhoneDuration = time.Hour
+var limitSendMailDurationCnt = 10
+var limitSendMailDuration = time.Hour
 
-func (s *NrpcServer) delTimeOut(dts []*gtime.Time, limitDuration time.Duration) []*gtime.Time {
+func (s *sTFA) delTimeOut(dts []*gtime.Time, limitDuration time.Duration) []*gtime.Time {
 	i := 0
 	n := gtime.Now()
 
@@ -37,21 +29,7 @@ func (s *NrpcServer) delTimeOut(dts []*gtime.Time, limitDuration time.Duration) 
 	return dts[:i]
 }
 
-// func (s *NrpcServer) limitSendMailDuration(ctx context.Context, tokenId string, method string) error {
-// 	key := tokenId + method + "limitSendMailDuration"
-// 	if v, err := s.cache.Get(ctx, key); err != nil {
-// 		g.Log().Warning(ctx, "limitSendMailDuration:", "tokenId:", tokenId, "method", method, "err", err)
-// 		return mpccode.CodeLimitSendMailCode()
-// 	} else if !v.IsEmpty() {
-// 		g.Log().Info(ctx, "limitSendMailDuration:", "tokenId:", tokenId, "method", method)
-// 		return mpccode.CodeLimitSendMailCode()
-// 	} else {
-// 		s.cache.Set(ctx, key, 1, limitSendInterval)
-// 		return nil
-// 	}
-// }
-
-func (s *NrpcServer) limitSendPhoneCnt(ctx context.Context, tokenId string, phone string) error {
+func (s *sTFA) limitSendPhoneCnt(ctx context.Context, tokenId string, phone string) error {
 	key := phone + "limitSendPhone"
 	sendtimes := []*gtime.Time{}
 	if v, err := s.cache.Get(ctx, key); err != nil {
@@ -81,7 +59,7 @@ func (s *NrpcServer) limitSendPhoneCnt(ctx context.Context, tokenId string, phon
 		return nil
 	}
 }
-func (s *NrpcServer) limitSendMailCnt(ctx context.Context, tokenId string, mail string) error {
+func (s *sTFA) limitSendMailCnt(ctx context.Context, tokenId string, mail string) error {
 	key := mail + "limitSendMail"
 	sendtimes := []*gtime.Time{}
 	if v, err := s.cache.Get(ctx, key); err != nil {

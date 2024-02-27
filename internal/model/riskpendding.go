@@ -29,14 +29,14 @@ type RiskVerifyPendding struct {
 
 // //
 
-func (s *RiskVerifyPendding) Verifier(kind VerifyKind) IVerifier {
+func (s *RiskVerifyPendding) GetVerifier(kind VerifyKind) IVerifier {
 	if v, ok := s.verifier[kind]; ok {
 		return v
 	}
 	return nil
 }
 
-func (s *RiskVerifyPendding) Verifiers() map[VerifyKind]IVerifier {
+func (s *RiskVerifyPendding) GetVerifiers() map[VerifyKind]IVerifier {
 	return s.verifier
 }
 func (s *RiskVerifyPendding) AddAfterFunc(after func(context.Context) error) {

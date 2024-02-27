@@ -35,7 +35,7 @@ func (s *sMailCode) SendVerificationCode(ctx context.Context, to string) (string
 	if err != nil {
 		return "", err
 	}
-	g.Log().Notice(ctx, "SendVerificationCode:", to)
+	g.Log().Notice(ctx, "SendVerificationCode:", "to:", to, "code:", code)
 	return code, nil
 }
 
@@ -66,7 +66,7 @@ func (s *sMailCode) SendUpMailCode(ctx context.Context, to string) (string, erro
 	if err != nil {
 		return "", err
 	}
-	g.Log().Notice(ctx, "SendUpMailCode:", to)
+	g.Log().Notice(ctx, "SendUpMailCode:", "to:", to, "code:", code)
 	return code, nil
 }
 

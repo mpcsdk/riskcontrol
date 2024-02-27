@@ -21,7 +21,6 @@ func (s *sTFA) VerifyCode(ctx context.Context, userId string, riskSerial string,
 	if err != nil {
 
 		return mpccode.CodeRiskVerifyCodeInvalid()
-		// return err
 	}
 
 	return nil

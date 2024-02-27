@@ -1,8 +1,8 @@
-package nats
+package nrpcserver
 
 import (
 	"context"
-	"riskcontral/api/riskserver"
+	"riskcontral/api/riskctrl"
 	"riskcontral/internal/config"
 	"sync"
 	"time"
@@ -22,17 +22,12 @@ type NrpcServer struct {
 	cache *gcache.Cache
 }
 
-var apiInterval = time.Second * 1
-
-// var limitSendInterval = time.Second * 60
-var limitSendPhoneDurationCnt = 50
-var limitSendPhoneDuration = time.Hour
-var limitSendMailDurationCnt = 10
-var limitSendMailDuration = time.Hour
-
 var once sync.Once
 var nrpcServer *NrpcServer
 
+func Init() *NrpcServer {
+	return Instance()
+}
 func Instance() *NrpcServer {
 	once.Do(func() {
 		nrpcServer = new()
@@ -40,20 +35,11 @@ func Instance() *NrpcServer {
 	return nrpcServer
 }
 func new() *NrpcServer {
-	apiInterval = time.Duration(config.Config.Cache.ApiInterval) * time.Second
-	// limitSendInterval = time.Duration(config.Config.Cache.LimitSendInterval) * time.Second
-	//
-	limitSendPhoneDurationCnt = config.Config.Cache.LimitSendPhoneCount
-	limitSendPhoneDuration = time.Duration(config.Config.Cache.LimitSendPhoneDuration) * time.Second
-	limitSendMailDurationCnt = config.Config.Cache.LimitSendMailCount
-	limitSendMailDuration = time.Duration(config.Config.Cache.LimitSendMailDuration) * time.Second
-
 	//
 	nc, err := nats.Connect(config.Config.Nrpc.NatsUrl, nats.Timeout(5*time.Second))
 	if err != nil {
 		panic(err)
 	}
-	// defer nc.Close()
 	// defer nc.Close()
 	redisCache := gcache.NewAdapterRedis(g.Redis())
 	s := &NrpcServer{
@@ -61,18 +47,16 @@ func new() *NrpcServer {
 	}
 	s.cache.SetAdapter(redisCache)
 	///
-	h := riskserver.NewRiskServerHandler(gctx.GetInitCtx(), nc, s)
+	h := riskctrl.NewRiskCtrlHandler(gctx.GetInitCtx(), nc, s)
 	sub, err := nc.QueueSubscribe(h.Subject(), "riskcontrol", h.Handler)
 	if err != nil {
 		panic(err)
 	}
-	// defer sub.Unsubscribe()
 	s.sub = sub
 	s.nc = nc
 	s.ctx = gctx.GetInitCtx()
 
 	///
-	// s.NatsPub()
 	return s
 }
 

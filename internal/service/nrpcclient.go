@@ -8,13 +8,14 @@ package service
 import (
 	"context"
 	"riskcontral/api/riskctrl"
+	"riskcontral/api/riskengine"
 )
 
 type (
 	INrpcClient interface {
 		Flush()
-		RiskTxs(ctx context.Context, req *riskctrl.TxRiskReq) (res *riskctrl.TxRiskRes, err error)
-		RiskTfaRequest(ctx context.Context, req *riskctrl.TfaRiskReq) (res *riskctrl.TfaRiskRes, err error)
+		RiskTxs(ctx context.Context, req *riskengine.TxRiskReq) (res *riskengine.TxRiskRes, err error)
+		RiskTfaRequest(ctx context.Context, req *riskctrl.TfaRequestReq) (res *riskctrl.TfaRequestRes, err error)
 	}
 )
 

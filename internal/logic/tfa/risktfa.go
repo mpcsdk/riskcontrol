@@ -14,7 +14,7 @@ import (
 
 func (s *sTFA) RiskTfaRequest(ctx context.Context,
 	tfaInfo *entity.Tfa,
-	riskData *model.RiskTfa) (int32, error) {
+	riskKind model.RiskKind) (int32, error) {
 
 	//
 
@@ -22,7 +22,7 @@ func (s *sTFA) RiskTfaRequest(ctx context.Context,
 	code := mpccode.RiskCodePass
 	var err error
 	///
-	switch riskData.RiskKind {
+	switch riskKind {
 	case model.RiskKind_UpPhone:
 		code, err = s.checkTfaUpPhone(ctx, tfaInfo)
 	case model.RiskKind_UpMail:
@@ -32,11 +32,11 @@ func (s *sTFA) RiskTfaRequest(ctx context.Context,
 	case model.RiskKind_BindMail:
 		code, err = s.checkTfaBindMail(ctx, tfaInfo)
 	default:
-		g.Log().Error(ctx, "RiskTFA:", "req:", riskData, "not support")
+		g.Log().Error(ctx, "RiskTFA:", "req:", riskKind, "not support")
 		return code, mpccode.CodeParamInvalid()
 	}
 	if err != nil {
-		g.Log().Warning(ctx, "RiskTFA:", "tfaInfo:", tfaInfo, "riskDAta:", riskData, "err:", err)
+		g.Log().Warning(ctx, "RiskTFA:", "tfaInfo:", tfaInfo, "riskKind:", riskKind, "err:", err)
 		return mpccode.RiskCodeError, mpccode.CodeInternalError()
 	}
 

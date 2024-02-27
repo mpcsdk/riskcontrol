@@ -7,20 +7,23 @@ package service
 
 import (
 	"context"
+	v1 "riskcontral/api/tfa/v1"
 	"riskcontral/internal/model"
 	"riskcontral/internal/model/entity"
+
+	"github.com/mpcsdk/mpcCommon/userInfoGeter"
 )
 
 type (
 	ITFA interface {
 		GetRiskVerify(ctx context.Context, userId, riskSerial string) (risk *model.RiskVerifyPendding)
-		RiskTfaRequest(ctx context.Context, tfaInfo *entity.Tfa, riskData *model.RiskTfa) (int32, error)
+		RiskTfaRequest(ctx context.Context, tfaInfo *entity.Tfa, riskKind model.RiskKind) (int32, error)
 		// /
 		RiskTfaTidy(ctx context.Context, tfaInfo *entity.Tfa, riskKind model.RiskKind) (string, []string, error)
 		RiskTxTidy(ctx context.Context, tfaInfo *entity.Tfa) (string, []string, error)
+		SendMailCode(ctx context.Context, userId string, riskSerial string, mail string) error
 		// /
-		SendPhoneCode(ctx context.Context, userId string, riskSerial string) (string, error)
-		SendMailCode(ctx context.Context, userId string, riskSerial string) (string, error)
+		SendPhoneCode(ctx context.Context, userId string, riskSerial string, phone string) error
 		TfaSetMail(ctx context.Context, tfaInfo *entity.Tfa, mail string, riskSerial string, riskKind model.RiskKind) (string, error)
 		// //
 		TfaBindMail(ctx context.Context, tfaInfo *entity.Tfa, mail string, riskSerial string) (string, error)
@@ -30,6 +33,7 @@ type (
 		TfaBindPhone(ctx context.Context, tfaInfo *entity.Tfa, phone string, riskSerial string) (string, error)
 		TfaUpPhone(ctx context.Context, tfaInfo *entity.Tfa, phone string, riskSerial string) (string, error)
 		TfaRiskKind(ctx context.Context, tfaInfo *entity.Tfa, riskSerial string) (model.RiskKind, error)
+		TfaRequest(ctx context.Context, info *userInfoGeter.UserInfo, riskKind model.RiskKind) (*v1.TfaRequestRes, error)
 		VerifyCode(ctx context.Context, userId string, riskSerial string, code *model.VerifyCode) error
 	}
 )

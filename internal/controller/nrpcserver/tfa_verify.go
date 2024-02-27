@@ -1,8 +1,8 @@
-package nats
+package nrpcserver
 
 import (
 	"context"
-	"riskcontral/api/riskserver"
+	"riskcontral/api/riskctrl"
 	"riskcontral/internal/model"
 	"riskcontral/internal/service"
 
@@ -10,20 +10,12 @@ import (
 	"github.com/gogf/gf/v2/net/gtrace"
 )
 
-func (s *NrpcServer) RpcVerifyCode(ctx context.Context, req *riskserver.VerifyCodeReq) (res *riskserver.VerifyCodeRes, err error) {
+func (s *NrpcServer) RpcVerifyCode(ctx context.Context, req *riskctrl.VerifyCodeReq) (res *riskctrl.VerifyCodeRes, err error) {
 
 	g.Log().Notice(ctx, "RpcVerifyCode:", "req:", req)
 	//trace
 	ctx, span := gtrace.NewSpan(ctx, "VerifyCode")
 	defer span.End()
-	if err := s.apiLimit(ctx, req.UserId, "VerifyCode"); err != nil {
-		return nil, err
-	}
-	// ///
-	// userInfo, err := service.UserInfo().GetUserInfo(ctx, req.Token)
-	// if err != nil {
-	// 	return nil, gerror.NewCode(mpccode.CodeTFANotExist)
-	// }
 
 	code := &model.VerifyCode{
 		PhoneCode: req.PhoneCode,

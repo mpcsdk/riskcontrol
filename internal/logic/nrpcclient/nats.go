@@ -1,7 +1,7 @@
 package nrpcclient
 
 import (
-	"riskcontral/api/riskctrl"
+	"riskcontral/api/riskengine"
 	"riskcontral/internal/config"
 	"riskcontral/internal/service"
 	"time"
@@ -13,8 +13,8 @@ import (
 )
 
 type sNrpcClient struct {
-	nc      *nats.Conn
-	riskcli *riskctrl.RiskCtrlClient
+	nc         *nats.Conn
+	riskengine *riskengine.RiskEngineClient
 }
 
 func init() {
@@ -35,8 +35,8 @@ func init() {
 	// 	panic(err)
 	// }
 	ctx := gctx.GetInitCtx()
-	riskcli := riskctrl.NewRiskCtrlClient(nc)
-	_, err = riskcli.RpcAlive(&empty.Empty{})
+	riskengine := riskengine.NewRiskEngineClient(nc)
+	_, err = riskengine.RpcAlive(&empty.Empty{})
 	if err != nil {
 		g.Log().Error(ctx, err)
 		panic(err)
@@ -44,8 +44,8 @@ func init() {
 	///
 	s := &sNrpcClient{
 		// cli: cli,
-		riskcli: riskcli,
-		nc:      nc,
+		riskengine: riskengine,
+		nc:         nc,
 	}
 	service.RegisterNrpcClient(s)
 }
@@ -54,6 +54,6 @@ func (s *sNrpcClient) Flush() {
 	if err != nil {
 		panic(err)
 	}
-	s.riskcli = riskctrl.NewRiskCtrlClient(s.nc)
+	s.riskengine = riskengine.NewRiskEngineClient(s.nc)
 	// s.cli = tfav1.NewTFAClient(s.nc)
 }

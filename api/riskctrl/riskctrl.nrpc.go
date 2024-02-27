@@ -16,8 +16,12 @@ import (
 // RiskCtrl should implement.
 type RiskCtrlServer interface {
 	RpcAlive(ctx context.Context, req *github_com_golang_protobuf_ptypes_empty.Empty) (*github_com_golang_protobuf_ptypes_empty.Empty, error)
-	RpcRiskTxs(ctx context.Context, req *TxRiskReq) (*TxRiskRes, error)
-	RpcRiskTfa(ctx context.Context, req *TfaRiskReq) (*TfaRiskRes, error)
+	RpcTxsRequest(ctx context.Context, req *TxRequestReq) (*TxRequestRes, error)
+	RpcTfaRequest(ctx context.Context, req *TfaRequestReq) (*TfaRequestRes, error)
+	RpcTfaInfo(ctx context.Context, req *TfaInfoReq) (*TfaInfoRes, error)
+	RpcSendPhoneCode(ctx context.Context, req *SendPhoneCodeReq) (*SendPhoneCodeRes, error)
+	RpcSendMailCode(ctx context.Context, req *SendMailCodeReq) (*SendMailCodeRes, error)
+	RpcVerifyCode(ctx context.Context, req *VerifyCodeReq) (*VerifyCodeRes, error)
 }
 
 // RiskCtrlHandler provides a NATS subscription handler that can serve a
@@ -102,44 +106,132 @@ func (h *RiskCtrlHandler) Handler(msg *nats.Msg) {
 				return innerResp, err
 			}
 		}
-	case "RpcRiskTxs":
+	case "RpcTxsRequest":
 		_, request.Encoding, err = nrpc.ParseSubjectTail(0, request.SubjectTail)
 		if err != nil {
-			log.Printf("RpcRiskTxsHanlder: RpcRiskTxs subject parsing failed: %v", err)
+			log.Printf("RpcTxsRequestHanlder: RpcTxsRequest subject parsing failed: %v", err)
 			break
 		}
-		var req TxRiskReq
+		var req TxRequestReq
 		if err := nrpc.Unmarshal(request.Encoding, msg.Data, &req); err != nil {
-			log.Printf("RpcRiskTxsHandler: RpcRiskTxs request unmarshal failed: %v", err)
+			log.Printf("RpcTxsRequestHandler: RpcTxsRequest request unmarshal failed: %v", err)
 			immediateError = &nrpc.Error{
 				Type: nrpc.Error_CLIENT,
 				Message: "bad request received: " + err.Error(),
 			}
 		} else {
 			request.Handler = func(ctx context.Context)(proto.Message, error){
-				innerResp, err := h.server.RpcRiskTxs(ctx, &req)
+				innerResp, err := h.server.RpcTxsRequest(ctx, &req)
 				if err != nil {
 					return nil, err
 				}
 				return innerResp, err
 			}
 		}
-	case "RpcRiskTfa":
+	case "RpcTfaRequest":
 		_, request.Encoding, err = nrpc.ParseSubjectTail(0, request.SubjectTail)
 		if err != nil {
-			log.Printf("RpcRiskTfaHanlder: RpcRiskTfa subject parsing failed: %v", err)
+			log.Printf("RpcTfaRequestHanlder: RpcTfaRequest subject parsing failed: %v", err)
 			break
 		}
-		var req TfaRiskReq
+		var req TfaRequestReq
 		if err := nrpc.Unmarshal(request.Encoding, msg.Data, &req); err != nil {
-			log.Printf("RpcRiskTfaHandler: RpcRiskTfa request unmarshal failed: %v", err)
+			log.Printf("RpcTfaRequestHandler: RpcTfaRequest request unmarshal failed: %v", err)
 			immediateError = &nrpc.Error{
 				Type: nrpc.Error_CLIENT,
 				Message: "bad request received: " + err.Error(),
 			}
 		} else {
 			request.Handler = func(ctx context.Context)(proto.Message, error){
-				innerResp, err := h.server.RpcRiskTfa(ctx, &req)
+				innerResp, err := h.server.RpcTfaRequest(ctx, &req)
+				if err != nil {
+					return nil, err
+				}
+				return innerResp, err
+			}
+		}
+	case "RpcTfaInfo":
+		_, request.Encoding, err = nrpc.ParseSubjectTail(0, request.SubjectTail)
+		if err != nil {
+			log.Printf("RpcTfaInfoHanlder: RpcTfaInfo subject parsing failed: %v", err)
+			break
+		}
+		var req TfaInfoReq
+		if err := nrpc.Unmarshal(request.Encoding, msg.Data, &req); err != nil {
+			log.Printf("RpcTfaInfoHandler: RpcTfaInfo request unmarshal failed: %v", err)
+			immediateError = &nrpc.Error{
+				Type: nrpc.Error_CLIENT,
+				Message: "bad request received: " + err.Error(),
+			}
+		} else {
+			request.Handler = func(ctx context.Context)(proto.Message, error){
+				innerResp, err := h.server.RpcTfaInfo(ctx, &req)
+				if err != nil {
+					return nil, err
+				}
+				return innerResp, err
+			}
+		}
+	case "RpcSendPhoneCode":
+		_, request.Encoding, err = nrpc.ParseSubjectTail(0, request.SubjectTail)
+		if err != nil {
+			log.Printf("RpcSendPhoneCodeHanlder: RpcSendPhoneCode subject parsing failed: %v", err)
+			break
+		}
+		var req SendPhoneCodeReq
+		if err := nrpc.Unmarshal(request.Encoding, msg.Data, &req); err != nil {
+			log.Printf("RpcSendPhoneCodeHandler: RpcSendPhoneCode request unmarshal failed: %v", err)
+			immediateError = &nrpc.Error{
+				Type: nrpc.Error_CLIENT,
+				Message: "bad request received: " + err.Error(),
+			}
+		} else {
+			request.Handler = func(ctx context.Context)(proto.Message, error){
+				innerResp, err := h.server.RpcSendPhoneCode(ctx, &req)
+				if err != nil {
+					return nil, err
+				}
+				return innerResp, err
+			}
+		}
+	case "RpcSendMailCode":
+		_, request.Encoding, err = nrpc.ParseSubjectTail(0, request.SubjectTail)
+		if err != nil {
+			log.Printf("RpcSendMailCodeHanlder: RpcSendMailCode subject parsing failed: %v", err)
+			break
+		}
+		var req SendMailCodeReq
+		if err := nrpc.Unmarshal(request.Encoding, msg.Data, &req); err != nil {
+			log.Printf("RpcSendMailCodeHandler: RpcSendMailCode request unmarshal failed: %v", err)
+			immediateError = &nrpc.Error{
+				Type: nrpc.Error_CLIENT,
+				Message: "bad request received: " + err.Error(),
+			}
+		} else {
+			request.Handler = func(ctx context.Context)(proto.Message, error){
+				innerResp, err := h.server.RpcSendMailCode(ctx, &req)
+				if err != nil {
+					return nil, err
+				}
+				return innerResp, err
+			}
+		}
+	case "RpcVerifyCode":
+		_, request.Encoding, err = nrpc.ParseSubjectTail(0, request.SubjectTail)
+		if err != nil {
+			log.Printf("RpcVerifyCodeHanlder: RpcVerifyCode subject parsing failed: %v", err)
+			break
+		}
+		var req VerifyCodeReq
+		if err := nrpc.Unmarshal(request.Encoding, msg.Data, &req); err != nil {
+			log.Printf("RpcVerifyCodeHandler: RpcVerifyCode request unmarshal failed: %v", err)
+			immediateError = &nrpc.Error{
+				Type: nrpc.Error_CLIENT,
+				Message: "bad request received: " + err.Error(),
+			}
+		} else {
+			request.Handler = func(ctx context.Context)(proto.Message, error){
+				innerResp, err := h.server.RpcVerifyCode(ctx, &req)
 				if err != nil {
 					return nil, err
 				}
@@ -202,12 +294,12 @@ func (c *RiskCtrlClient) RpcAlive(req *github_com_golang_protobuf_ptypes_empty.E
 	return &resp, nil
 }
 
-func (c *RiskCtrlClient) RpcRiskTxs(req *TxRiskReq) (*TxRiskRes, error) {
+func (c *RiskCtrlClient) RpcTxsRequest(req *TxRequestReq) (*TxRequestRes, error) {
 
-	subject := c.Subject + "." + "RpcRiskTxs"
+	subject := c.Subject + "." + "RpcTxsRequest"
 
 	// call
-	var resp = TxRiskRes{}
+	var resp = TxRequestRes{}
 	if err := nrpc.Call(req, &resp, c.nc, subject, c.Encoding, c.Timeout); err != nil {
 		return nil, err
 	}
@@ -215,12 +307,64 @@ func (c *RiskCtrlClient) RpcRiskTxs(req *TxRiskReq) (*TxRiskRes, error) {
 	return &resp, nil
 }
 
-func (c *RiskCtrlClient) RpcRiskTfa(req *TfaRiskReq) (*TfaRiskRes, error) {
+func (c *RiskCtrlClient) RpcTfaRequest(req *TfaRequestReq) (*TfaRequestRes, error) {
 
-	subject := c.Subject + "." + "RpcRiskTfa"
+	subject := c.Subject + "." + "RpcTfaRequest"
 
 	// call
-	var resp = TfaRiskRes{}
+	var resp = TfaRequestRes{}
+	if err := nrpc.Call(req, &resp, c.nc, subject, c.Encoding, c.Timeout); err != nil {
+		return nil, err
+	}
+
+	return &resp, nil
+}
+
+func (c *RiskCtrlClient) RpcTfaInfo(req *TfaInfoReq) (*TfaInfoRes, error) {
+
+	subject := c.Subject + "." + "RpcTfaInfo"
+
+	// call
+	var resp = TfaInfoRes{}
+	if err := nrpc.Call(req, &resp, c.nc, subject, c.Encoding, c.Timeout); err != nil {
+		return nil, err
+	}
+
+	return &resp, nil
+}
+
+func (c *RiskCtrlClient) RpcSendPhoneCode(req *SendPhoneCodeReq) (*SendPhoneCodeRes, error) {
+
+	subject := c.Subject + "." + "RpcSendPhoneCode"
+
+	// call
+	var resp = SendPhoneCodeRes{}
+	if err := nrpc.Call(req, &resp, c.nc, subject, c.Encoding, c.Timeout); err != nil {
+		return nil, err
+	}
+
+	return &resp, nil
+}
+
+func (c *RiskCtrlClient) RpcSendMailCode(req *SendMailCodeReq) (*SendMailCodeRes, error) {
+
+	subject := c.Subject + "." + "RpcSendMailCode"
+
+	// call
+	var resp = SendMailCodeRes{}
+	if err := nrpc.Call(req, &resp, c.nc, subject, c.Encoding, c.Timeout); err != nil {
+		return nil, err
+	}
+
+	return &resp, nil
+}
+
+func (c *RiskCtrlClient) RpcVerifyCode(req *VerifyCodeReq) (*VerifyCodeRes, error) {
+
+	subject := c.Subject + "." + "RpcVerifyCode"
+
+	// call
+	var resp = VerifyCodeRes{}
 	if err := nrpc.Call(req, &resp, c.nc, subject, c.Encoding, c.Timeout); err != nil {
 		return nil, err
 	}

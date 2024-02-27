@@ -5,12 +5,15 @@ import (
 	"riskcontral/internal/dao"
 	"riskcontral/internal/model/entity"
 
-	"github.com/gogf/gf/v2/frame/g"
-	"github.com/mpcsdk/mpcCommon/mpccode"
+	"github.com/gogf/gf/v2/database/gdb"
 )
 
 func (s *sDB) GetContractAbiBriefs(ctx context.Context, SceneNo string, kind string) ([]*entity.Contractabi, error) {
-	model := dao.Contractabi.Ctx(ctx).Fields(
+	model := dao.Contractabi.Ctx(ctx).Cache(gdb.CacheOption{
+		Duration: -1,
+		Name:     dao.Contractabi.Table() + "GetContractAbiBriefs" + SceneNo + kind,
+		Force:    true,
+	}).Fields(
 		dao.Contractabi.Columns().SceneNo,
 		dao.Contractabi.Columns().ContractAddress,
 		dao.Contractabi.Columns().ContractName,
@@ -24,34 +27,28 @@ func (s *sDB) GetContractAbiBriefs(ctx context.Context, SceneNo string, kind str
 	}
 	rst, err := model.All()
 	if err != nil {
-		g.Log().Error(ctx, "GetContractAbiBriefs:", "sceneNo", SceneNo, "kind", kind, "err", err)
-		return nil, mpccode.CodeInternalError()
+		return nil, err
 	}
 	///
 	rule := []*entity.Contractabi{}
-	err = rst.Structs(&rule)
-	if err != nil {
-		g.Log().Error(ctx, "GetContractAbiBriefs:", "sceneNo", SceneNo, "kind", kind, "err", err)
-		return nil, mpccode.CodeInternalError()
-	}
+	rst.Structs(&rule)
 	return rule, nil
 }
 
 // /
 func (s *sDB) GetContractAbi(ctx context.Context, SceneNo string, address string) (*entity.Contractabi, error) {
-	rst, err := dao.Contractabi.Ctx(ctx).
+	rst, err := dao.Contractabi.Ctx(ctx).Cache(gdb.CacheOption{
+		Duration: -1,
+		Name:     dao.Contractabi.Table() + "GetContractAbi" + SceneNo + address,
+		Force:    true,
+	}).
 		Where(dao.Contractabi.Columns().SceneNo, SceneNo).
 		Where(dao.Contractabi.Columns().ContractAddress, address).One()
 	if err != nil {
-		g.Log().Error(ctx, "GetContractAbi:", "sceneNo", SceneNo, "address", address, "err", err)
-		return nil, mpccode.CodeInternalError()
+		return nil, err
 	}
 	// /
 	rule := &entity.Contractabi{}
-	err = rst.Struct(&rule)
-	if err != nil {
-		g.Log().Error(ctx, "GetContractAbi:", "sceneNo", SceneNo, "address", address, "err", err)
-		return nil, mpccode.CodeInternalError()
-	}
+	rst.Struct(&rule)
 	return rule, nil
 }

@@ -6,8 +6,10 @@ import (
 	"riskcontral/internal/model"
 	"riskcontral/internal/model/entity"
 	"riskcontral/internal/service"
+	"time"
 
 	"github.com/gogf/gf/v2/frame/g"
+	"github.com/gogf/gf/v2/os/gcache"
 	"github.com/gogf/gf/v2/os/gctx"
 	"github.com/mpcsdk/mpcCommon/mpccode"
 )
@@ -23,19 +25,28 @@ type sTFA struct {
 	ctx                   context.Context
 	riskPenddingContainer *model.RiskPenddingContainer
 	////
+	cache *gcache.Cache
 }
 
 // /
 func new() *sTFA {
 
 	ctx := gctx.GetInitCtx()
+	limitSendPhoneDurationCnt = config.Config.Cache.LimitSendPhoneCount
+	limitSendPhoneDuration = time.Duration(config.Config.Cache.LimitSendPhoneDuration) * time.Second
+	limitSendMailDurationCnt = config.Config.Cache.LimitSendMailCount
+	limitSendMailDuration = time.Duration(config.Config.Cache.LimitSendMailDuration) * time.Second
+
 	//
 	t := config.Config.Cache.VerificationCodeDuration
 	s := &sTFA{
 		//todo:
 		riskPenddingContainer: model.NewRiskPenddingContainer(t),
 		ctx:                   ctx,
+		cache:                 gcache.New(),
 	}
+	redisCache := gcache.NewAdapterRedis(g.Redis())
+	s.cache.SetAdapter(redisCache)
 	///
 
 	return s

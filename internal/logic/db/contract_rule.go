@@ -5,16 +5,15 @@ import (
 	"riskcontral/internal/dao"
 	"riskcontral/internal/model/entity"
 
-	"github.com/gogf/gf/v2/frame/g"
-	"github.com/mpcsdk/mpcCommon/mpccode"
+	"github.com/gogf/gf/v2/database/gdb"
 )
 
-// var NftRules = map[string]*mpcmodel.NftRule{}
-
-// var FtRules = map[string]*mpcmodel.FtRule{}
-
 func (s *sDB) GetContractRuleBriefs(ctx context.Context, SceneNo string, kind string) ([]*entity.Contractrule, error) {
-	model := dao.Contractrule.Ctx(ctx).Fields(
+	model := dao.Contractrule.Ctx(ctx).Cache(gdb.CacheOption{
+		Duration: -1,
+		Name:     dao.Contractrule.Table() + "GetContractRuleBriefs" + SceneNo + kind,
+		Force:    true,
+	}).Fields(
 		dao.Contractrule.Columns().SceneNo,
 		dao.Contractrule.Columns().ContractAddress,
 		dao.Contractrule.Columns().ContractName,
@@ -28,8 +27,7 @@ func (s *sDB) GetContractRuleBriefs(ctx context.Context, SceneNo string, kind st
 	}
 	rst, err := model.All()
 	if err != nil {
-		g.Log().Error(ctx, "GetContractRuleBriefs:", "sceneNo", SceneNo, "kind", kind, "err", err)
-		return nil, mpccode.CodeInternalError()
+		return nil, err
 	}
 	///
 	rule := []*entity.Contractrule{}
@@ -39,12 +37,14 @@ func (s *sDB) GetContractRuleBriefs(ctx context.Context, SceneNo string, kind st
 
 // /
 func (s *sDB) GetContractRule(ctx context.Context, SceneNo string, address string) (*entity.Contractrule, error) {
-	rst, err := dao.Contractrule.Ctx(ctx).
-		Where(dao.Contractrule.Columns().SceneNo, SceneNo).
+	rst, err := dao.Contractrule.Ctx(ctx).Cache(gdb.CacheOption{
+		Duration: -1,
+		Name:     dao.Contractrule.Table() + "GetContractRule" + SceneNo + address,
+		Force:    true,
+	}).Where(dao.Contractrule.Columns().SceneNo, SceneNo).
 		Where(dao.Contractrule.Columns().ContractAddress, address).One()
 	if err != nil {
-		g.Log().Error(ctx, "GetContractRule:", "sceneNo", SceneNo, "address", address, "err", err)
-		return nil, mpccode.CodeInternalError()
+		return nil, err
 	}
 	// /
 	rule := &entity.Contractrule{}
