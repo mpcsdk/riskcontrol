@@ -19,8 +19,10 @@ func (*NrpcServer) RpcTxsRequest(ctx context.Context, req *riskctrl.TxRequestReq
 	defer span.End()
 	///
 	res, err := service.NrpcClient().RiskTxs(ctx, &riskengine.TxRiskReq{
-		UserId: req.UserId,
-		SignTx: req.SignTxData,
+		UserId:  req.UserId,
+		SignTx:  req.SignTxData,
+		ChainId: req.ChainId,
+		SceneNo: req.SceneNo,
 	})
 	if err != nil {
 		g.Log().Warning(ctx, "RpcRiskTxs:", "req:", req, "err:", err)
