@@ -33,6 +33,7 @@ func (s *sTFA) SendMailCode(ctx context.Context, userId string, riskSerial strin
 		service.TFA().TfaSetMail(ctx, tfaInfo, mail, risk.RiskSerial, risk.RiskKind)
 		///
 	case model.RiskKind_BindPhone, model.RiskKind_UpPhone:
+	case model.RiskKind_Tx:
 	default:
 		return mpccode.CodeRiskSerialNotExist()
 	}
