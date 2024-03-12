@@ -20,7 +20,6 @@ type Contractrule struct {
 	ContractName     interface{} // 合约名
 	MethodName       interface{} // 方法名
 	MethodSignature  interface{} // 方法签名
-	MethodParameters interface{} // 方法参数
 	MethodFromField  interface{} // 方法from字段名
 	MethodToField    interface{} // 方法to字段名
 	MethodValueField interface{} // 方法value字段名
@@ -34,4 +33,5 @@ type Contractrule struct {
 	ContractKind     interface{} // 合约类型
 	EventTopic       interface{} // 事件topic
 	WhiteAddrList    interface{} // to地址白名单
+	ChainId          interface{} // 链id
 }

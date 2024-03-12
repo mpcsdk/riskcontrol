@@ -19,7 +19,6 @@ type Contractrule struct {
 	ContractName     string          `json:"contractName"     ` // 合约名
 	MethodName       string          `json:"methodName"       ` // 方法名
 	MethodSignature  string          `json:"methodSignature"  ` // 方法签名
-	MethodParameters string          `json:"methodParameters" ` // 方法参数
 	MethodFromField  string          `json:"methodFromField"  ` // 方法from字段名
 	MethodToField    string          `json:"methodToField"    ` // 方法to字段名
 	MethodValueField string          `json:"methodValueField" ` // 方法value字段名
@@ -33,5 +32,5 @@ type Contractrule struct {
 	ContractKind     string          `json:"contractKind"     ` // 合约类型
 	EventTopic       string          `json:"eventTopic"       ` // 事件topic
 	WhiteAddrList    string          `json:"whiteAddrList"    ` // to地址白名单
+	ChainId          string          `json:"chainId"          ` // 链id
 }
-

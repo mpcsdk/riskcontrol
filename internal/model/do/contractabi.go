@@ -20,4 +20,5 @@ type Contractabi struct {
 	SceneNo         interface{} // 场景号
 	AbiContent      interface{} // 合约abi
 	ContractKind    interface{} // 合约类型
+	ChainId         interface{} // 链id
 }

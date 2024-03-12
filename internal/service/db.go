@@ -16,12 +16,12 @@ type (
 		GetAggFT(ctx context.Context, from, contract, methodName string) (*entity.AggFt24H, error)
 		// /
 		GetAggNFT(ctx context.Context, from, contract, methodName string) (int, error)
-		GetContractAbiBriefs(ctx context.Context, SceneNo string, kind string) ([]*entity.Contractabi, error)
+		GetContractAbiBriefs(ctx context.Context, chainId string, kind string) ([]*entity.Contractabi, error)
 		// /
-		GetContractAbi(ctx context.Context, SceneNo string, address string) (*entity.Contractabi, error)
-		GetContractRuleBriefs(ctx context.Context, SceneNo string, kind string) ([]*entity.Contractrule, error)
+		GetContractAbi(ctx context.Context, chainId string, address string) (*entity.Contractabi, error)
+		GetContractRuleBriefs(ctx context.Context, chainId string, kind string) ([]*entity.Contractrule, error)
 		// /
-		GetContractRule(ctx context.Context, SceneNo string, address string) (*entity.Contractrule, error)
+		GetContractRule(ctx context.Context, chainId string, address string) (*entity.Contractrule, error)
 		TfaMailNotExists(ctx context.Context, mail string) (bool, error)
 		TfaPhoneNotExists(ctx context.Context, phone string) (bool, error)
 		InsertTfaInfo(ctx context.Context, userId string, data *do.Tfa) error

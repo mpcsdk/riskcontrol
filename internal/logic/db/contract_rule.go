@@ -8,19 +8,19 @@ import (
 	"github.com/gogf/gf/v2/database/gdb"
 )
 
-func (s *sDB) GetContractRuleBriefs(ctx context.Context, SceneNo string, kind string) ([]*entity.Contractrule, error) {
+func (s *sDB) GetContractRuleBriefs(ctx context.Context, chainId string, kind string) ([]*entity.Contractrule, error) {
 	model := dao.Contractrule.Ctx(ctx).Cache(gdb.CacheOption{
 		Duration: -1,
-		Name:     dao.Contractrule.Table() + "GetContractRuleBriefs" + SceneNo + kind,
+		Name:     dao.Contractrule.Table() + "GetContractRuleBriefs" + chainId + kind,
 		Force:    true,
 	}).Fields(
-		dao.Contractrule.Columns().SceneNo,
+		dao.Contractrule.Columns().ChainId,
 		dao.Contractrule.Columns().ContractAddress,
 		dao.Contractrule.Columns().ContractName,
 		dao.Contractrule.Columns().ContractKind,
 	)
-	if SceneNo != "" {
-		model = model.Where(dao.Contractrule.Columns().SceneNo, SceneNo)
+	if chainId != "" {
+		model = model.Where(dao.Contractrule.Columns().ChainId, chainId)
 	}
 	if kind != "" {
 		model = model.Where(dao.Contractrule.Columns().ContractKind, kind)
@@ -36,12 +36,12 @@ func (s *sDB) GetContractRuleBriefs(ctx context.Context, SceneNo string, kind st
 }
 
 // /
-func (s *sDB) GetContractRule(ctx context.Context, SceneNo string, address string) (*entity.Contractrule, error) {
+func (s *sDB) GetContractRule(ctx context.Context, chainId string, address string) (*entity.Contractrule, error) {
 	rst, err := dao.Contractrule.Ctx(ctx).Cache(gdb.CacheOption{
 		Duration: -1,
-		Name:     dao.Contractrule.Table() + "GetContractRule" + SceneNo + address,
+		Name:     dao.Contractrule.Table() + "GetContractRule" + chainId + address,
 		Force:    true,
-	}).Where(dao.Contractrule.Columns().SceneNo, SceneNo).
+	}).Where(dao.Contractrule.Columns().ChainId, chainId).
 		Where(dao.Contractrule.Columns().ContractAddress, address).One()
 	if err != nil {
 		return nil, err

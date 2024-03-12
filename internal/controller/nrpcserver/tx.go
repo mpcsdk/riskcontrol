@@ -22,7 +22,6 @@ func (*NrpcServer) RpcTxsRequest(ctx context.Context, req *riskctrl.TxRequestReq
 		UserId:  req.UserId,
 		SignTx:  req.SignTxData,
 		ChainId: req.ChainId,
-		SceneNo: req.SceneNo,
 	})
 	if err != nil {
 		g.Log().Warning(ctx, "RpcRiskTxs:", "req:", req, "err:", err)

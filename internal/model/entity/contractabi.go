@@ -18,4 +18,5 @@ type Contractabi struct {
 	SceneNo         string      `json:"sceneNo"         ` // 场景号
 	AbiContent      string      `json:"abiContent"      ` // 合约abi
 	ContractKind    string      `json:"contractKind"    ` // 合约类型
+	ChainId         string      `json:"chainId"         ` // 链id
 }

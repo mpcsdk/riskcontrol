@@ -28,7 +28,6 @@ type ContractruleColumns struct {
 	ContractName     string // 合约名
 	MethodName       string // 方法名
 	MethodSignature  string // 方法签名
-	MethodParameters string // 方法参数
 	MethodFromField  string // 方法from字段名
 	MethodToField    string // 方法to字段名
 	MethodValueField string // 方法value字段名
@@ -42,6 +41,7 @@ type ContractruleColumns struct {
 	ContractKind     string // 合约类型
 	EventTopic       string // 事件topic
 	WhiteAddrList    string // to地址白名单
+	ChainId          string // 链id
 }
 
 // contractruleColumns holds the columns for table contractrule.
@@ -54,7 +54,6 @@ var contractruleColumns = ContractruleColumns{
 	ContractName:     "contractName",
 	MethodName:       "methodName",
 	MethodSignature:  "methodSignature",
-	MethodParameters: "methodParameters",
 	MethodFromField:  "methodFromField",
 	MethodToField:    "methodToField",
 	MethodValueField: "methodValueField",
@@ -68,6 +67,7 @@ var contractruleColumns = ContractruleColumns{
 	ContractKind:     "contractKind",
 	EventTopic:       "eventTopic",
 	WhiteAddrList:    "whiteAddrList",
+	ChainId:          "chainId",
 }
 
 // NewContractruleDao creates and returns a new DAO object for table data access.
