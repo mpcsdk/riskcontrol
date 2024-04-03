@@ -27,7 +27,7 @@ func (c *ControllerV1) TfaInfo(ctx context.Context, req *v1.TfaInfoReq) (res *v1
 		return nil, mpccode.CodeTFANotExist()
 	}
 	///
-	tfaInfo, err := service.DB().FetchTfaInfo(ctx, userInfo.UserId)
+	tfaInfo, err := service.DB().TfaDB().FetchTfaInfo(ctx, userInfo.UserId)
 	if err != nil {
 		return nil, mpccode.CodeTFANotExist()
 	}

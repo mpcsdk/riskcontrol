@@ -10,7 +10,7 @@ import (
 )
 
 func (s *sTFA) SendMailCode(ctx context.Context, userId string, riskSerial string, mail string) error {
-	tfaInfo, err := service.DB().FetchTfaInfo(ctx, userId)
+	tfaInfo, err := service.DB().TfaDB().FetchTfaInfo(ctx, userId)
 	if err != nil || tfaInfo == nil {
 		return mpccode.CodeTFANotExist()
 	}
@@ -25,7 +25,7 @@ func (s *sTFA) SendMailCode(ctx context.Context, userId string, riskSerial strin
 		if mail == "" {
 			return mpccode.CodeParamInvalid()
 		}
-		notexists, err := service.DB().TfaMailNotExists(ctx, mail)
+		notexists, err := service.DB().TfaDB().TfaMailNotExists(ctx, mail)
 		if err != nil || !notexists {
 			return mpccode.CodeTFAMailExists()
 		}

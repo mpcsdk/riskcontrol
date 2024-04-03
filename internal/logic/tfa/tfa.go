@@ -2,16 +2,17 @@ package tfa
 
 import (
 	"context"
-	"riskcontral/internal/config"
+	"riskcontral/internal/conf"
 	"riskcontral/internal/model"
-	"riskcontral/internal/model/entity"
 	"riskcontral/internal/service"
 	"time"
 
 	"github.com/gogf/gf/v2/frame/g"
 	"github.com/gogf/gf/v2/os/gcache"
 	"github.com/gogf/gf/v2/os/gctx"
+	"github.com/gogf/gf/v2/os/gtime"
 	"github.com/mpcsdk/mpcCommon/mpccode"
+	"github.com/mpcsdk/mpcCommon/mpcdao/model/entity"
 )
 
 type UserRiskId string
@@ -21,7 +22,7 @@ func keyUserRiskId(userId string, riskSerial string) UserRiskId {
 }
 
 type sTFA struct {
-	// riskClient riskv1.UserClient
+	forbiddentTime        time.Duration
 	ctx                   context.Context
 	riskPenddingContainer *model.RiskPenddingContainer
 	////
@@ -32,18 +33,23 @@ type sTFA struct {
 func new() *sTFA {
 
 	ctx := gctx.GetInitCtx()
-	limitSendPhoneDurationCnt = config.Config.Cache.LimitSendPhoneCount
-	limitSendPhoneDuration = time.Duration(config.Config.Cache.LimitSendPhoneDuration) * time.Second
-	limitSendMailDurationCnt = config.Config.Cache.LimitSendMailCount
-	limitSendMailDuration = time.Duration(config.Config.Cache.LimitSendMailDuration) * time.Second
-
+	limitSendPhoneDurationCnt = conf.Config.Cache.LimitSendPhoneCount
+	limitSendPhoneDuration = time.Duration(conf.Config.Cache.LimitSendPhoneDuration) * time.Second
+	limitSendMailDurationCnt = conf.Config.Cache.LimitSendMailCount
+	limitSendMailDuration = time.Duration(conf.Config.Cache.LimitSendMailDuration) * time.Second
+	///
+	forbiddentTime, err := gtime.ParseDuration(conf.Config.UserRisk.ForbiddenTime)
+	if err != nil {
+		panic(err)
+	}
 	//
-	t := config.Config.Cache.VerificationCodeDuration
+	t := conf.Config.Cache.VerificationCodeDuration
 	s := &sTFA{
 		//todo:
 		riskPenddingContainer: model.NewRiskPenddingContainer(t),
 		ctx:                   ctx,
 		cache:                 gcache.New(),
+		forbiddentTime:        forbiddentTime,
 	}
 	redisCache := gcache.NewAdapterRedis(g.Redis())
 	s.cache.SetAdapter(redisCache)

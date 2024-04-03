@@ -2,7 +2,7 @@ package nrpcclient
 
 import (
 	"riskcontral/api/riskengine"
-	"riskcontral/internal/config"
+	"riskcontral/internal/conf"
 	"riskcontral/internal/service"
 	"time"
 
@@ -20,7 +20,7 @@ type sNrpcClient struct {
 func init() {
 
 	// Connect to the NATS server.
-	nc, err := nats.Connect(config.Config.Nrpc.NatsUrl, nats.Timeout(3*time.Second))
+	nc, err := nats.Connect(conf.Config.Nrpc.NatsUrl, nats.Timeout(3*time.Second))
 	if err != nil {
 		panic(err)
 	}

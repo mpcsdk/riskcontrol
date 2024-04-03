@@ -4,12 +4,12 @@ import (
 	"context"
 	v1 "riskcontral/api/tfa/v1"
 	"riskcontral/internal/model"
-	"riskcontral/internal/model/do"
 	"riskcontral/internal/service"
 
 	"github.com/gogf/gf/v2/frame/g"
 	"github.com/gogf/gf/v2/os/gtime"
 	"github.com/mpcsdk/mpcCommon/mpccode"
+	"github.com/mpcsdk/mpcCommon/mpcdao/model/do"
 	"github.com/mpcsdk/mpcCommon/userInfoGeter"
 )
 
@@ -19,7 +19,7 @@ func (s *sTFA) TfaRequest(ctx context.Context, info *userInfoGeter.UserInfo, ris
 	/////
 	//
 	///
-	tfaInfo, err := service.DB().FetchTfaInfo(ctx, info.UserId)
+	tfaInfo, err := service.DB().TfaDB().FetchTfaInfo(ctx, info.UserId)
 	if err != nil {
 		return nil, mpccode.CodeTokenInvalid()
 	}
@@ -30,7 +30,7 @@ func (s *sTFA) TfaRequest(ctx context.Context, info *userInfoGeter.UserInfo, ris
 			return nil, mpccode.CodeTFAExist()
 		}
 		if tfaInfo == nil {
-			err = service.DB().InsertTfaInfo(ctx, info.UserId, &do.Tfa{
+			err = service.DB().TfaDB().InsertTfaInfo(ctx, info.UserId, &do.Tfa{
 				UserId:    info.UserId,
 				TokenData: info,
 				CreatedAt: gtime.Now(),
@@ -45,7 +45,7 @@ func (s *sTFA) TfaRequest(ctx context.Context, info *userInfoGeter.UserInfo, ris
 			return nil, mpccode.CodeTFAExist()
 		}
 		if tfaInfo == nil {
-			err = service.DB().InsertTfaInfo(ctx, info.UserId, &do.Tfa{
+			err = service.DB().TfaDB().InsertTfaInfo(ctx, info.UserId, &do.Tfa{
 				UserId:    info.UserId,
 				TokenData: info,
 				CreatedAt: gtime.Now(),
@@ -68,7 +68,7 @@ func (s *sTFA) TfaRequest(ctx context.Context, info *userInfoGeter.UserInfo, ris
 	}
 	///
 	// tfaInfo, err = service.TFA().TFAInfo(ctx, info.UserId)
-	tfaInfo, err = service.DB().FetchTfaInfo(ctx, info.UserId)
+	tfaInfo, err = service.DB().TfaDB().FetchTfaInfo(ctx, info.UserId)
 	if err != nil || tfaInfo == nil {
 		return nil, mpccode.CodeTokenInvalid()
 	}

@@ -1,4 +1,4 @@
-package config
+package conf
 
 import (
 	"github.com/gogf/gf/v2/container/gvar"

@@ -2,17 +2,17 @@ package tfa
 
 import (
 	"context"
-	"riskcontral/internal/model/do"
 	"riskcontral/internal/service"
 
 	"github.com/gogf/gf/v2/frame/g"
 	"github.com/gogf/gf/v2/os/gtime"
 	"github.com/mpcsdk/mpcCommon/mpccode"
+	"github.com/mpcsdk/mpcCommon/mpcdao/model/do"
 )
 
 func (s *sTFA) recordPhone(ctx context.Context, userId, phone string, phoneExists bool) error {
 	if !phoneExists {
-		err := service.DB().UpdateTfaInfo(ctx, userId, &do.Tfa{
+		err := service.DB().TfaDB().UpdateTfaInfo(ctx, userId, &do.Tfa{
 			UserId: userId,
 			Phone:  phone,
 		})
@@ -22,7 +22,7 @@ func (s *sTFA) recordPhone(ctx context.Context, userId, phone string, phoneExist
 		}
 		return nil
 	} else {
-		err := service.DB().UpdateTfaInfo(ctx, userId, &do.Tfa{
+		err := service.DB().TfaDB().UpdateTfaInfo(ctx, userId, &do.Tfa{
 			UserId:         userId,
 			Phone:          phone,
 			PhoneUpdatedAt: gtime.Now(),
@@ -38,7 +38,7 @@ func (s *sTFA) recordPhone(ctx context.Context, userId, phone string, phoneExist
 func (s *sTFA) recordMail(ctx context.Context, userId, mail string, upMail bool) error {
 
 	if !upMail {
-		err := service.DB().UpdateTfaInfo(ctx, userId, &do.Tfa{
+		err := service.DB().TfaDB().UpdateTfaInfo(ctx, userId, &do.Tfa{
 			UserId: userId,
 			Mail:   mail,
 		})
@@ -48,7 +48,7 @@ func (s *sTFA) recordMail(ctx context.Context, userId, mail string, upMail bool)
 		}
 		return err
 	} else {
-		err := service.DB().UpdateTfaInfo(ctx, userId, &do.Tfa{
+		err := service.DB().TfaDB().UpdateTfaInfo(ctx, userId, &do.Tfa{
 			UserId:        userId,
 			Mail:          mail,
 			MailUpdatedAt: gtime.Now(),
@@ -63,7 +63,7 @@ func (s *sTFA) recordMail(ctx context.Context, userId, mail string, upMail bool)
 
 // //
 // func (s *sTFA) insertPhone(ctx context.Context, userId string, phone *string) error {
-// 	err := service.DB().InsertTfaInfo(ctx, userId, &do.Tfa{
+// 	err := service.DB().TfaDB().InsertTfaInfo(ctx, userId, &do.Tfa{
 // 		UserId:         userId,
 // 		Phone:          phone,
 // 		PhoneUpdatedAt: gtime.Now(),
@@ -73,7 +73,7 @@ func (s *sTFA) recordMail(ctx context.Context, userId, mail string, upMail bool)
 // }
 // func (s *sTFA) insertMail(ctx context.Context, userId string, mail *string) error {
 
-// 	err := service.DB().InsertTfaInfo(ctx, userId, &do.Tfa{
+// 	err := service.DB().TfaDB().InsertTfaInfo(ctx, userId, &do.Tfa{
 
 // 		UserId:        userId,
 // 		Mail:          mail,

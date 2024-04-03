@@ -50,7 +50,7 @@ func (c *ControllerV1) TxsRequest(ctx context.Context, req *v1.TxsRequestReq) (*
 	///
 	//
 	//notice:  tfatx  need verification
-	tfaInfo, err := service.DB().FetchTfaInfo(ctx, req.UserId)
+	tfaInfo, err := service.DB().TfaDB().FetchTfaInfo(ctx, req.UserId)
 	if err != nil || tfaInfo == nil {
 		return nil, mpccode.CodeTFANotExist()
 	}

@@ -2,9 +2,9 @@ package model
 
 import (
 	"riskcontral/api/riskctrl"
-	"riskcontral/internal/model/entity"
 	"strings"
 
+	"github.com/mpcsdk/mpcCommon/mpcdao/model/entity"
 	"github.com/mpcsdk/mpcCommon/mpcmodel"
 )
 

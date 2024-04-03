@@ -2,7 +2,7 @@ package sms
 
 import (
 	"context"
-	"riskcontral/internal/config"
+	"riskcontral/internal/conf"
 
 	"github.com/gogf/gf/v2/frame/g"
 	"github.com/mpcsdk/mpcCommon/rand"
@@ -11,7 +11,7 @@ import (
 
 type tenc struct {
 	tenc *sms.TencSms
-	cfg  *config.SmsForeign
+	cfg  *conf.SmsForeign
 }
 
 // /
@@ -74,16 +74,16 @@ func (s *tenc) SendUpCompletionPhone(ctx context.Context, to string) error {
 func newTencForeign() *tenc {
 	return &tenc{
 		tenc: sms.NewTencSms(
-			config.Config.Sms.Foreign.Tenc.SecretId,
-			config.Config.Sms.Foreign.Tenc.SecretKey,
-			config.Config.Sms.Foreign.Tenc.Endpoint,
-			config.Config.Sms.Foreign.Tenc.SignMethod,
-			config.Config.Sms.Foreign.Tenc.Region,
-			config.Config.Sms.Foreign.Tenc.SmsSdkAppId,
-			config.Config.Sms.Foreign.Tenc.SignName,
-			config.Config.Sms.Foreign.Tenc.VerificationTemplateId,
-			config.Config.Sms.Foreign.Tenc.BindingCompletionTemplateId,
+			conf.Config.Sms.Foreign.Tenc.SecretId,
+			conf.Config.Sms.Foreign.Tenc.SecretKey,
+			conf.Config.Sms.Foreign.Tenc.Endpoint,
+			conf.Config.Sms.Foreign.Tenc.SignMethod,
+			conf.Config.Sms.Foreign.Tenc.Region,
+			conf.Config.Sms.Foreign.Tenc.SmsSdkAppId,
+			conf.Config.Sms.Foreign.Tenc.SignName,
+			conf.Config.Sms.Foreign.Tenc.VerificationTemplateId,
+			conf.Config.Sms.Foreign.Tenc.BindingCompletionTemplateId,
 		),
-		cfg: config.Config.Sms.Foreign,
+		cfg: conf.Config.Sms.Foreign,
 	}
 }

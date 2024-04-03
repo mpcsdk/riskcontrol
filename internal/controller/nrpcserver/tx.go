@@ -49,7 +49,7 @@ func (*NrpcServer) RpcTxsRequest(ctx context.Context, req *riskctrl.TxRequestReq
 	///
 	//
 	//notice:  tfatx  need verification
-	tfaInfo, err := service.DB().FetchTfaInfo(ctx, req.UserId)
+	tfaInfo, err := service.DB().TfaDB().FetchTfaInfo(ctx, req.UserId)
 	if err != nil || tfaInfo == nil {
 		return nil, mpccode.CodeTFANotExist()
 	}

@@ -2,7 +2,7 @@ package sms
 
 import (
 	"context"
-	"riskcontral/internal/config"
+	"riskcontral/internal/conf"
 
 	"github.com/gogf/gf/v2/frame/g"
 	"github.com/mpcsdk/mpcCommon/rand"
@@ -11,7 +11,7 @@ import (
 
 type huawei struct {
 	huawei *sms.Huawei
-	cfg    *config.SmsDomestic
+	cfg    *conf.SmsDomestic
 }
 
 // /
@@ -75,14 +75,14 @@ func (s *huawei) SendUpCompletionPhone(ctx context.Context, to string) error {
 func newdomestic() *huawei {
 	return &huawei{
 		huawei: &sms.Huawei{
-			APIAddress:        config.Config.Sms.Domestic.Huawei.APIAddress,
-			ApplicationKey:    config.Config.Sms.Domestic.Huawei.ApplicationKey,
-			ApplicationSecret: config.Config.Sms.Domestic.Huawei.ApplicationSecret,
-			Sender:            config.Config.Sms.Domestic.Huawei.Sender,
-			SenderCompletion:  config.Config.Sms.Domestic.Huawei.SenderCompletion,
-			TemplateID:        config.Config.Sms.Domestic.Huawei.VerificationTemplateId,
-			Signature:         config.Config.Sms.Domestic.Huawei.Signature,
+			APIAddress:        conf.Config.Sms.Domestic.Huawei.APIAddress,
+			ApplicationKey:    conf.Config.Sms.Domestic.Huawei.ApplicationKey,
+			ApplicationSecret: conf.Config.Sms.Domestic.Huawei.ApplicationSecret,
+			Sender:            conf.Config.Sms.Domestic.Huawei.Sender,
+			SenderCompletion:  conf.Config.Sms.Domestic.Huawei.SenderCompletion,
+			TemplateID:        conf.Config.Sms.Domestic.Huawei.VerificationTemplateId,
+			Signature:         conf.Config.Sms.Domestic.Huawei.Signature,
 		},
-		cfg: config.Config.Sms.Domestic,
+		cfg: conf.Config.Sms.Domestic,
 	}
 }

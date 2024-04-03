@@ -11,7 +11,7 @@ import (
 
 // /
 func (s *sTFA) SendPhoneCode(ctx context.Context, userId string, riskSerial string, phone string) error {
-	tfaInfo, err := service.DB().FetchTfaInfo(ctx, userId)
+	tfaInfo, err := service.DB().TfaDB().FetchTfaInfo(ctx, userId)
 	if err != nil || tfaInfo == nil {
 		return mpccode.CodeTFANotExist()
 	}
@@ -25,7 +25,7 @@ func (s *sTFA) SendPhoneCode(ctx context.Context, userId string, riskSerial stri
 		if phone == "" {
 			return mpccode.CodeParamInvalid()
 		}
-		notexists, err := service.DB().TfaPhoneNotExists(ctx, phone)
+		notexists, err := service.DB().TfaDB().TfaPhoneNotExists(ctx, phone)
 		if err != nil || !notexists {
 			return mpccode.CodeTFAPhoneExists()
 		}

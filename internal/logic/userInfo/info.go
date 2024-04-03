@@ -2,11 +2,13 @@ package userInfo
 
 import (
 	"context"
-	"riskcontral/internal/config"
+	"riskcontral/internal/conf"
 	"riskcontral/internal/service"
+	"time"
 
 	"github.com/gogf/gf/v2/frame/g"
 	"github.com/gogf/gf/v2/os/gcache"
+	"github.com/gogf/gf/v2/os/gctx"
 	"github.com/mpcsdk/mpcCommon/mpccode"
 	"github.com/mpcsdk/mpcCommon/userInfoGeter"
 )
@@ -52,14 +54,18 @@ func (s *sUserInfo) GetUserInfo(ctx context.Context, userToken string) (userInfo
 
 func new() *sUserInfo {
 	///
-	// url, err := gcfg.Instance().Get(context.Background(), "userTokenUrl")
-	// if err != nil {
-	// 	panic(err)
-	// }
-	url := config.Config.UserTokenUrl
+	r := g.Redis("cache")
+	_, err := r.Conn(gctx.GetInitCtx())
+	if err != nil {
+		panic(err)
+	}
+	cache := gcache.New()
+	cache.SetAdapter(gcache.NewAdapterRedis(r))
 	///
-	userGeter := userInfoGeter.NewUserInfoGeter(url)
-	_, err := userGeter.GetUserInfo(context.Background(), "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhcHBQdWJLZXkiOiIwMjI1YmI1MmU5NTcyMDUwZmZjMGM4MGRjZDBhYTBmNjQyNDFjMDk5ZDAzZjFlYTFjODEzMmZkMzViY2Q3MDBiMWMiLCJpYXQiOjE2OTQ0Mjk5OTEsImV4cCI6MTcyNTk2NTk5MX0.8YaF5spnD1SjI-NNbBCIBj9H5pspXMMkPJrKk23LdnM")
+	url := conf.Config.UserTokenUrl
+	///
+	userGeter := userInfoGeter.NewUserInfoGeter(url, cache, time.Duration(conf.Config.Cache.DBCacheDuration))
+	_, err = userGeter.GetUserInfo(context.Background(), "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhcHBQdWJLZXkiOiIwMjI1YmI1MmU5NTcyMDUwZmZjMGM4MGRjZDBhYTBmNjQyNDFjMDk5ZDAzZjFlYTFjODEzMmZkMzViY2Q3MDBiMWMiLCJpYXQiOjE2OTQ0Mjk5OTEsImV4cCI6MTcyNTk2NTk5MX0.8YaF5spnD1SjI-NNbBCIBj9H5pspXMMkPJrKk23LdnM")
 	if err != nil {
 		panic(err)
 	}

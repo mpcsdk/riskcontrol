@@ -3,7 +3,7 @@ package nrpcserver
 import (
 	"context"
 	"riskcontral/api/riskctrl"
-	"riskcontral/internal/config"
+	"riskcontral/internal/conf"
 	"sync"
 	"time"
 
@@ -36,7 +36,7 @@ func Instance() *NrpcServer {
 }
 func new() *NrpcServer {
 	//
-	nc, err := nats.Connect(config.Config.Nrpc.NatsUrl, nats.Timeout(5*time.Second))
+	nc, err := nats.Connect(conf.Config.Nrpc.NatsUrl, nats.Timeout(5*time.Second))
 	if err != nil {
 		panic(err)
 	}

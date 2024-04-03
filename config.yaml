@@ -29,27 +29,16 @@ redis:
     db: 1
 
 database:
-  # default:
-  # - link: "pgsql:postgres:123456@tcp(127.0.0.1:10100)/riskcontrol"
   scrape_logs:
   - link: "pgsql:postgres:123456@tcp(127.0.0.1:10100)/scrape_logs"
   tfa:
   - link: "pgsql:postgres:123456@tcp(127.0.0.1:10100)/tfa"
-  default:
+  riskcontrol:
   - link: "mysql:ssh:123456@tcp(127.0.0.1:3305)/riskcontrol"
 
 nrpc:
   natsUrl: "127.0.0.1:4222,127.0.0.1:4211"
   
-grpc:
-  name:             "riskRpc"  # 服务名称
-  address:          ":8001" # 自定义服务监听地址
-  logPath:          "./log" # 日志存储目录路径
-  logStdout:        true    # 日志是否输出到终端
-  errorLogEnabled:  true    # 是否开启错误日志记录
-  accessLogEnabled: true    # 是否开启访问日志记录
-  errorStack:       true    # 当产生错误时，是否记录错误堆栈
-
 
 sms:
   domestic:

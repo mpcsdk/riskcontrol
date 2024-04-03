@@ -9,8 +9,8 @@ import (
 	"context"
 	v1 "riskcontral/api/tfa/v1"
 	"riskcontral/internal/model"
-	"riskcontral/internal/model/entity"
 
+	"github.com/mpcsdk/mpcCommon/mpcdao/model/entity"
 	"github.com/mpcsdk/mpcCommon/userInfoGeter"
 )
 

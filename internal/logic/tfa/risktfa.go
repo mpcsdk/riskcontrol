@@ -3,12 +3,11 @@ package tfa
 import (
 	"context"
 	"riskcontral/internal/model"
-	"riskcontral/internal/model/entity"
-	"time"
 
 	"github.com/gogf/gf/v2/frame/g"
 	"github.com/gogf/gf/v2/os/gtime"
 	"github.com/mpcsdk/mpcCommon/mpccode"
+	"github.com/mpcsdk/mpcCommon/mpcdao/model/entity"
 	"github.com/mpcsdk/mpcCommon/rand"
 )
 
@@ -43,8 +42,6 @@ func (s *sTFA) RiskTfaRequest(ctx context.Context,
 	return code, nil
 }
 
-var BeforH24 = time.Hour * 24 * -1
-
 func (s *sTFA) checkTfaUpPhone(ctx context.Context, tfaInfo *entity.Tfa) (int32, error) {
 	/////
 	if tfaInfo == nil {
@@ -62,13 +59,13 @@ func (s *sTFA) checkTfaUpPhone(ctx context.Context, tfaInfo *entity.Tfa) (int32,
 		return mpccode.RiskCodeNeedVerification, nil
 	}
 
-	befor24h := gtime.Now().Add(BeforH24)
+	forbiddentTime := gtime.Now().Add(s.forbiddentTime)
 	g.Log().Notice(ctx, "checkTFAUpPhone check phoneUpTime:",
 		"tfaInfo:", tfaInfo,
 		"info.PhoneUpdatedAt:", tfaInfo.PhoneUpdatedAt.Local(),
-		"beforAt:", befor24h,
+		"beforAt:", forbiddentTime,
 	)
-	if tfaInfo.PhoneUpdatedAt.Before(befor24h) {
+	if tfaInfo.PhoneUpdatedAt.Before(forbiddentTime) {
 		return mpccode.RiskCodeNeedVerification, nil
 	}
 	return mpccode.RiskCodeForbidden, nil
@@ -91,13 +88,13 @@ func (s *sTFA) checkTfaUpMail(ctx context.Context, tfaInfo *entity.Tfa) (int32, 
 			"info.MailUpdatedAt:", tfaInfo.MailUpdatedAt)
 		return mpccode.RiskCodeNeedVerification, nil
 	}
-	befor24h := gtime.Now().Add(BeforH24)
+	forbiddentTime := gtime.Now().Add(s.forbiddentTime)
 	g.Log().Notice(ctx, "checkTfaUpMail check phoneUpTime:",
 		"tfaInfo:", tfaInfo,
 		"info.MailUpdatedAt:", tfaInfo.MailUpdatedAt,
-		"beforAt:", befor24h,
+		"beforAt:", forbiddentTime,
 	)
-	if tfaInfo.MailUpdatedAt.Before(befor24h) {
+	if tfaInfo.MailUpdatedAt.Before(forbiddentTime) {
 		return mpccode.RiskCodeNeedVerification, nil
 	}
 	return mpccode.RiskCodeForbidden, nil

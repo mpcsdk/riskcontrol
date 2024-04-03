@@ -2,7 +2,7 @@ package sms
 
 import (
 	"context"
-	"riskcontral/internal/config"
+	"riskcontral/internal/conf"
 	"riskcontral/internal/service"
 	"strings"
 )
@@ -11,8 +11,8 @@ type sSmsCode struct {
 	foreign  *tenc
 	domestic *huawei
 
-	foreignCfg  *config.SmsForeign
-	domesticCfg *config.SmsDomestic
+	foreignCfg  *conf.SmsForeign
+	domesticCfg *conf.SmsDomestic
 }
 
 // }
@@ -80,8 +80,8 @@ func new() *sSmsCode {
 	return &sSmsCode{
 		foreign:     newTencForeign(),
 		domestic:    newdomestic(),
-		foreignCfg:  config.Config.Sms.Foreign,
-		domesticCfg: config.Config.Sms.Domestic,
+		foreignCfg:  conf.Config.Sms.Foreign,
+		domesticCfg: conf.Config.Sms.Domestic,
 	}
 }
 

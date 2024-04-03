@@ -3,9 +3,9 @@ package tfa
 import (
 	"context"
 	"riskcontral/internal/model"
-	"riskcontral/internal/model/entity"
 
 	"github.com/mpcsdk/mpcCommon/mpccode"
+	"github.com/mpcsdk/mpcCommon/mpcdao/model/entity"
 	"github.com/mpcsdk/mpcCommon/rand"
 )
 

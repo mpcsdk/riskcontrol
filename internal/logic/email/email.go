@@ -2,7 +2,7 @@ package email
 
 import (
 	"context"
-	"riskcontral/internal/config"
+	"riskcontral/internal/conf"
 	"riskcontral/internal/service"
 
 	"github.com/gogf/gf/v2/frame/g"
@@ -82,15 +82,15 @@ func (s *sMailCode) SendUpCompletionMail(ctx context.Context, to string) error {
 func new() *sMailCode {
 
 	s := &sMailCode{
-		From:                          config.Config.ExEmail.From,      //cfg.MustGet(ctx, "exemail.From").String(),
-		SecretId:                      config.Config.ExEmail.SecretId,  //cfg.MustGet(ctx, "exemail.SecretId").String(),
-		SecretKey:                     config.Config.ExEmail.SecretKey, //cfg.MustGet(ctx, "exemail.SecretKey").String(),
-		VerificationTemplateId:        uint64(config.Config.ExEmail.VerificationTemplateId),
-		BindingVerificationTemplateId: uint64(config.Config.ExEmail.BindingVerificationTemplateId),
-		BindingCompletionTemplateId:   uint64(config.Config.ExEmail.BindingCompletionTemplateId),
-		UpVerificationTemplateId:      uint64(config.Config.ExEmail.UpVerificationTemplateId),
-		UpCompletionTemplateId:        uint64(config.Config.ExEmail.UpCompletionTemplateId),
-		Subject:                       config.Config.ExEmail.Subject, //cfg.MustGet(ctx, "exemail.Subject").String(),
+		From:                          conf.Config.ExEmail.From,      //cfg.MustGet(ctx, "exemail.From").String(),
+		SecretId:                      conf.Config.ExEmail.SecretId,  //cfg.MustGet(ctx, "exemail.SecretId").String(),
+		SecretKey:                     conf.Config.ExEmail.SecretKey, //cfg.MustGet(ctx, "exemail.SecretKey").String(),
+		VerificationTemplateId:        uint64(conf.Config.ExEmail.VerificationTemplateId),
+		BindingVerificationTemplateId: uint64(conf.Config.ExEmail.BindingVerificationTemplateId),
+		BindingCompletionTemplateId:   uint64(conf.Config.ExEmail.BindingCompletionTemplateId),
+		UpVerificationTemplateId:      uint64(conf.Config.ExEmail.UpVerificationTemplateId),
+		UpCompletionTemplateId:        uint64(conf.Config.ExEmail.UpCompletionTemplateId),
+		Subject:                       conf.Config.ExEmail.Subject, //cfg.MustGet(ctx, "exemail.Subject").String(),
 		tencMail:                      newTencMail(gctx.GetInitCtx()),
 	}
 	return s

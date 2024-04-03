@@ -21,7 +21,7 @@ func (*NrpcServer) RpcTfaInfo(ctx context.Context, req *riskctrl.TfaInfoReq) (re
 		g.Log().Warning(ctx, "TFAInfo no userId:", "req:", req, "userInfo:", req)
 		return nil, mpccode.CodeTFANotExist()
 	}
-	tfaInfo, err := service.DB().FetchTfaInfo(ctx, req.UserId)
+	tfaInfo, err := service.DB().TfaDB().FetchTfaInfo(ctx, req.UserId)
 	if err != nil {
 		return nil, mpccode.CodeTFANotExist()
 	}

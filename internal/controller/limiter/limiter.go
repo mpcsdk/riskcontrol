@@ -2,7 +2,7 @@ package limiter
 
 import (
 	"context"
-	"riskcontral/internal/config"
+	"riskcontral/internal/conf"
 	"sync"
 	"time"
 
@@ -31,7 +31,7 @@ func (s *Limiter) ApiLimit(ctx context.Context, tokenId string, method string) e
 	}
 }
 func new() *Limiter {
-	apiInterval = time.Duration(config.Config.Cache.ApiInterval) * time.Second
+	apiInterval = time.Duration(conf.Config.Cache.ApiInterval) * time.Second
 	redisCache := gcache.NewAdapterRedis(g.Redis())
 	s := &Limiter{
 		cache: gcache.New(),
