@@ -29,14 +29,12 @@ redis:
     db: 1
 
 database:
-  scrape_logs:
-  - link: "pgsql:postgres:123456@tcp(127.0.0.1:10100)/scrape_logs"
   tfa:
   - link: "pgsql:postgres:123456@tcp(127.0.0.1:10100)/tfa"
   riskcontrol:
   - link: "mysql:ssh:123456@tcp(127.0.0.1:3305)/riskcontrol"
 
-nrpc:
+nats:
   natsUrl: "127.0.0.1:4222,127.0.0.1:4211"
   
 
@@ -96,17 +94,6 @@ gfcli:
     - link:  "mysql:ssh:123456@tcp(127.0.0.1:3305)/riskcontrol"
       group: default
       tables:   "contractrule,contractabi"
-      jsonCase: "CamelLower"
-      typeMapping:
-        decimal:
-          type:   decimal.Decimal
-          import: github.com/shopspring/decimal
-        numeric:
-          type:   decimal.Decimal
-          import: github.com/shopspring/decimal
-    - link:     "pgsql:postgres:123456@tcp(127.0.0.1:10100)/scrape_logs"
-      group: scrape_logs
-      tables:   "agg_ft_24h,agg_nft_24h"
       jsonCase: "CamelLower"
       typeMapping:
         decimal:

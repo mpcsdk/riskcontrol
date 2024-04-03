@@ -25,8 +25,6 @@ redis:
 database:
   default:
   - link: "pgsql:postgres:123456@tcp(127.0.0.1:10100)/riskcontrol"
-  scrape_logs:
-  - link: "pgsql:postgres:123456@tcp(127.0.0.1:10100)/scrape_logs"
   tfa:
   - link: "pgsql:postgres:123456@tcp(127.0.0.1:10100)/tfa"
 
@@ -298,17 +296,6 @@ gfcli:
     dao:
     - link:     "pgsql:postgres:123456@tcp(127.0.0.1:10100)/riskcontrol"
       tables:   "contract_abi,rule"
-      jsonCase: "CamelLower"
-      typeMapping:
-        decimal:
-          type:   decimal.Decimal
-          import: github.com/shopspring/decimal
-        numeric:
-          type:   decimal.Decimal
-          import: github.com/shopspring/decimal
-    - link:     "pgsql:postgres:123456@tcp(127.0.0.1:10100)/scrape_logs"
-      group: scrape_logs
-      tables:   "agg_ft_24h,agg_nft_24h"
       jsonCase: "CamelLower"
       typeMapping:
         decimal:

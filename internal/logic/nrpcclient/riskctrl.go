@@ -19,13 +19,12 @@ func (c *sNrpcClient) RiskTxs(ctx context.Context, req *riskengine.TxRiskReq) (r
 			c.Flush()
 			return nil, mpccode.CodeInternalError()
 		}
-		err = gerror.Wrap(mpccode.CodeInternalError(), mpccode.ErrDetails(
-			mpccode.ErrDetail("err", err),
-		))
-		return nil, err
+		return nil, mpccode.CodeInternalError(err.Error())
 	}
-	return res, err
+	return res, nil
 }
+
+// /
 func (c *sNrpcClient) RiskTfaRequest(ctx context.Context, req *riskctrl.TfaRequestReq) (res *riskctrl.TfaRequestRes, err error) {
 	return nil, gerror.NewCode(gcode.CodeNotImplemented)
 }

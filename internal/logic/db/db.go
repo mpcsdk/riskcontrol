@@ -7,6 +7,7 @@ import (
 	"time"
 
 	_ "github.com/gogf/gf/contrib/drivers/mysql/v2"
+	_ "github.com/gogf/gf/contrib/nosql/redis/v2"
 	"github.com/gogf/gf/v2/frame/g"
 	"github.com/gogf/gf/v2/os/gctx"
 	"github.com/mpcsdk/mpcCommon/mpcdao"
@@ -22,7 +23,7 @@ type sDB struct {
 
 func new() *sDB {
 	///
-	r := g.Redis("")
+	r := g.Redis()
 	_, err := r.Conn(gctx.GetInitCtx())
 	if err != nil {
 		panic(err)

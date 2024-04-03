@@ -36,7 +36,7 @@ func Instance() *NrpcServer {
 }
 func new() *NrpcServer {
 	//
-	nc, err := nats.Connect(conf.Config.Nrpc.NatsUrl, nats.Timeout(5*time.Second))
+	nc, err := nats.Connect(conf.Config.Nats.NatsUrl, nats.Timeout(5*time.Second))
 	if err != nil {
 		panic(err)
 	}

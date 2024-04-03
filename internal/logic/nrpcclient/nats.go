@@ -6,8 +6,6 @@ import (
 	"riskcontral/internal/service"
 	"time"
 
-	"github.com/gogf/gf/v2/frame/g"
-	"github.com/gogf/gf/v2/os/gctx"
 	"github.com/golang/protobuf/ptypes/empty"
 	"github.com/nats-io/nats.go"
 )
@@ -20,30 +18,19 @@ type sNrpcClient struct {
 func init() {
 
 	// Connect to the NATS server.
-	nc, err := nats.Connect(conf.Config.Nrpc.NatsUrl, nats.Timeout(3*time.Second))
+	nc, err := nats.Connect(conf.Config.Nats.NatsUrl, nats.Timeout(3*time.Second))
 	if err != nil {
 		panic(err)
 	}
 	// defer nc.Close()
 
-	// This is our generated client.
-	// cli := tfav1.NewTFAClient(nc)
-
-	// Contact the server and print out its response.
-	// _, err = cli.RpcAlive(&empty.Empty{})
-	// if err != nil {
-	// 	panic(err)
-	// }
-	ctx := gctx.GetInitCtx()
 	riskengine := riskengine.NewRiskEngineClient(nc)
 	_, err = riskengine.RpcAlive(&empty.Empty{})
 	if err != nil {
-		g.Log().Error(ctx, err)
 		panic(err)
 	}
 	///
 	s := &sNrpcClient{
-		// cli: cli,
 		riskengine: riskengine,
 		nc:         nc,
 	}
