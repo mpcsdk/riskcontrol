@@ -3,18 +3,17 @@ module riskcontral
 go 1.20
 
 require (
-	github.com/gogf/gf/contrib/drivers/pgsql/v2 v2.5.4
-	github.com/gogf/gf/contrib/nosql/redis/v2 v2.5.4
-	github.com/gogf/gf/contrib/trace/jaeger/v2 v2.5.4
+	github.com/gogf/gf/contrib/drivers/pgsql/v2 v2.7.0
+	github.com/gogf/gf/contrib/nosql/redis/v2 v2.7.0
+	github.com/gogf/gf/contrib/trace/jaeger/v2 v2.7.0
 	github.com/golang/protobuf v1.5.3
 	github.com/mpcsdk/mpcCommon v0.0.0
-	github.com/shopspring/decimal v1.3.1 // indirect
 	google.golang.org/protobuf v1.31.0
 )
 
 require (
-	github.com/gogf/gf/contrib/drivers/mysql/v2 v2.5.7
-	github.com/gogf/gf/v2 v2.5.7
+	github.com/gogf/gf/contrib/drivers/mysql/v2 v2.7.0
+	github.com/gogf/gf/v2 v2.7.0
 	github.com/nats-io/nats.go v1.33.1
 	github.com/nats-rpc/nrpc v0.0.0-20231018091755-18e69326f052
 )
@@ -43,7 +42,7 @@ require (
 	github.com/nats-io/nkeys v0.4.7 // indirect
 	github.com/nats-io/nuid v1.0.1 // indirect
 	github.com/olekukonko/tablewriter v0.0.5 // indirect
-	github.com/redis/go-redis/v9 v9.0.5 // indirect
+	github.com/redis/go-redis/v9 v9.2.1 // indirect
 	github.com/rivo/uniseg v0.4.4 // indirect
 	github.com/satori/go.uuid v1.2.0 // indirect
 	github.com/tencentcloud/tencentcloud-sdk-go/tencentcloud/common v1.0.763 // indirect
