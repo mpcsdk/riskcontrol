@@ -6,7 +6,6 @@ import (
 	"riskcontral/api/riskengine"
 	"riskcontral/internal/service"
 
-	"github.com/gogf/gf/v2/errors/gerror"
 	"github.com/gogf/gf/v2/frame/g"
 	"github.com/gogf/gf/v2/net/gtrace"
 	"github.com/mpcsdk/mpcCommon/mpccode"
@@ -25,25 +24,23 @@ func (*NrpcServer) RpcTxsRequest(ctx context.Context, req *riskctrl.TxRequestReq
 	})
 	if err != nil {
 		g.Log().Warning(ctx, "RpcRiskTxs:", "req:", req, "err:", err)
-		return nil, gerror.Wrap(mpccode.CodeInternalError(), mpccode.ErrDetails(
-			mpccode.ErrDetail("engineErr", err.Error()),
-		))
+		return nil, err
 	}
 	///
 	if res.Ok == mpccode.RiskCodeError {
 		return &riskctrl.TxRequestRes{
-			Ok: res.Ok,
-		}, mpccode.CodeInternalError()
+			Ok: mpccode.RiskCodeError,
+		}, err
 	}
 	//
 	if res.Ok == mpccode.RiskCodePass {
 		return &riskctrl.TxRequestRes{
-			Ok: res.Ok,
+			Ok: mpccode.RiskCodePass,
 		}, nil
 	}
 	if res.Ok == mpccode.RiskCodeForbidden {
 		return &riskctrl.TxRequestRes{
-			Ok: res.Ok,
+			Ok: mpccode.RiskCodeForbidden,
 		}, nil
 	}
 	///
@@ -63,5 +60,5 @@ func (*NrpcServer) RpcTxsRequest(ctx context.Context, req *riskctrl.TxRequestReq
 		Ok:         res.Ok,
 		RiskSerial: riskserial,
 		RiskKind:   kinds,
-	}, err
+	}, nil
 }

@@ -11,9 +11,9 @@ import (
 
 // var limitSendInterval = time.Second * 60
 var limitSendPhoneDurationCnt = 50
-var limitSendPhoneDuration = time.Hour
+var limitSendPhoneDuration = time.Minute
 var limitSendMailDurationCnt = 10
-var limitSendMailDuration = time.Hour
+var limitSendMailDuration = time.Minute
 
 func (s *sTFA) delTimeOut(dts []*gtime.Time, limitDuration time.Duration) []*gtime.Time {
 	i := 0
