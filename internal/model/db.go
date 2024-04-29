@@ -5,23 +5,22 @@ import (
 	"strings"
 
 	"github.com/mpcsdk/mpcCommon/mpcdao/model/entity"
-	"github.com/mpcsdk/mpcCommon/mpcmodel"
 )
 
-func ContractRuleEntity2Model(e *entity.Contractrule) *mpcmodel.ContractRule {
-	return &mpcmodel.ContractRule{
-		Contract:         e.ContractAddress,
-		Name:             e.ContractName,
-		Kind:             e.ContractKind,
-		MethodName:       e.MethodName,
-		MethodSig:        e.MethodSignature,
-		MethodFromField:  e.MethodFromField,
-		MethodToField:    e.MethodToField,
-		MethodValueField: e.MethodValueField,
+// func ContractRuleEntity2Model(e *entity.Contractrule) *mpcmodel.ContractRule {
+// 	return &mpcmodel.ContractRule{
+// 		Contract:         e.ContractAddress,
+// 		Name:             e.ContractName,
+// 		Kind:             e.ContractKind,
+// 		MethodName:       e.MethodName,
+// 		MethodSig:        e.MethodSignature,
+// 		MethodFromField:  e.MethodFromField,
+// 		MethodToField:    e.MethodToField,
+// 		MethodValueField: e.MethodValueField,
 
-		WhiteAddrList: strings.Split(e.WhiteAddrList, ","),
-	}
-}
+//			WhiteAddrList: strings.Split(e.WhiteAddrList, ","),
+//		}
+//	}
 func ContractRuleEntity2Rpc(e *entity.Contractrule) *riskctrl.ContractRuleRes {
 	return &riskctrl.ContractRuleRes{
 		Contract:         e.ContractAddress,
