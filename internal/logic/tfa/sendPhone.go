@@ -2,7 +2,7 @@ package tfa
 
 import (
 	"context"
-	"riskcontral/internal/model"
+	"riskcontral/internal/logic/tfa/tfaconst"
 	"riskcontral/internal/service"
 
 	"github.com/gogf/gf/v2/frame/g"
@@ -10,35 +10,18 @@ import (
 )
 
 // /
-func (s *sTFA) SendPhoneCode(ctx context.Context, userId string, riskSerial string, phone string) error {
+func (s *sTFA) SendPhoneCode(ctx context.Context, userId string, riskSerial string) error {
 	tfaInfo, err := service.DB().TfaDB().FetchTfaInfo(ctx, userId)
 	if err != nil || tfaInfo == nil {
 		return mpccode.CodeTFANotExist()
 	}
 	///
-	risk := service.TFA().GetRiskVerify(ctx, userId, riskSerial)
+	risk := s.riskPenddingContainer.GetRiskPendding(userId, riskSerial)
 	if risk == nil {
 		return mpccode.CodeRiskSerialNotExist()
 	} ////
-	switch risk.RiskKind {
-	case model.RiskKind_BindPhone, model.RiskKind_UpPhone:
-		if phone == "" {
-			return mpccode.CodeParamInvalid()
-		}
-		notexists, err := service.DB().TfaDB().TfaPhoneNotExists(ctx, phone)
-		if err != nil || !notexists {
-			return mpccode.CodeTFAPhoneExists()
-		}
-		////
-		service.TFA().TfaSetPhone(ctx, tfaInfo, phone, risk.RiskSerial, risk.RiskKind)
-		///
-	case model.RiskKind_BindMail, model.RiskKind_UpMail:
-	case model.RiskKind_Tx:
-	default:
-		return mpccode.CodeRiskSerialNotExist()
-	}
 	///
-	v := risk.GetVerifier(model.VerifierKind_Phone)
+	v := risk.GetVerifier(tfaconst.VerifierKind_Phone)
 	if v == nil {
 		return mpccode.CodeRiskSerialNotExist()
 	}

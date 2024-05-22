@@ -8,7 +8,7 @@ import (
 )
 
 func (s *sTFA) VerifyCode(ctx context.Context, userId string, riskSerial string, code *model.VerifyCode) error {
-	risk := s.riskPenddingContainer.GetRiskVerify(userId, riskSerial)
+	risk := s.riskPenddingContainer.GetRiskPendding(userId, riskSerial)
 	if risk == nil {
 		return mpccode.CodeRiskSerialNotExist()
 	}

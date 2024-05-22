@@ -3,7 +3,7 @@ package tfa
 import (
 	"context"
 	v1 "riskcontral/api/tfa/v1"
-	"riskcontral/internal/model"
+	"riskcontral/internal/logic/tfa/tfaconst"
 	"riskcontral/internal/service"
 
 	"github.com/gogf/gf/v2/frame/g"
@@ -29,9 +29,9 @@ func (c *ControllerV1) TfaRequest(ctx context.Context, req *v1.TfaRequestReq) (r
 		return nil, mpccode.CodeTokenInvalid()
 	}
 	///
-	riskKind := model.CodeType2RiskKind(req.CodeType)
 	//
-	return service.TFA().TfaRequest(ctx, info, riskKind)
+	riskKind := tfaconst.CodeType2RiskKind(req.CodeType)
+	return service.TFA().TfaRequest(ctx, info.UserId, riskKind, req.Data)
 	///
 	///
 }

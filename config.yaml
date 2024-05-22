@@ -1,27 +1,25 @@
 server:
-  address:     ":8002"
+  address: ":8002"
   workId: 1
   name: "riskcontrol"
 
 jaegerUrl: "127.0.0.1:6831"
 
 logger:
-  level : "all"
-  stdout: true 
+  level: "all"
+  stdout: true
   rotateExpire: "1d"
   path: "./"
-
 
 cache:
   apiInterval: 1
   sessionDuration: 10000
-  verificationCodeDuration : 600
+  verificationCodeDuration: 600
   dbCacheDuration: 100
   limitSendPhoneCount: 10
   limitSendPhoneDuration: 600
   limitSendMailCount: 10
   limitSendMailDuration: 600
-
 
 redis:
   default:
@@ -30,13 +28,12 @@ redis:
 
 database:
   tfa:
-  - link: "pgsql:postgres:123456@tcp(127.0.0.1:10100)/tfa"
+    - link: "pgsql:postgres:123456@tcp(127.0.0.1:10100)/tfa"
   riskcontrol:
-  - link: "mysql:ssh:123456@tcp(127.0.0.1:3305)/riskcontrol"
+    - link: "mysql:ssh:123456@tcp(127.0.0.1:3305)/riskcontrol"
 
 nats:
   natsUrl: "127.0.0.1:4222,127.0.0.1:4211"
-  
 
 sms:
   domestic:
@@ -84,33 +81,32 @@ userTokenUrl: "https://auth-dev.mixmarvel-sdk.com/info"
 userRisk:
   userControl: true
   txControl: true
-  verificationCodeDuration : 600
+  penddingRiskeDuration: 600
   verificationCodeInterval: 1
   forbiddenTime: "-10m"
 
 gfcli:
   gen:
     dao:
-    - link:  "mysql:ssh:123456@tcp(127.0.0.1:3305)/riskcontrol"
-      group: default
-      tables:   "contractrule,contractabi"
-      jsonCase: "CamelLower"
-      typeMapping:
-        decimal:
-          type:   decimal.Decimal
-          import: github.com/shopspring/decimal
-        numeric:
-          type:   decimal.Decimal
-          import: github.com/shopspring/decimal
-    - link:     "pgsql:postgres:123456@tcp(127.0.0.1:10100)/tfa"
-      group: tfa
-      tables:   "tfa"
-      jsonCase: "CamelLower"
-      typeMapping:
-        decimal:
-          type:   decimal.Decimal
-          import: github.com/shopspring/decimal
-        numeric:
-          type:   decimal.Decimal
-          import: github.com/shopspring/decimal
-
+      - link: "mysql:ssh:123456@tcp(127.0.0.1:3305)/riskcontrol"
+        group: default
+        tables: "contractrule,contractabi"
+        jsonCase: "CamelLower"
+        typeMapping:
+          decimal:
+            type: decimal.Decimal
+            import: github.com/shopspring/decimal
+          numeric:
+            type: decimal.Decimal
+            import: github.com/shopspring/decimal
+      - link: "pgsql:postgres:123456@tcp(127.0.0.1:10100)/tfa"
+        group: tfa
+        tables: "tfa"
+        jsonCase: "CamelLower"
+        typeMapping:
+          decimal:
+            type: decimal.Decimal
+            import: github.com/shopspring/decimal
+          numeric:
+            type: decimal.Decimal
+            import: github.com/shopspring/decimal

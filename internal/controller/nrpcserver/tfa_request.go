@@ -3,7 +3,7 @@ package nrpcserver
 import (
 	"context"
 	"riskcontral/api/riskctrl"
-	"riskcontral/internal/model"
+	"riskcontral/internal/logic/tfa/tfaconst"
 	"riskcontral/internal/service"
 
 	"github.com/gogf/gf/v2/frame/g"
@@ -22,9 +22,12 @@ func (s *NrpcServer) RpcTfaRequest(ctx context.Context, req *riskctrl.TfaRequest
 		return nil, mpccode.CodeTokenInvalid()
 	}
 	///
-	riskKind := model.CodeType2RiskKind(req.CodeType)
+	if req.CodeType == tfaconst.CodeType_TxNeedVerify {
+		return nil, mpccode.CodeParamInvalid()
+	}
 	//
-	res, err := service.TFA().TfaRequest(ctx, info, riskKind)
+	riskKind := tfaconst.CodeType2RiskKind(req.CodeType)
+	res, err := service.TFA().TfaRequest(ctx, info.UserId, riskKind, nil)
 	if err != nil {
 		return nil, err
 	}

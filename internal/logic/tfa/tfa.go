@@ -3,7 +3,8 @@ package tfa
 import (
 	"context"
 	"riskcontral/internal/conf"
-	"riskcontral/internal/model"
+	check "riskcontral/internal/logic/tfa/checker"
+	pendding "riskcontral/internal/logic/tfa/penddingrisk"
 	"riskcontral/internal/service"
 	"time"
 
@@ -11,8 +12,6 @@ import (
 	"github.com/gogf/gf/v2/os/gcache"
 	"github.com/gogf/gf/v2/os/gctx"
 	"github.com/gogf/gf/v2/os/gtime"
-	"github.com/mpcsdk/mpcCommon/mpccode"
-	"github.com/mpcsdk/mpcCommon/mpcdao/model/entity"
 )
 
 type UserRiskId string
@@ -24,9 +23,11 @@ func keyUserRiskId(userId string, riskSerial string) UserRiskId {
 type sTFA struct {
 	forbiddentTime        time.Duration
 	ctx                   context.Context
-	riskPenddingContainer *model.RiskPenddingContainer
+	riskPenddingContainer *pendding.RiskPenddingContainer
 	////
 	cache *gcache.Cache
+	///
+	checker *check.Checker
 }
 
 // /
@@ -45,8 +46,7 @@ func new() *sTFA {
 	//
 	t := conf.Config.Cache.VerificationCodeDuration
 	s := &sTFA{
-		//todo:
-		riskPenddingContainer: model.NewRiskPenddingContainer(t),
+		riskPenddingContainer: pendding.NewRiskPenddingContainer(t),
 		ctx:                   ctx,
 		cache:                 gcache.New(),
 		forbiddentTime:        forbiddentTime,
@@ -62,13 +62,4 @@ func new() *sTFA {
 
 func init() {
 	service.RegisterTFA(new())
-}
-
-func (s *sTFA) TfaRiskKind(ctx context.Context, tfaInfo *entity.Tfa, riskSerial string) (model.RiskKind, error) {
-	risk := s.riskPenddingContainer.GetRiskVerify(tfaInfo.UserId, riskSerial)
-	if risk == nil {
-		g.Log().Warning(ctx, "TfaRiskKind:", "tfaInfo:", tfaInfo, "riskSerial:", riskSerial)
-		return "", mpccode.CodeParamInvalid()
-	}
-	return risk.RiskKind, nil
 }

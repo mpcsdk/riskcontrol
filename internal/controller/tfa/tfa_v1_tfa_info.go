@@ -52,6 +52,7 @@ func (c *ControllerV1) TfaInfo(ctx context.Context, req *v1.TfaInfoReq) (res *v1
 			}
 			return tfaInfo.MailUpdatedAt.String()
 		}(),
+		TxNeedVerify: tfaInfo.TxNeedVerify,
 	}
 	return
 }

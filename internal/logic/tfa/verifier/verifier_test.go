@@ -1,14 +1,14 @@
-package tfa
+package verifier
 
 import (
-	"riskcontral/internal/model"
+	"riskcontral/internal/logic/tfa/tfaconst"
 	"testing"
 
 	"github.com/gogf/gf/v2/errors/gerror"
 )
 
 func Test_Verifier(t *testing.T) {
-	verifier := newEmptyVerifier(model.RiskKind_Tx)
+	verifier := newEmptyVerifier(tfaconst.RiskKind_Tx)
 	_, err := verifier.SendVerificationCode()
 	if !gerror.Equal(err, errRiskKindTx) {
 		t.Error(err)

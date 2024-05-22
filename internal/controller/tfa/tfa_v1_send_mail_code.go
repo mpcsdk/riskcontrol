@@ -34,8 +34,10 @@ func (c *ControllerV1) SendMailCode(ctx context.Context, req *v1.SendMailCodeReq
 	if err != nil || info == nil {
 		return nil, mpccode.CodeTokenInvalid()
 	}
+	////tidy mail cfg
+	service.TFA().TfaTidyMail(ctx, info.UserId, req.RiskSerial, req.Mail)
 	////
-	err = service.TFA().SendMailCode(ctx, info.UserId, req.RiskSerial, req.Mail)
+	err = service.TFA().SendMailCode(ctx, info.UserId, req.RiskSerial)
 	if err != nil {
 		return nil, err
 	}

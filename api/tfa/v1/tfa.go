@@ -9,11 +9,12 @@ type TfaInfoReq struct {
 	Token  string `json:"token"`
 }
 type TfaInfoRes struct {
-	g.Meta      `mime:"text/html" example:"string"`
-	Phone       string `json:"phone"`
-	UpPhoneTime string `json:"upPhoneTime"`
-	Mail        string `json:"mail"`
-	UpMailTime  string `json:"upMailTime"`
+	g.Meta       `mime:"text/html" example:"string"`
+	Phone        string `json:"phone"`
+	UpPhoneTime  string `json:"upPhoneTime"`
+	Mail         string `json:"mail"`
+	UpMailTime   string `json:"upMailTime"`
+	TxNeedVerify bool   `json:"txNeedVerify"`
 }
 
 // /
@@ -53,10 +54,14 @@ type VerifyCodeRes struct {
 
 // /
 
+type RequestData struct {
+	Enable bool `json:"enable"`
+}
 type TfaRequestReq struct {
 	g.Meta   `path:"/tfaRequest" tags:"tfaRequest" method:"post" summary:"tfaRequest"`
-	CodeType string `json:"codeType" "in:bindPhone,bindMail,updatePhone,updateMail"`
-	Token    string `json:"token"`
+	CodeType string       `json:"codeType" "in:bindPhone,bindMail,updatePhone,updateMail"`
+	Data     *RequestData `json:"data"`
+	Token    string       `json:"token"`
 }
 type TfaRequestRes struct {
 	g.Meta     `mime:"text/html" example:"string"`

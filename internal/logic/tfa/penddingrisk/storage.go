@@ -1,4 +1,4 @@
-package tfa
+package pendding
 
 import (
 	"context"
@@ -9,6 +9,18 @@ import (
 	"github.com/mpcsdk/mpcCommon/mpccode"
 	"github.com/mpcsdk/mpcCommon/mpcdao/model/do"
 )
+
+func recordPerson(ctx context.Context, userId string, enable bool) error {
+	err := service.DB().TfaDB().UpdateTfaInfo(ctx, userId, &do.Tfa{
+		UserId:       userId,
+		TxNeedVerify: enable,
+	})
+	if err != nil {
+		g.Log().Warning(ctx, "recordPerson:", "userId:", userId, "enable:", enable, "err:", err)
+		return mpccode.CodeInternalError()
+	}
+	return err
+}
 
 func recordPhone(ctx context.Context, userId, phone string, phoneExists bool) error {
 	if !phoneExists {

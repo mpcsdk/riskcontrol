@@ -15,7 +15,7 @@ func (s *NrpcServer) RpcSendMailCode(ctx context.Context, req *riskctrl.SendMail
 	ctx, span := gtrace.NewSpan(ctx, "SendMailCode")
 	defer span.End()
 	///
-	err = service.TFA().SendMailCode(ctx, req.UserId, req.RiskSerial, req.Mail)
+	err = service.TFA().SendMailCode(ctx, req.UserId, req.RiskSerial)
 	return nil, err
 }
 
@@ -27,7 +27,7 @@ func (s *NrpcServer) RpcSendPhoneCode(ctx context.Context, req *riskctrl.SendPho
 	defer span.End()
 	///
 	///
-	err = service.TFA().SendPhoneCode(ctx, req.UserId, req.RiskSerial, req.Phone)
+	err = service.TFA().SendPhoneCode(ctx, req.UserId, req.RiskSerial)
 	return nil, err
 }
 

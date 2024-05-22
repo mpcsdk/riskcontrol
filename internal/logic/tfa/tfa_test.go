@@ -2,21 +2,28 @@ package tfa
 
 import (
 	"context"
+	pendding "riskcontral/internal/logic/tfa/penddingrisk"
+	"riskcontral/internal/logic/tfa/tfaconst"
+	"riskcontral/internal/logic/tfa/verifier"
 	"riskcontral/internal/model"
 	"testing"
+
+	"github.com/mpcsdk/mpcCommon/mpcdao/model/entity"
 )
 
-var userId = "userId"
+var tfaInfo = &entity.Tfa{
+	UserId: "userId",
+}
 var riskSerial = "riskSerial"
 var phone = "13812345678"
 var s *sTFA = &sTFA{
-	riskPenddingContainer: model.NewRiskPenddingContainer(10),
+	riskPenddingContainer: pendding.NewRiskPenddingContainer(10),
 }
 
 func Test_riskPhone(t *testing.T) {
 
-	risk := s.riskPenddingContainer.NewRiskPendding(userId, riskSerial, model.RiskKind_Tx)
-	verifier := newVerifierPhone(model.RiskKind_Tx, phone)
+	risk := s.riskPenddingContainer.NewRiskPendding(tfaInfo, tfaconst.RiskKind_Tx, nil)
+	verifier := verifier.NewVerifierPhone(tfaconst.RiskKind_Tx, phone)
 	risk.AddBeforFunc(nil)
 	risk.AddAfterFunc(nil)
 	///

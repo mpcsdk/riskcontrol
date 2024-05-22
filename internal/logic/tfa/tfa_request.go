@@ -3,81 +3,47 @@ package tfa
 import (
 	"context"
 	v1 "riskcontral/api/tfa/v1"
-	"riskcontral/internal/model"
+	"riskcontral/internal/logic/tfa/tfaconst"
 	"riskcontral/internal/service"
 
 	"github.com/gogf/gf/v2/frame/g"
 	"github.com/gogf/gf/v2/os/gtime"
 	"github.com/mpcsdk/mpcCommon/mpccode"
 	"github.com/mpcsdk/mpcCommon/mpcdao/model/do"
-	"github.com/mpcsdk/mpcCommon/userInfoGeter"
 )
 
-func (s *sTFA) TfaRequest(ctx context.Context, info *userInfoGeter.UserInfo, riskKind model.RiskKind) (*v1.TfaRequestRes, error) {
-	g.Log().Notice(ctx, "RpcTfaRequest:", "info:", info, "riskKind:", riskKind)
-
+func (s *sTFA) TfaRequest(ctx context.Context, userId string, riskKind tfaconst.RISKKIND, data *v1.RequestData) (*v1.TfaRequestRes, error) {
+	g.Log().Notice(ctx, "RpcTfaRequest:", "userId:", userId, "riskKind:", riskKind)
 	/////
 	//
+	// riskKind := tfaconst.CodeType2RiskKind(codeType)
 	///
-	tfaInfo, err := service.DB().TfaDB().FetchTfaInfo(ctx, info.UserId)
+	tfaInfo, err := service.DB().TfaDB().FetchTfaInfo(ctx, userId)
 	if err != nil {
 		return nil, mpccode.CodeTokenInvalid()
 	}
-	///
-	switch riskKind {
-	case model.RiskKind_BindPhone:
-		if tfaInfo != nil && tfaInfo.Phone != "" {
-			return nil, mpccode.CodeTFAExist()
-		}
-		if tfaInfo == nil {
-			err = service.DB().TfaDB().InsertTfaInfo(ctx, info.UserId, &do.Tfa{
-				UserId:    info.UserId,
-				TokenData: info,
-				CreatedAt: gtime.Now(),
-			})
-			if err != nil {
-				return nil, mpccode.CodeInternalError()
-			}
+	if tfaInfo == nil {
+		err = service.DB().TfaDB().InsertTfaInfo(ctx, userId, &do.Tfa{
+			UserId:    userId,
+			TokenData: userId,
+			CreatedAt: gtime.Now(),
+		})
+		if err != nil {
+			return nil, mpccode.CodeInternalError()
 		}
 		///
-	case model.RiskKind_BindMail:
-		if tfaInfo != nil && tfaInfo.Mail != "" {
-			return nil, mpccode.CodeTFAExist()
+		tfaInfo, err = service.DB().TfaDB().FetchTfaInfo(ctx, userId)
+		if err != nil || tfaInfo == nil {
+			g.Log().Warning(ctx, "RpcTfaRequest:", "userId:", userId, "riskKind:", riskKind, "err:", err)
+			return nil, mpccode.CodeTokenInvalid()
 		}
-		if tfaInfo == nil {
-			err = service.DB().TfaDB().InsertTfaInfo(ctx, info.UserId, &do.Tfa{
-				UserId:    info.UserId,
-				TokenData: info,
-				CreatedAt: gtime.Now(),
-			})
-			if err != nil {
-				return nil, mpccode.CodeInternalError()
-			}
-		}
-		////
-	case model.RiskKind_UpPhone:
-		if tfaInfo == nil || tfaInfo.Phone == "" {
-			return nil, mpccode.CodeTFANotExist()
-		}
-	case model.RiskKind_UpMail:
-		if tfaInfo == nil || tfaInfo.Mail == "" {
-			return nil, mpccode.CodeTFANotExist()
-		}
-	default:
-		return nil, mpccode.CodeParamInvalid()
 	}
+	///check riskKind
+	code, err := s.checker.CheckKind(ctx, tfaInfo, riskKind, data)
 	///
-	// tfaInfo, err = service.TFA().TFAInfo(ctx, info.UserId)
-	tfaInfo, err = service.DB().TfaDB().FetchTfaInfo(ctx, info.UserId)
-	if err != nil || tfaInfo == nil {
-		return nil, mpccode.CodeTokenInvalid()
-	}
-	///
-
-	code, err := s.RiskTfaRequest(ctx, tfaInfo, riskKind)
 	if err != nil {
-		g.Log().Warning(ctx, "RpcTfaRequest:", "info:", info, "riskKind:", riskKind, "err:", err)
-		return nil, mpccode.CodeInternalError()
+		g.Log().Warning(ctx, "RpcTfaRequest:", "userId:", userId, "riskKind:", riskKind, "err:", err)
+		return nil, err
 	}
 	///
 	if code == mpccode.RiskCodeForbidden {
@@ -86,11 +52,17 @@ func (s *sTFA) TfaRequest(ctx context.Context, info *userInfoGeter.UserInfo, ris
 	if code == mpccode.RiskCodeError {
 		return nil, mpccode.CodePerformRiskError()
 	}
-	///
-	riskSerial, vl, _ := service.TFA().RiskTfaTidy(ctx, tfaInfo, riskKind)
+	/////
+	// if riskKind == tfaconst.RiskKind_PersonRisk {
+	// 	if tfaInfo.Enable == data.Enable {
+	// 		return nil, mpccode.CodeParamInvalid()
+	// 	}
+	// }
+	////new risk
+	risk := s.riskPenddingContainer.NewRiskPendding(tfaInfo, riskKind, data)
 	return &v1.TfaRequestRes{
-		RiskSerial: riskSerial,
-		VList:      vl,
+		RiskSerial: risk.RiskSerial(),
+		VList:      risk.VerifyKind(),
 	}, nil
 	///
 }

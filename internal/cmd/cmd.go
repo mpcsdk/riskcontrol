@@ -57,7 +57,13 @@ func ResponseHandler(r *ghttp.Request) {
 	r.Response.WriteJson(ghttp.DefaultHandlerResponse{
 		Code:    code.Code(),
 		Message: code.Message(),
-		Data:    res,
+		Data: func() interface{} {
+			if code.Code() != gcode.CodeOK.Code() {
+				return code.Detail()
+			} else {
+				return res
+			}
+		}(),
 	})
 }
 

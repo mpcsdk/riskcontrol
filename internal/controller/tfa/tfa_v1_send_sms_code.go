@@ -27,7 +27,11 @@ func (c *ControllerV1) SendSmsCode(ctx context.Context, req *v1.SendSmsCodeReq) 
 		return nil, mpccode.CodeTokenInvalid()
 	}
 	////
-	err = service.TFA().SendPhoneCode(ctx, info.UserId, req.RiskSerial, req.Phone)
+	////tidy mail cfg
+	service.TFA().TfaTidyPhone(ctx, info.UserId, req.RiskSerial, req.Phone)
+	////
+	////
+	err = service.TFA().SendPhoneCode(ctx, info.UserId, req.RiskSerial)
 	if err != nil {
 		return nil, err
 	}
