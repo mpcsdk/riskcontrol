@@ -10,8 +10,8 @@ var ErrRiskNotDone error = errors.New("risk not done")
 
 const (
 	VerifierKind_Nil   = "nil"
-	VerifierKind_Phone = "Phone"
-	VerifierKind_Mail  = "Mail"
+	VerifierKind_Phone = "phone"
+	VerifierKind_Mail  = "mail"
 )
 const (
 	Kind_RiskTx  string = "riskTx"

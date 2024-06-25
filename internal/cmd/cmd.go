@@ -11,6 +11,7 @@ import (
 	"github.com/gogf/gf/v2/errors/gerror"
 	"github.com/gogf/gf/v2/frame/g"
 	"github.com/gogf/gf/v2/net/ghttp"
+	"github.com/gogf/gf/v2/net/gtrace"
 	"github.com/gogf/gf/v2/os/gcmd"
 )
 
@@ -24,7 +25,7 @@ func MiddlewareErrorHandler(r *ghttp.Request) {
 		r.Response.WriteJson(ghttp.DefaultHandlerResponse{
 			Code:    code.Code(),
 			Message: code.Message(),
-			Data:    nil,
+			Data:    gtrace.GetTraceID(r.GetCtx()),
 		})
 	}
 }

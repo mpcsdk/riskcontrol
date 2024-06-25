@@ -2,10 +2,13 @@ package check
 
 import (
 	"context"
+	"riskcontral/api/riskengine"
 	v1 "riskcontral/api/tfa/v1"
 	"riskcontral/internal/logic/tfa/tfaconst"
+	"riskcontral/internal/service"
 	"time"
 
+	"github.com/gogf/gf/v2/frame/g"
 	"github.com/mpcsdk/mpcCommon/mpccode"
 	"github.com/mpcsdk/mpcCommon/mpcdao/model/entity"
 )
@@ -14,6 +17,9 @@ type Checker struct {
 	forbiddentTime time.Duration
 }
 
+func NewChecker(forbiddent time.Duration) *Checker {
+	return &Checker{forbiddentTime: forbiddent}
+}
 func (s *Checker) CheckKind(ctx context.Context, tfaInfo *entity.Tfa, kind tfaconst.RISKKIND, data *v1.RequestData) (int32, error) {
 	code := mpccode.RiskCodeError
 	var err error = nil
@@ -55,6 +61,37 @@ func (s *Checker) CheckKind(ctx context.Context, tfaInfo *entity.Tfa, kind tfaco
 			return code, mpccode.CodeParamInvalid()
 		}
 		code, err = s.CheckPersonRisk(ctx, tfaInfo)
+	case tfaconst.RiskKind_Tx:
+		///
+		res, err := service.NrpcClient().RiskTxs(ctx, &riskengine.TxRiskReq{
+			UserId:  data.UserId,
+			SignTx:  data.SignDataStr,
+			ChainId: data.ChainId,
+		})
+		if err != nil {
+			g.Log().Warning(ctx, "RpcRiskTxs:", "data:", data, "err:", err)
+			code = 0
+		} else {
+			code = res.Ok
+		}
+		///
+		// if res.Ok == mpccode.RiskCodeError {
+		// 	return &riskctrl.TxRequestRes{
+		// 		Ok: mpccode.RiskCodeError,
+		// 	}, err
+		// }
+		// //
+		// if res.Ok == mpccode.RiskCodePass {
+		// 	return &riskctrl.TxRequestRes{
+		// 		Ok: mpccode.RiskCodePass,
+		// 	}, nil
+		// }
+		// if res.Ok == mpccode.RiskCodeForbidden {
+		// 	return &riskctrl.TxRequestRes{
+		// 		Ok: mpccode.RiskCodeForbidden,
+		// 	}, nil
+		// }
+	///
 	default:
 		return code, mpccode.CodeParamInvalid()
 	}

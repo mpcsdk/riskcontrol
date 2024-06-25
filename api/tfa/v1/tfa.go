@@ -55,7 +55,10 @@ type VerifyCodeRes struct {
 // /
 
 type RequestData struct {
-	Enable bool `json:"enable"`
+	Enable      bool   `json:"enable"`
+	ChainId     string `json:"chainId"`
+	SignDataStr string `json:"signData"`
+	UserId      string `json:"userId"`
 }
 type TfaRequestReq struct {
 	g.Meta   `path:"/tfaRequest" tags:"tfaRequest" method:"post" summary:"tfaRequest"`
@@ -65,6 +68,7 @@ type TfaRequestReq struct {
 }
 type TfaRequestRes struct {
 	g.Meta     `mime:"text/html" example:"string"`
+	Ok         int32    `json:"ok"`
 	RiskSerial string   `json:"riskSerial"`
 	VList      []string `json:"vlist"`
 }

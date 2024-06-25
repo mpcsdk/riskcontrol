@@ -35,7 +35,7 @@ func (s *Checker) CheckTfaRisk(ctx context.Context, tfaInfo *entity.Tfa) (int32,
 		g.Log().Notice(ctx, "checkTfaRisk check mailUpTime:",
 			"tfaInfo:", tfaInfo,
 		)
-		if !s.upTimeAfterForbiddent(ctx, tfaInfo.MailUpdatedAt) {
+		if s.upTimeAfterForbiddent(ctx, tfaInfo.MailUpdatedAt) {
 			return mpccode.RiskCodeForbidden, nil
 		}
 	}
@@ -43,7 +43,7 @@ func (s *Checker) CheckTfaRisk(ctx context.Context, tfaInfo *entity.Tfa) (int32,
 		g.Log().Notice(ctx, "checkTfaRisk check phoneUpTime:",
 			"tfaInfo:", tfaInfo,
 		)
-		if !s.upTimeAfterForbiddent(ctx, tfaInfo.PhoneUpdatedAt) {
+		if s.upTimeAfterForbiddent(ctx, tfaInfo.PhoneUpdatedAt) {
 			return mpccode.RiskCodeForbidden, nil
 		}
 	}
@@ -72,7 +72,7 @@ func (s *Checker) CheckTfaUpPhone(ctx context.Context, tfaInfo *entity.Tfa) (int
 	g.Log().Notice(ctx, "checkTfaUpPhone check phoneUpTime:",
 		"tfaInfo:", tfaInfo,
 	)
-	if !s.upTimeAfterForbiddent(ctx, tfaInfo.PhoneUpdatedAt) {
+	if s.upTimeAfterForbiddent(ctx, tfaInfo.PhoneUpdatedAt) {
 		return mpccode.RiskCodeForbidden, nil
 	}
 	return mpccode.RiskCodeNeedVerification, nil
@@ -99,12 +99,12 @@ func (s *Checker) CheckTfaUpMail(ctx context.Context, tfaInfo *entity.Tfa) (int3
 	g.Log().Notice(ctx, "checkTfaUpMail check mailUpTime:",
 		"tfaInfo:", tfaInfo,
 	)
-	if !s.upTimeAfterForbiddent(ctx, tfaInfo.MailUpdatedAt) {
+	if s.upTimeAfterForbiddent(ctx, tfaInfo.MailUpdatedAt) {
 		return mpccode.RiskCodeForbidden, nil
 	}
 	////
 
-	return mpccode.RiskCodeForbidden, nil
+	return mpccode.RiskCodeNeedVerification, nil
 
 }
 

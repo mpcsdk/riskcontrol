@@ -46,9 +46,6 @@ func (s *sTFA) TfaRequest(ctx context.Context, userId string, riskKind tfaconst.
 		return nil, err
 	}
 	///
-	if code == mpccode.RiskCodeForbidden {
-		return nil, mpccode.CodePerformRiskForbidden()
-	}
 	if code == mpccode.RiskCodeError {
 		return nil, mpccode.CodePerformRiskError()
 	}
@@ -61,6 +58,7 @@ func (s *sTFA) TfaRequest(ctx context.Context, userId string, riskKind tfaconst.
 	////new risk
 	risk := s.riskPenddingContainer.NewRiskPendding(tfaInfo, riskKind, data)
 	return &v1.TfaRequestRes{
+		Ok:         code,
 		RiskSerial: risk.RiskSerial(),
 		VList:      risk.VerifyKind(),
 	}, nil

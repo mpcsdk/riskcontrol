@@ -50,6 +50,7 @@ func new() *sTFA {
 		ctx:                   ctx,
 		cache:                 gcache.New(),
 		forbiddentTime:        forbiddentTime,
+		checker:               check.NewChecker(forbiddentTime),
 	}
 	redisCache := gcache.NewAdapterRedis(g.Redis())
 	s.cache.SetAdapter(redisCache)

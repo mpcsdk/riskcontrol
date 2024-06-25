@@ -10,6 +10,9 @@ import (
 
 func (s *sTFA) TfaTidyMail(ctx context.Context, userId string, riskSerial string, mail string) error {
 	risk := s.riskPenddingContainer.GetRiskPendding(userId, riskSerial)
+	if risk == nil {
+		return mpccode.CodeRiskSerialNotExist()
+	}
 	riskKind := risk.RiskKind()
 	if riskKind != tfaconst.RiskKind_BindMail && riskKind != tfaconst.RiskKind_UpMail {
 		return nil

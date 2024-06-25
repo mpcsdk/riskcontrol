@@ -32,7 +32,7 @@ func (c *ControllerV1) TfaInfo(ctx context.Context, req *v1.TfaInfoReq) (res *v1
 		return nil, mpccode.CodeTFANotExist()
 	}
 	if tfaInfo == nil {
-		return nil, nil
+		return &v1.TfaInfoRes{}, nil
 	}
 
 	///
