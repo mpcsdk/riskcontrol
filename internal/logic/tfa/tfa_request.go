@@ -47,7 +47,7 @@ func (s *sTFA) TfaRequest(ctx context.Context, userId string, riskKind tfaconst.
 	}
 	///
 	if code == mpccode.RiskCodeError {
-		return nil, mpccode.CodePerformRiskError()
+		return nil, mpccode.CodePerformRiskInternalError()
 	}
 	/////
 	// if riskKind == tfaconst.RiskKind_PersonRisk {
