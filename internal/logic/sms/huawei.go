@@ -2,7 +2,7 @@ package sms
 
 import (
 	"context"
-	"riskcontral/internal/conf"
+	"riskcontrol/internal/conf"
 
 	"github.com/gogf/gf/v2/frame/g"
 	"github.com/mpcsdk/mpcCommon/rand"

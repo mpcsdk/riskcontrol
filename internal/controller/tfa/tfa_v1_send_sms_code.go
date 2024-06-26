@@ -2,8 +2,8 @@ package tfa
 
 import (
 	"context"
-	v1 "riskcontral/api/tfa/v1"
-	"riskcontral/internal/service"
+	v1 "riskcontrol/api/tfa/v1"
+	"riskcontrol/internal/service"
 
 	"github.com/gogf/gf/v2/frame/g"
 	"github.com/gogf/gf/v2/net/gtrace"

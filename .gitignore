@@ -15,7 +15,7 @@ output/
 temp/
 temp.yaml
 bin
-**/config/config.yaml
+config/
 __debug_*
 *.log
 build/

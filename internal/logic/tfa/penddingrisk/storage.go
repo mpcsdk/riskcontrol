@@ -2,7 +2,7 @@ package pendding
 
 import (
 	"context"
-	"riskcontral/internal/service"
+	"riskcontrol/internal/service"
 
 	"github.com/gogf/gf/v2/frame/g"
 	"github.com/gogf/gf/v2/os/gtime"

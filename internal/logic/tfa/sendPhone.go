@@ -2,8 +2,8 @@ package tfa
 
 import (
 	"context"
-	"riskcontral/internal/logic/tfa/tfaconst"
-	"riskcontral/internal/service"
+	"riskcontrol/internal/logic/tfa/tfaconst"
+	"riskcontrol/internal/service"
 
 	"github.com/gogf/gf/v2/frame/g"
 	"github.com/mpcsdk/mpcCommon/mpccode"

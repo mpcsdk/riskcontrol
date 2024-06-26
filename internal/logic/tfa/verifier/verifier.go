@@ -4,8 +4,8 @@ import (
 	"context"
 	"errors"
 	"fmt"
-	"riskcontral/internal/logic/tfa/tfaconst"
-	"riskcontral/internal/model"
+	"riskcontrol/internal/logic/tfa/tfaconst"
+	"riskcontrol/internal/model"
 )
 
 // //

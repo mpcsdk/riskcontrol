@@ -2,8 +2,7 @@ package sms
 
 import (
 	"context"
-	"riskcontral/internal/conf"
-	"riskcontral/internal/service"
+	"riskcontrol/internal/conf"
 	"strings"
 )
 
@@ -76,15 +75,11 @@ func (s *sSmsCode) SendUpCompletionPhone(ctx context.Context, receiver string) e
 
 	return err
 }
-func new() *sSmsCode {
+func New() *sSmsCode {
 	return &sSmsCode{
 		foreign:     newTencForeign(),
 		domestic:    newdomestic(),
 		foreignCfg:  conf.Config.Sms.Foreign,
 		domesticCfg: conf.Config.Sms.Domestic,
 	}
-}
-
-func init() {
-	service.RegisterSmsCode(new())
 }

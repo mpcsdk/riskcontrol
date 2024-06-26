@@ -5,8 +5,8 @@
 package riskctrl
 
 import (
-	"riskcontral/api/riskctrl"
-	"riskcontral/internal/controller/limiter"
+	"riskcontrol/api/riskctrl"
+	"riskcontrol/internal/controller/limiter"
 )
 
 type ControllerV1 struct{

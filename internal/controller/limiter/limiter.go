@@ -2,7 +2,7 @@ package limiter
 
 import (
 	"context"
-	"riskcontral/internal/conf"
+	"riskcontrol/internal/conf"
 	"sync"
 	"time"
 

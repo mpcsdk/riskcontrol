@@ -2,10 +2,9 @@ package tfa
 
 import (
 	"context"
-	"riskcontral/internal/conf"
-	check "riskcontral/internal/logic/tfa/checker"
-	pendding "riskcontral/internal/logic/tfa/penddingrisk"
-	"riskcontral/internal/service"
+	"riskcontrol/internal/conf"
+	check "riskcontrol/internal/logic/tfa/checker"
+	pendding "riskcontrol/internal/logic/tfa/penddingrisk"
 	"time"
 
 	"github.com/gogf/gf/v2/frame/g"
@@ -31,7 +30,7 @@ type sTFA struct {
 }
 
 // /
-func new() *sTFA {
+func New() *sTFA {
 
 	ctx := gctx.GetInitCtx()
 	limitSendPhoneDurationCnt = conf.Config.Cache.LimitSendPhoneCount
@@ -60,7 +59,3 @@ func new() *sTFA {
 }
 
 ///
-
-func init() {
-	service.RegisterTFA(new())
-}

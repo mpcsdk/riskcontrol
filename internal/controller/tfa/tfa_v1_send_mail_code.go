@@ -7,8 +7,8 @@ import (
 	"github.com/gogf/gf/v2/net/gtrace"
 	"github.com/mpcsdk/mpcCommon/mpccode"
 
-	v1 "riskcontral/api/tfa/v1"
-	"riskcontral/internal/service"
+	v1 "riskcontrol/api/tfa/v1"
+	"riskcontrol/internal/service"
 )
 
 func (c *ControllerV1) SendMailCode(ctx context.Context, req *v1.SendMailCodeReq) (res *v1.SendMailCodeRes, err error) {

@@ -2,8 +2,7 @@ package email
 
 import (
 	"context"
-	"riskcontral/internal/conf"
-	"riskcontral/internal/service"
+	"riskcontrol/internal/conf"
 
 	"github.com/gogf/gf/v2/frame/g"
 	"github.com/gogf/gf/v2/os/gctx"
@@ -79,7 +78,7 @@ func (s *sMailCode) SendUpCompletionMail(ctx context.Context, to string) error {
 	g.Log().Notice(ctx, "SendUpCompletionMail:", to)
 	return nil
 }
-func new() *sMailCode {
+func New() *sMailCode {
 
 	s := &sMailCode{
 		From:                          conf.Config.ExEmail.From,      //cfg.MustGet(ctx, "exemail.From").String(),
@@ -94,8 +93,4 @@ func new() *sMailCode {
 		tencMail:                      newTencMail(gctx.GetInitCtx()),
 	}
 	return s
-}
-
-func init() {
-	service.RegisterMailCode(new())
 }

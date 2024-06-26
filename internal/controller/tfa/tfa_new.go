@@ -5,8 +5,8 @@
 package tfa
 
 import (
-	"riskcontral/api/tfa"
-	"riskcontral/internal/controller/limiter"
+	"riskcontrol/api/tfa"
+	"riskcontrol/internal/controller/limiter"
 )
 
 

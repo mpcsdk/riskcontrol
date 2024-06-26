@@ -12,6 +12,8 @@ import (
 type (
 	IDB interface {
 		TfaDB() *mpcdao.RiskTfa
+		RiskCtrl() *mpcdao.RiskCtrlRule
+		ChainCfg() *mpcdao.ChainCfg
 	}
 )
 

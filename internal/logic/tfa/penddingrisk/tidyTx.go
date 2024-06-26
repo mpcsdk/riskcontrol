@@ -2,8 +2,8 @@ package pendding
 
 import (
 	"context"
-	"riskcontral/internal/logic/tfa/tfaconst"
-	"riskcontral/internal/logic/tfa/verifier"
+	"riskcontrol/internal/logic/tfa/tfaconst"
+	"riskcontrol/internal/logic/tfa/verifier"
 
 	"github.com/mpcsdk/mpcCommon/mpccode"
 	"github.com/mpcsdk/mpcCommon/mpcdao/model/entity"

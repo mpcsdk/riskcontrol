@@ -2,9 +2,9 @@ package verifier
 
 import (
 	"context"
-	"riskcontral/internal/logic/tfa/tfaconst"
-	"riskcontral/internal/model"
-	"riskcontral/internal/service"
+	"riskcontrol/internal/logic/tfa/tfaconst"
+	"riskcontrol/internal/model"
+	"riskcontrol/internal/service"
 
 	"github.com/gogf/gf/v2/frame/g"
 	"github.com/gogf/gf/v2/os/gctx"

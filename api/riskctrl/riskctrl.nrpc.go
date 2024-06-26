@@ -6,10 +6,10 @@ import (
 	"log"
 	"time"
 
-	"google.golang.org/protobuf/proto"
-	"github.com/nats-io/nats.go"
 	github_com_golang_protobuf_ptypes_empty "github.com/golang/protobuf/ptypes/empty"
+	"github.com/nats-io/nats.go"
 	"github.com/nats-rpc/nrpc"
+	"google.golang.org/protobuf/proto"
 )
 
 // RiskCtrlServer is the interface that providers of the service
@@ -94,11 +94,11 @@ func (h *RiskCtrlHandler) Handler(msg *nats.Msg) {
 		if err := nrpc.Unmarshal(request.Encoding, msg.Data, &req); err != nil {
 			log.Printf("RpcAliveHandler: RpcAlive request unmarshal failed: %v", err)
 			immediateError = &nrpc.Error{
-				Type: nrpc.Error_CLIENT,
+				Type:    nrpc.Error_CLIENT,
 				Message: "bad request received: " + err.Error(),
 			}
 		} else {
-			request.Handler = func(ctx context.Context)(proto.Message, error){
+			request.Handler = func(ctx context.Context) (proto.Message, error) {
 				innerResp, err := h.server.RpcAlive(ctx, &req)
 				if err != nil {
 					return nil, err
@@ -116,11 +116,11 @@ func (h *RiskCtrlHandler) Handler(msg *nats.Msg) {
 		if err := nrpc.Unmarshal(request.Encoding, msg.Data, &req); err != nil {
 			log.Printf("RpcTxsRequestHandler: RpcTxsRequest request unmarshal failed: %v", err)
 			immediateError = &nrpc.Error{
-				Type: nrpc.Error_CLIENT,
+				Type:    nrpc.Error_CLIENT,
 				Message: "bad request received: " + err.Error(),
 			}
 		} else {
-			request.Handler = func(ctx context.Context)(proto.Message, error){
+			request.Handler = func(ctx context.Context) (proto.Message, error) {
 				innerResp, err := h.server.RpcTxsRequest(ctx, &req)
 				if err != nil {
 					return nil, err
@@ -138,11 +138,11 @@ func (h *RiskCtrlHandler) Handler(msg *nats.Msg) {
 		if err := nrpc.Unmarshal(request.Encoding, msg.Data, &req); err != nil {
 			log.Printf("RpcTfaRequestHandler: RpcTfaRequest request unmarshal failed: %v", err)
 			immediateError = &nrpc.Error{
-				Type: nrpc.Error_CLIENT,
+				Type:    nrpc.Error_CLIENT,
 				Message: "bad request received: " + err.Error(),
 			}
 		} else {
-			request.Handler = func(ctx context.Context)(proto.Message, error){
+			request.Handler = func(ctx context.Context) (proto.Message, error) {
 				innerResp, err := h.server.RpcTfaRequest(ctx, &req)
 				if err != nil {
 					return nil, err
@@ -160,11 +160,11 @@ func (h *RiskCtrlHandler) Handler(msg *nats.Msg) {
 		if err := nrpc.Unmarshal(request.Encoding, msg.Data, &req); err != nil {
 			log.Printf("RpcTfaInfoHandler: RpcTfaInfo request unmarshal failed: %v", err)
 			immediateError = &nrpc.Error{
-				Type: nrpc.Error_CLIENT,
+				Type:    nrpc.Error_CLIENT,
 				Message: "bad request received: " + err.Error(),
 			}
 		} else {
-			request.Handler = func(ctx context.Context)(proto.Message, error){
+			request.Handler = func(ctx context.Context) (proto.Message, error) {
 				innerResp, err := h.server.RpcTfaInfo(ctx, &req)
 				if err != nil {
 					return nil, err
@@ -182,11 +182,11 @@ func (h *RiskCtrlHandler) Handler(msg *nats.Msg) {
 		if err := nrpc.Unmarshal(request.Encoding, msg.Data, &req); err != nil {
 			log.Printf("RpcSendPhoneCodeHandler: RpcSendPhoneCode request unmarshal failed: %v", err)
 			immediateError = &nrpc.Error{
-				Type: nrpc.Error_CLIENT,
+				Type:    nrpc.Error_CLIENT,
 				Message: "bad request received: " + err.Error(),
 			}
 		} else {
-			request.Handler = func(ctx context.Context)(proto.Message, error){
+			request.Handler = func(ctx context.Context) (proto.Message, error) {
 				innerResp, err := h.server.RpcSendPhoneCode(ctx, &req)
 				if err != nil {
 					return nil, err
@@ -204,11 +204,11 @@ func (h *RiskCtrlHandler) Handler(msg *nats.Msg) {
 		if err := nrpc.Unmarshal(request.Encoding, msg.Data, &req); err != nil {
 			log.Printf("RpcSendMailCodeHandler: RpcSendMailCode request unmarshal failed: %v", err)
 			immediateError = &nrpc.Error{
-				Type: nrpc.Error_CLIENT,
+				Type:    nrpc.Error_CLIENT,
 				Message: "bad request received: " + err.Error(),
 			}
 		} else {
-			request.Handler = func(ctx context.Context)(proto.Message, error){
+			request.Handler = func(ctx context.Context) (proto.Message, error) {
 				innerResp, err := h.server.RpcSendMailCode(ctx, &req)
 				if err != nil {
 					return nil, err
@@ -226,11 +226,11 @@ func (h *RiskCtrlHandler) Handler(msg *nats.Msg) {
 		if err := nrpc.Unmarshal(request.Encoding, msg.Data, &req); err != nil {
 			log.Printf("RpcVerifyCodeHandler: RpcVerifyCode request unmarshal failed: %v", err)
 			immediateError = &nrpc.Error{
-				Type: nrpc.Error_CLIENT,
+				Type:    nrpc.Error_CLIENT,
 				Message: "bad request received: " + err.Error(),
 			}
 		} else {
-			request.Handler = func(ctx context.Context)(proto.Message, error){
+			request.Handler = func(ctx context.Context) (proto.Message, error) {
 				innerResp, err := h.server.RpcVerifyCode(ctx, &req)
 				if err != nil {
 					return nil, err
@@ -241,7 +241,7 @@ func (h *RiskCtrlHandler) Handler(msg *nats.Msg) {
 	default:
 		log.Printf("RiskCtrlHandler: unknown name %q", name)
 		immediateError = &nrpc.Error{
-			Type: nrpc.Error_CLIENT,
+			Type:    nrpc.Error_CLIENT,
 			Message: "unknown name: " + name,
 		}
 	}
@@ -266,18 +266,18 @@ func (h *RiskCtrlHandler) Handler(msg *nats.Msg) {
 }
 
 type RiskCtrlClient struct {
-	nc      nrpc.NatsConn
-	Subject string
+	nc       nrpc.NatsConn
+	Subject  string
 	Encoding string
-	Timeout time.Duration
+	Timeout  time.Duration
 }
 
 func NewRiskCtrlClient(nc nrpc.NatsConn) *RiskCtrlClient {
 	return &RiskCtrlClient{
-		nc:      nc,
-		Subject: "RiskCtrl",
+		nc:       nc,
+		Subject:  "RiskCtrl",
 		Encoding: "protobuf",
-		Timeout: 5 * time.Second,
+		Timeout:  5 * time.Second,
 	}
 }
 
@@ -373,17 +373,17 @@ func (c *RiskCtrlClient) RpcVerifyCode(req *VerifyCodeReq) (*VerifyCodeRes, erro
 }
 
 type Client struct {
-	nc      nrpc.NatsConn
+	nc              nrpc.NatsConn
 	defaultEncoding string
-	defaultTimeout time.Duration
-	RiskCtrl *RiskCtrlClient
+	defaultTimeout  time.Duration
+	RiskCtrl        *RiskCtrlClient
 }
 
 func NewClient(nc nrpc.NatsConn) *Client {
 	c := Client{
-		nc: nc,
+		nc:              nc,
 		defaultEncoding: "protobuf",
-		defaultTimeout: 5*time.Second,
+		defaultTimeout:  5 * time.Second,
 	}
 	c.RiskCtrl = NewRiskCtrlClient(nc)
 	return &c

@@ -2,10 +2,10 @@ package pendding
 
 import (
 	"context"
-	v1 "riskcontral/api/tfa/v1"
-	"riskcontral/internal/conf"
-	"riskcontral/internal/logic/tfa/tfaconst"
-	"riskcontral/internal/model"
+	v1 "riskcontrol/api/tfa/v1"
+	"riskcontrol/internal/conf"
+	"riskcontrol/internal/logic/tfa/tfaconst"
+	"riskcontrol/internal/model"
 	"time"
 
 	"github.com/gogf/gf/v2/frame/g"

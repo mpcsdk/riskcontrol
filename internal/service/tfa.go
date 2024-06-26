@@ -7,9 +7,9 @@ package service
 
 import (
 	"context"
-	v1 "riskcontral/api/tfa/v1"
-	"riskcontral/internal/logic/tfa/tfaconst"
-	"riskcontral/internal/model"
+	v1 "riskcontrol/api/tfa/v1"
+	"riskcontrol/internal/logic/tfa/tfaconst"
+	"riskcontrol/internal/model"
 )
 
 type (

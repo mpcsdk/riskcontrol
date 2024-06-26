@@ -2,9 +2,9 @@ package tfa
 
 import (
 	"context"
-	v1 "riskcontral/api/tfa/v1"
-	"riskcontral/internal/logic/tfa/tfaconst"
-	"riskcontral/internal/service"
+	v1 "riskcontrol/api/tfa/v1"
+	"riskcontrol/internal/logic/tfa/tfaconst"
+	"riskcontrol/internal/service"
 
 	"github.com/gogf/gf/v2/frame/g"
 	"github.com/gogf/gf/v2/os/gtime"
@@ -45,22 +45,26 @@ func (s *sTFA) TfaRequest(ctx context.Context, userId string, riskKind tfaconst.
 		g.Log().Warning(ctx, "RpcTfaRequest:", "userId:", userId, "riskKind:", riskKind, "err:", err)
 		return nil, err
 	}
-	///
-	if code == mpccode.RiskCodeError {
+	///return
+	switch code {
+	case mpccode.RiskCodeError:
 		return nil, mpccode.CodePerformRiskInternalError()
+	case mpccode.RiskCodeNeedVerification:
+		risk := s.riskPenddingContainer.NewRiskPendding(tfaInfo, riskKind, data)
+		return &v1.TfaRequestRes{
+			Ok:         code,
+			RiskSerial: risk.RiskSerial(),
+			VList:      risk.VerifyKind(),
+		}, nil
+	case mpccode.RiskCodeForbidden:
+		return &v1.TfaRequestRes{
+			Ok: code,
+		}, nil
+	default:
+		///pass
+		return &v1.TfaRequestRes{
+			Ok: code,
+		}, nil
 	}
-	/////
-	// if riskKind == tfaconst.RiskKind_PersonRisk {
-	// 	if tfaInfo.Enable == data.Enable {
-	// 		return nil, mpccode.CodeParamInvalid()
-	// 	}
-	// }
-	////new risk
-	risk := s.riskPenddingContainer.NewRiskPendding(tfaInfo, riskKind, data)
-	return &v1.TfaRequestRes{
-		Ok:         code,
-		RiskSerial: risk.RiskSerial(),
-		VList:      risk.VerifyKind(),
-	}, nil
 	///
 }

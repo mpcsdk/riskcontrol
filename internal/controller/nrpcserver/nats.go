@@ -2,8 +2,8 @@ package nrpcserver
 
 import (
 	"context"
-	"riskcontral/api/riskctrl"
-	"riskcontral/internal/conf"
+	"riskcontrol/api/riskctrl"
+	"riskcontrol/internal/conf"
 	"sync"
 	"time"
 

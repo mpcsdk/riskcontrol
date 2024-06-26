@@ -6,8 +6,8 @@ import (
 	"github.com/gogf/gf/v2/frame/g"
 	"github.com/mpcsdk/mpcCommon/mpccode"
 
-	v1 "riskcontral/api/tfa/v1"
-	"riskcontral/internal/service"
+	v1 "riskcontrol/api/tfa/v1"
+	"riskcontrol/internal/service"
 )
 
 func (c *ControllerV1) TfaInfo(ctx context.Context, req *v1.TfaInfoReq) (res *v1.TfaInfoRes, err error) {

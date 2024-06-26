@@ -1,11 +1,11 @@
 package main
 
 import (
-	"riskcontral/internal/conf"
-	_ "riskcontral/internal/packed"
+	"riskcontrol/internal/conf"
+	_ "riskcontrol/internal/packed"
 
-	_ "riskcontral/internal/logic"
-	_ "riskcontral/internal/service"
+	_ "riskcontrol/internal/logic"
+	_ "riskcontrol/internal/service"
 
 	_ "github.com/gogf/gf/contrib/drivers/mysql/v2"
 	_ "github.com/gogf/gf/contrib/drivers/pgsql/v2"
@@ -15,9 +15,9 @@ import (
 	"github.com/gogf/gf/v2/os/gctx"
 	"github.com/gogf/gf/v2/os/gtime"
 
-	"riskcontral/internal/cmd"
+	"riskcontrol/internal/cmd"
 
-	_ "riskcontral/internal/conf"
+	_ "riskcontrol/internal/conf"
 
 	"github.com/mpcsdk/mpcCommon/rand"
 )

@@ -2,8 +2,7 @@ package userInfo
 
 import (
 	"context"
-	"riskcontral/internal/conf"
-	"riskcontral/internal/service"
+	"riskcontrol/internal/conf"
 
 	"github.com/gogf/gf/v2/frame/g"
 	"github.com/mpcsdk/mpcCommon/mpccode"
@@ -39,11 +38,11 @@ func (s *sUserInfo) GetUserInfo(ctx context.Context, userToken string) (userInfo
 	return info, err
 }
 
-func new() *sUserInfo {
+func New() *sUserInfo {
 	///
 	url := conf.Config.UserTokenUrl
 	///
-	userGeter := userInfoGeter.NewUserInfoGeter(url, conf.Config.Cache.DBCacheDuration)
+	userGeter := userInfoGeter.NewUserInfoGeter(url, conf.Config.Cache.Duration)
 	_, err := userGeter.GetUserInfo(context.Background(), "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhcHBQdWJLZXkiOiIwMjI1YmI1MmU5NTcyMDUwZmZjMGM4MGRjZDBhYTBmNjQyNDFjMDk5ZDAzZjFlYTFjODEzMmZkMzViY2Q3MDBiMWMiLCJpYXQiOjE2OTQ0Mjk5OTEsImV4cCI6MTcyNTk2NTk5MX0.8YaF5spnD1SjI-NNbBCIBj9H5pspXMMkPJrKk23LdnM")
 	if err != nil {
 		panic(err)
@@ -55,8 +54,4 @@ func new() *sUserInfo {
 	///
 
 	return s
-}
-
-func init() {
-	service.RegisterUserInfo(new())
 }

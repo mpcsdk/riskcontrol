@@ -2,7 +2,7 @@ package tfa
 
 import (
 	"context"
-	"riskcontral/internal/model"
+	"riskcontrol/internal/model"
 
 	"github.com/mpcsdk/mpcCommon/mpccode"
 )

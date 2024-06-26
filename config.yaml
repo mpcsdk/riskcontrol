@@ -13,9 +13,9 @@ logger:
 
 cache:
   apiInterval: 1
+  Duration : 1000
   sessionDuration: 10000
   verificationCodeDuration: 600
-  dbCacheDuration: 100
   limitSendPhoneCount: 10
   limitSendPhoneDuration: 600
   limitSendMailCount: 10
@@ -25,12 +25,24 @@ redis:
   default:
     address: "127.0.0.1:6379"
     db: 1
+  cache:
+    address: "127.0.0.1:6379"
+    db: 2
+  aggRiskCtrl:
+    address: "127.0.0.1:6379"
+    db: 11
 
+  
 database:
   tfa:
     - link: "pgsql:postgres:123456@tcp(127.0.0.1:10100)/tfa"
   riskcontrol:
     - link: "mysql:ssh:123456@tcp(127.0.0.1:3305)/riskcontrol"
+  enhanced_riskctrl:
+    - link: "pgsql:postgres:123456@tcp(127.0.0.1:10100)/enhanced_riskctrl"
+      role: "master"
+    - link: "pgsql:postgres:123456@tcp(127.0.0.1:10100)/enhanced_riskctrl"
+      role: "slave"
 
 nats:
   natsUrl: "127.0.0.1:4222,127.0.0.1:4211"
@@ -85,28 +97,10 @@ userRisk:
   verificationCodeInterval: 1
   forbiddenTime: "-10m"
 
-gfcli:
-  gen:
-    dao:
-      - link: "mysql:ssh:123456@tcp(127.0.0.1:3305)/riskcontrol"
-        group: default
-        tables: "contractrule,contractabi"
-        jsonCase: "CamelLower"
-        typeMapping:
-          decimal:
-            type: decimal.Decimal
-            import: github.com/shopspring/decimal
-          numeric:
-            type: decimal.Decimal
-            import: github.com/shopspring/decimal
-      - link: "pgsql:postgres:123456@tcp(127.0.0.1:10100)/tfa"
-        group: tfa
-        tables: "tfa"
-        jsonCase: "CamelLower"
-        typeMapping:
-          decimal:
-            type: decimal.Decimal
-            import: github.com/shopspring/decimal
-          numeric:
-            type: decimal.Decimal
-            import: github.com/shopspring/decimal
+swap:
+  - chainId: 9527
+    contract: "0xFc1a90688e5891CBA41864cF8A91abFAA82d5068"
+
+nftMarket:
+  - chainId: 9527
+    contract: "0x340518BDaE0A15f4e3B47fec2B4668674e0Fb910"

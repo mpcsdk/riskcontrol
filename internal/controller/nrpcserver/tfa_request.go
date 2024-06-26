@@ -2,9 +2,9 @@ package nrpcserver
 
 import (
 	"context"
-	"riskcontral/api/riskctrl"
-	"riskcontral/internal/logic/tfa/tfaconst"
-	"riskcontral/internal/service"
+	"riskcontrol/api/riskctrl"
+	"riskcontrol/internal/logic/tfa/tfaconst"
+	"riskcontrol/internal/service"
 
 	"github.com/gogf/gf/v2/frame/g"
 	"github.com/gogf/gf/v2/net/gtrace"

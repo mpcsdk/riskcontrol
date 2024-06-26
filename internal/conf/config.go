@@ -8,20 +8,18 @@ import (
 )
 
 type Cache struct {
-	ApiInterval              int `json:"apiInterval" v:"required|min:1"`
-	SessionDuration          int `json:"sessionDuration" v:"required|min:1"`
-	DBCacheDuration          int `json:"dbCacheDuration" v:"required|min:1"`
+	Duration int `json:"duration" v:"required|min:1000"`
+
+	ApiInterval     int `json:"apiInterval" v:"required|min:1"`
+	SessionDuration int `json:"sessionDuration" v:"required|min:1"`
+	////
 	VerificationCodeDuration int `json:"VerificationCodeDuration" v:"required|min:1"`
-	// LimitSendInterval        int `json:"limitSendInterval" v:"required|min:1"`
-	LimitSendPhoneCount    int `json:"limitSendPhoneCount" v:"required|min:1"`
-	LimitSendPhoneDuration int `json:"limitSendPhoneDuration" v:"required|min:1"`
-	LimitSendMailCount     int `json:"limitSendMailCount" v:"required|min:1"`
-	LimitSendMailDuration  int `json:"limitSendMailDuration" v:"required|min:1"`
+	LimitSendPhoneCount      int `json:"limitSendPhoneCount" v:"required|min:1"`
+	LimitSendPhoneDuration   int `json:"limitSendPhoneDuration" v:"required|min:1"`
+	LimitSendMailCount       int `json:"limitSendMailCount" v:"required|min:1"`
+	LimitSendMailDuration    int `json:"limitSendMailDuration" v:"required|min:1"`
 }
-type Etcd struct {
-	Address       string `json:"address" v:"required"`
-	ScrapeLogsRpc string `json:"scrapeLogsRpc" v:"required"`
-}
+
 type UserRisk struct {
 	UserControl              bool   `json:"userControl" v:"required"`
 	TxControl                bool   `json:"txControl" v:"required"`
@@ -89,6 +87,14 @@ type Server struct {
 type NatsCfg struct {
 	NatsUrl string `json:"natsUrl" v:"required"`
 }
+type Swap struct {
+	ChainId  int64  `json:"chainId"`
+	Contract string `json:"contract"`
+}
+type NftMarket struct {
+	ChainId  int64  `json:"chainId"`
+	Contract string `json:"contract"`
+}
 
 // //
 type Cfg struct {
@@ -100,6 +106,9 @@ type Cfg struct {
 	UserTokenUrl string    `json:"userTokenUrl" v:"required"`
 	JaegerUrl    string    `json:"jaegerUrl" v:"required"`
 	Nats         *NatsCfg  `json:"nats" v:"required"`
+
+	Swap      []*Swap      `json:"swap" v:"required"`
+	NftMarket []*NftMarket `json:"nftMarket v:"required"`
 }
 
 var Config = &Cfg{}

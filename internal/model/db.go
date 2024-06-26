@@ -1,7 +1,7 @@
 package model
 
 import (
-	"riskcontral/api/riskctrl"
+	"riskcontrol/api/riskctrl"
 	"strings"
 
 	"github.com/mpcsdk/mpcCommon/mpcdao/model/entity"

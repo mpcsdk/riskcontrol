@@ -7,7 +7,7 @@ package tfa
 import (
 	"context"
 	
-	"riskcontral/api/tfa/v1"
+	"riskcontrol/api/tfa/v1"
 )
 
 type ITfaV1 interface {

@@ -2,8 +2,8 @@ package pendding
 
 import (
 	"context"
-	v1 "riskcontral/api/tfa/v1"
-	"riskcontral/internal/logic/tfa/tfaconst"
+	v1 "riskcontrol/api/tfa/v1"
+	"riskcontrol/internal/logic/tfa/tfaconst"
 	"sync"
 	"time"
 

@@ -3,7 +3,7 @@ package tfaconst
 import (
 	"context"
 	"errors"
-	"riskcontral/internal/model"
+	"riskcontrol/internal/model"
 )
 
 var ErrRiskNotDone error = errors.New("risk not done")

@@ -2,10 +2,10 @@ package tfa
 
 import (
 	"context"
-	pendding "riskcontral/internal/logic/tfa/penddingrisk"
-	"riskcontral/internal/logic/tfa/tfaconst"
-	"riskcontral/internal/logic/tfa/verifier"
-	"riskcontral/internal/model"
+	pendding "riskcontrol/internal/logic/tfa/penddingrisk"
+	"riskcontrol/internal/logic/tfa/tfaconst"
+	"riskcontrol/internal/logic/tfa/verifier"
+	"riskcontrol/internal/model"
 	"testing"
 
 	"github.com/mpcsdk/mpcCommon/mpcdao/model/entity"

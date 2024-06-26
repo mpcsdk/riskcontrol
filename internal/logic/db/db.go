@@ -2,9 +2,7 @@ package db
 
 import (
 	"context"
-	"riskcontral/internal/conf"
-	"riskcontral/internal/service"
-	"time"
+	"riskcontrol/internal/conf"
 
 	_ "github.com/gogf/gf/contrib/drivers/mysql/v2"
 	_ "github.com/gogf/gf/contrib/nosql/redis/v2"
@@ -14,14 +12,13 @@ import (
 )
 
 type sDB struct {
-	// cache *gcache.Cache
-	ctx        context.Context
-	dbDuration time.Duration
-	///
-	riskCtrlTfa *mpcdao.RiskTfa
+	ctx          context.Context
+	chainCfg     *mpcdao.ChainCfg
+	riskCtrlRule *mpcdao.RiskCtrlRule
+	riskCtrlTfa  *mpcdao.RiskTfa
 }
 
-func new() *sDB {
+func New() *sDB {
 	///
 	r := g.Redis()
 	_, err := r.Conn(gctx.GetInitCtx())
@@ -30,9 +27,10 @@ func new() *sDB {
 	}
 	///
 	s := &sDB{
-		ctx:         gctx.GetInitCtx(),
-		dbDuration:  time.Duration(conf.Config.Cache.DBCacheDuration) * time.Second,
-		riskCtrlTfa: mpcdao.NewRiskTfa(r, conf.Config.Cache.DBCacheDuration),
+		ctx:          gctx.GetInitCtx(),
+		chainCfg:     mpcdao.NewChainCfg(r, conf.Config.Cache.Duration),
+		riskCtrlRule: mpcdao.NewRiskCtrlRule(r, conf.Config.Cache.Duration),
+		riskCtrlTfa:  mpcdao.NewRiskTfa(r, conf.Config.Cache.Duration),
 	}
 
 	return s
@@ -41,8 +39,9 @@ func new() *sDB {
 func (s *sDB) TfaDB() *mpcdao.RiskTfa {
 	return s.riskCtrlTfa
 }
-
-// 初始化
-func init() {
-	service.RegisterDB(new())
+func (s *sDB) RiskCtrl() *mpcdao.RiskCtrlRule {
+	return s.riskCtrlRule
+}
+func (s *sDB) ChainCfg() *mpcdao.ChainCfg {
+	return s.chainCfg
 }

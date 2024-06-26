@@ -3,9 +3,9 @@ package cmd
 import (
 	"context"
 
-	"riskcontral/internal/controller/nrpcserver"
-	"riskcontral/internal/controller/riskctrl"
-	"riskcontral/internal/controller/tfa"
+	"riskcontrol/internal/controller/nrpcserver"
+	"riskcontrol/internal/controller/riskctrl"
+	"riskcontrol/internal/controller/tfa"
 
 	"github.com/gogf/gf/v2/errors/gcode"
 	"github.com/gogf/gf/v2/errors/gerror"
@@ -59,8 +59,9 @@ func ResponseHandler(r *ghttp.Request) {
 		Code:    code.Code(),
 		Message: code.Message(),
 		Data: func() interface{} {
-			if code.Code() != gcode.CodeOK.Code() {
-				return code.Detail()
+			detail := code.Detail()
+			if detail != nil {
+				return detail
 			} else {
 				return res
 			}

@@ -1,7 +1,7 @@
 package pendding
 
 import (
-	"riskcontral/internal/logic/tfa/tfaconst"
+	"riskcontrol/internal/logic/tfa/tfaconst"
 	"testing"
 	"time"
 

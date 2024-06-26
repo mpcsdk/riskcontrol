@@ -7,7 +7,7 @@ package riskctrl
 import (
 	"context"
 	
-	"riskcontral/api/riskctrl/v1"
+	"riskcontrol/api/riskctrl/v1"
 )
 
 type IRiskctrlV1 interface {

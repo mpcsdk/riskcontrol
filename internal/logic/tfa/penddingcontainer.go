@@ -2,8 +2,8 @@ package tfa
 
 // import (
 // 	"context"
-// 	pendding "riskcontral/internal/logic/tfa/penddingrisk"
-// 	"riskcontral/internal/logic/tfa/tfaconst"
+// 	pendding "riskcontrol/internal/logic/tfa/penddingrisk"
+// 	"riskcontrol/internal/logic/tfa/tfaconst"
 // 	"sync"
 // 	"time"
 

@@ -2,8 +2,8 @@ package nrpcserver
 
 import (
 	"context"
-	"riskcontral/api/riskctrl"
-	"riskcontral/internal/service"
+	"riskcontrol/api/riskctrl"
+	"riskcontrol/internal/service"
 
 	"github.com/gogf/gf/v2/frame/g"
 	"github.com/gogf/gf/v2/net/gtrace"

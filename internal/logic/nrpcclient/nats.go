@@ -1,12 +1,8 @@
 package nrpcclient
 
 import (
-	"riskcontral/api/riskengine"
-	"riskcontral/internal/conf"
-	"riskcontral/internal/service"
-	"time"
+	"riskcontrol/api/riskengine"
 
-	"github.com/golang/protobuf/ptypes/empty"
 	"github.com/nats-io/nats.go"
 )
 
@@ -15,27 +11,27 @@ type sNrpcClient struct {
 	riskengine *riskengine.RiskEngineClient
 }
 
-func init() {
+// func init() {
 
-	// Connect to the NATS server.
-	nc, err := nats.Connect(conf.Config.Nats.NatsUrl, nats.Timeout(3*time.Second))
-	if err != nil {
-		panic(err)
-	}
-	// defer nc.Close()
+// 	// Connect to the NATS server.
+// 	nc, err := nats.Connect(conf.Config.Nats.NatsUrl, nats.Timeout(3*time.Second))
+// 	if err != nil {
+// 		panic(err)
+// 	}
+// 	// defer nc.Close()
 
-	riskengine := riskengine.NewRiskEngineClient(nc)
-	_, err = riskengine.RpcAlive(&empty.Empty{})
-	if err != nil {
-		panic(err)
-	}
-	///
-	s := &sNrpcClient{
-		riskengine: riskengine,
-		nc:         nc,
-	}
-	service.RegisterNrpcClient(s)
-}
+//		riskengine := riskengine.NewRiskEngineClient(nc)
+//		_, err = riskengine.RpcAlive(&empty.Empty{})
+//		if err != nil {
+//			panic(err)
+//		}
+//		///
+//		s := &sNrpcClient{
+//			riskengine: riskengine,
+//			nc:         nc,
+//		}
+//		service.RegisterNrpcClient(s)
+//	}
 func (s *sNrpcClient) Flush() {
 	err := s.nc.Flush()
 	if err != nil {

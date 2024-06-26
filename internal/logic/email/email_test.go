@@ -2,12 +2,12 @@ package email
 
 import (
 	"context"
-	"riskcontral/internal/service"
+	"riskcontrol/internal/service"
 	"testing"
 )
 
 func Test_SendMail(t *testing.T) {
-	service.RegisterMailCode(new())
+	service.RegisterMailCode(New())
 	_, err := service.MailCode().SendVerificationCode(context.Background(), "xinwei.li@mixmarvel.com")
 	if err != nil {
 		t.Error(err)

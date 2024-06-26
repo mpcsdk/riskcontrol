@@ -1,7 +1,7 @@
 package verifier
 
 import (
-	"riskcontral/internal/logic/tfa/tfaconst"
+	"riskcontrol/internal/logic/tfa/tfaconst"
 	"testing"
 
 	"github.com/gogf/gf/v2/errors/gerror"
