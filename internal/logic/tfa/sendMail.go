@@ -30,6 +30,7 @@ func (s *sTFA) SendMailCode(ctx context.Context, userId string, riskSerial strin
 	////
 	code, err := v.SendVerificationCode()
 	if err != nil {
+		g.Log().Warning(ctx, "SendMailCode:", "tfaInfo:", tfaInfo, "risk:", risk, "err:", err)
 		return mpccode.CodeTFASendMailFailed()
 	}
 	////
